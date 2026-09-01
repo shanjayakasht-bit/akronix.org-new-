@@ -1,0 +1,159 @@
+/* Self-hosted faces. Newsreader carries the optical-size axis (opsz 6-72) the
+   type scale depends on, plus a true drawn italic for the qualifier device. */
+@import "@fontsource-variable/newsreader/opsz.css";
+@import "@fontsource-variable/newsreader/opsz-italic.css";
+@import "@fontsource-variable/instrument-sans/wght.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "tailwindcss";
+
+@theme {
+  /* ---- Color -------------------------------------------------------------
+     Bone paper is the ground. Pure white is a *material* used only for panels,
+     which is what gives depth without shadows or rounded cards.              */
+  /* ---- Colour -----------------------------------------------------------
+     Warm cream page. Rich, deep slabs sit ON it as rounded blocks, with the
+     cream showing at the edges -- the structural device taken from the
+     reference sites. Accents stay muted; the depth comes from the slabs.   */
+  --color-paper: #faf7ef;
+  --color-panel: #ffffff;
+  --color-mist: #f2ecdf;
+
+  --color-ink: #191713;
+  --color-ink-2: #5c564c;
+  --color-ink-3: #918a7c;
+  --color-rule: #e4dccb;
+
+  /* slabs */
+  --color-forest: #12403a;
+  --color-coal: #191713;
+  --color-cocoa: #43302a;
+
+  --color-clay: #b4552f;
+  --color-clay-soft: #d98b5f;
+  --color-moss: #55684c;
+  --color-slate: #47596b;
+  --color-ochre: #99803f;
+
+  --color-clay-tint: #f6e8df;
+  --color-moss-tint: #eaeee5;
+  --color-slate-tint: #e8ecef;
+  --color-ochre-tint: #f2eddd;
+
+  --color-night: #191713;
+  --color-cream: #faf7ef;
+  --color-shell: #f2ecdf;
+  --color-line: #e4dccb;
+  --color-signal: #b4552f;
+  --color-ember: #b4552f;
+  --color-ember-2: #99803f;
+  --color-ember-tint: #f6e8df;
+  --color-teal: #47596b;
+  --color-teal-tint: #e8ecef;
+  --color-plum: #43302a;
+  --color-plum-tint: #f0e8e4;
+  --color-sage: #55684c;
+  --color-sage-tint: #eaeee5;
+  --color-sand: #f2ecdf;
+
+  /* ---- Families ---------------------------------------------------------- */
+  --font-serif: "Newsreader Variable", Georgia, "Times New Roman", serif;
+  --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* ---- Type scale --------------------------------------------------------
+     14>17>21>26 runs at ~1.23, then a deliberate break to 40 (x1.54) so no
+     mid-weight heading competes for rank. Fluid between the mobile and
+     desktop sizes named in the plan.                                        */
+  --text-display: clamp(2.75rem, 1.5rem + 5.5vw, 5.5rem);
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.03em;
+
+  --text-h1: clamp(2.25rem, 1.35rem + 3.95vw, 4rem);
+  --text-h1--line-height: 1;
+  --text-h1--letter-spacing: -0.025em;
+
+  --text-h2: clamp(1.75rem, 1.3rem + 1.85vw, 2.5rem);
+  --text-h2--line-height: 1.1;
+  --text-h2--letter-spacing: -0.02em;
+
+  --text-h3: clamp(1.375rem, 1.2rem + 0.75vw, 1.625rem);
+  --text-h3--line-height: 1.25;
+  --text-h3--letter-spacing: -0.01em;
+
+  --text-lede: clamp(1.1875rem, 1.1rem + 0.35vw, 1.3125rem);
+  --text-lede--line-height: 1.55;
+
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.65;
+
+  --text-ui: 0.875rem;
+  --text-ui--line-height: 1.5;
+
+  --text-mark: 0.6875rem;
+  --text-mark--line-height: 1.2;
+  --text-mark--letter-spacing: 0.12em;
+
+  /* ---- Radius ------------------------------------------------------------
+     Sharp by default. 2px exists only so controls read as pressable.        */
+  /* Sharp edges are the default. Radius only where something must read
+     as pressable. */
+  --radius-control: 999px;
+  /* Slabs are the one place a large radius is used, and it is the point. */
+  --radius-slab: 2.5rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    /* Lets the browser pick opsz from the rendered size, which is what keeps
+       an 88px headline from looking like inflated body text. */
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-signal);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
+  }
+}
+
+/* Body measure: ~62-68 characters at 17px Newsreader. */
+@utility measure {
+  max-width: 38.75rem;
+}
+
+/* Reduced motion is a hard stop, not a softening. Lenis is bypassed in JS. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* The tools marquee. Driven by CSS rather than JS: Motion's repeat ran the
+   track once to -50% and stopped, leaving the strip frozen mid-scroll. */
+@keyframes akx-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+.akx-marquee { animation: akx-marquee 38s linear infinite; }
+.akx-marquee:hover { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .akx-marquee { animation: none; }
+}
