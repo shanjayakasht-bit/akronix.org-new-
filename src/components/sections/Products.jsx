@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { Container } from '../primitives'
+import { RollText } from '../ui/RollText'
 import { Slab } from '../ui/Slab'
 import * as Glyphs from '../brand/Glyphs'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
@@ -76,9 +77,9 @@ export default function Products() {
         <motion.div className="mt-12 flex justify-center" {...up(0.3)}>
           <Link
             to="/building"
-            className="group inline-flex items-center gap-2.5 rounded-full bg-paper px-6 py-3.5 font-sans text-ui text-ink transition-colors duration-300 hover:bg-clay-soft hover:text-paper"
+            className="group/roll group inline-flex items-center gap-2.5 rounded-full bg-paper px-6 py-3.5 font-sans text-ui text-ink transition-colors duration-300 hover:bg-clay-soft hover:text-paper"
           >
-            View All Products
+            <RollText>View All Products</RollText>
             <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
           </Link>
         </motion.div>

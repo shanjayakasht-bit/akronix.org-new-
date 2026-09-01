@@ -162,6 +162,16 @@ under, one letter behind the next. Wired into `Button` (so every variant gets
 it), the nav links, CTA, menu button and mobile sheet, all the footer links,
 contact lines and social buttons, and the Ecosystem pillar CTAs.
 
+Two hand-rolled links were missed on the first pass and are now covered:
+Products' "View All Products" and the 404's "Back to the homepage", neither of
+which goes through `Button`. If another bespoke link is ever added, it needs
+wiring by hand -- only `Button` gets this for free.
+
+Three things are deliberately NOT rolled: the booking date and time pills, and
+the Ecosystem accordion row headers. The pills are options being chosen from
+rather than actions, and the accordion header already animates on hover by
+opening its row -- a second hover animation on the same target fights it.
+
 The trigger is a **named** group -- `group/roll` goes on the anchor, button or
 Link, never on the text -- so it fires from anywhere on the control including
 its padding. The stagger is a ladder of 26 static `delay-[Nms]` classes rather
@@ -995,10 +1005,36 @@ saying so. If the word *Demo* is wanted, "Book a walkthrough" was offered.
   `null`. The booking component's copy-link block is built and hides itself
   until a real URL exists. A Meet code cannot be invented.
 
-### Still unverified
+### Responsive — checked at 375px, and how
 
-Nothing on this site has been rendered below a 1280px CSS viewport. The browser
-available here will not go narrower — height resizes, width does not.
+The browser here will not resize its width, which is why this went unchecked for
+so long. The way round it: load the site into an `<iframe width="390">` on a
+page and read `contentDocument`. Media queries inside an iframe answer to the
+iframe's own box, so it is a real 375px viewport, not a zoom. Use that trick
+rather than assuming again.
+
+What holds at 375px:
+- No horizontal overflow anywhere. The only element wider than the viewport is
+  the tools marquee at 2439px, which is `w-max` inside an `overflow-hidden`
+  track and is meant to be.
+- The nav contracts to mark plus Menu, and the mobile sheet is there.
+- Ecosystem, Advantages, FinalCta and the footer all reflow; the booking card
+  sits at 295px wide and its fixed height holds across all three steps.
+
+Two things were broken and are fixed:
+- The hero headline rendered at **112px on a 375px screen** — `min(29vw, ...)`
+  in the clamp — and "Connect." could not fit the measure. It is 19vw now. Any
+  viewport at or above ~589px hits the 7rem cap either way, so desktop is
+  untouched; it is 74px at 375px.
+- Worse, the headline lines had no `whitespace-nowrap`, and the letters inside
+  them are inline-blocks, so "Connect." **broke mid-word** into "Conne / ct."
+  `SectionHead` had the guard and `Hero` did not. Any future per-letter split
+  needs it.
+
+Still not looked at: anything between 376px and 1279px, and no real device has
+been used. The fixed `2.5rem` slab inset is 80px of a 375px screen, which is a
+lot of the width; the client asked for a fixed value, so it stays until they
+say otherwise.
 
 ---
 

@@ -247,8 +247,14 @@ export default function Hero() {
     return { word, from }
   })
 
+  /* 19vw in the clamp, not 29vw. Any viewport at or above ~589px hits the 7rem
+     cap either way, so desktop is untouched; below it, 29vw put the headline at
+     112px on a 375px screen, where "Connect." cannot fit the measure. The lines
+     are also `whitespace-nowrap`, because the letters inside them are
+     inline-blocks and would otherwise be free to break mid-word -- which is
+     exactly what they did. */
   const heading = (
-    <h1 className="text-[clamp(2.5rem,min(29vw,30svh),7rem)] leading-[0.94] tracking-[-0.035em] text-ink">
+    <h1 className="text-[clamp(2.5rem,min(19vw,30svh),7rem)] leading-[0.94] tracking-[-0.035em] text-ink">
       {/* Split into letters, so the real line is carried once for a reader and
           the pieces are hidden from it. */}
       <span className="sr-only">{hero.headline.join(' ')}</span>
@@ -257,7 +263,10 @@ export default function Hero() {
         <span
           key={word}
           aria-hidden="true"
-          className={cx('block pb-[0.06em] font-serif', i === 1 && 'italic text-clay')}
+          className={cx(
+            'block whitespace-nowrap pb-[0.06em] font-serif',
+            i === 1 && 'italic text-clay',
+          )}
         >
           {[...word].map((ch, j) => {
             const [a, b] = letterRange(from + j, seen)
