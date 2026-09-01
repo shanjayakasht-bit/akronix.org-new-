@@ -1053,8 +1053,17 @@ Step 4 — the remaining pages, in this order:
 5. `/policies` — legal utility. Note it is dated 22 March 2026, a future date,
    and uses `admin@akronix.org` while contact.md uses the Gmail address.
 
-Then SEO metadata, OG images, 404 polish. The favicon is done -- it points at
-the supplied logo.
+Then SEO metadata, OG images, 404 polish. The favicon is done: it is
+`public/logo/favicon-mark.svg`, the supplied artwork cropped to the figure and
+forced white by a `feColorMatrix`. The viewBox is measured, not guessed -- the
+figure occupies x 149-384, y 21-287 of the 555x407 file and the wordmark begins
+below row 288 -- so regenerate it if the artwork ever changes.
+
+Two traps in that file. XML forbids a double hyphen inside a comment, and a
+malformed SVG does not fail loudly: the browser simply never loads it and the
+tab shows an empty slot. And being white on transparency, it disappears against
+a light tab strip; the client asked for white knowing that. A dark rounded plate
+behind the figure is the usual fix if it is ever wanted.
 
 ## Waiting on the client
 
