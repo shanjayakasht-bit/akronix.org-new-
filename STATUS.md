@@ -8,7 +8,35 @@ content audit, design system and homepage structure.
 
 ## Done
 
-### Step 3p — Partnership glyph redrawn (current)
+### Step 3q — Rolling stragglers, 375px, favicon (current)
+
+**Two links had been missed by the roll.** "View All Products" and the 404's
+"Back to the homepage" are hand-rolled `<Link>`s rather than `<Button>`, so
+neither picked it up. Both wired. The client spotted the first; the second came
+out of sweeping every clickable element in live code afterwards rather than
+patching only what was reported. Only `Button` gets the roll for free.
+
+**The site was rendered below 1280px for the first time** — see the
+"Responsive" section below for how, and for the two things it caught. Short
+version: the hero headline was 112px on a 375px screen and "Connect." was
+breaking mid-word.
+
+**The favicon is the figure alone, in white.** `public/logo/favicon-mark.svg`
+embeds the artwork, crops to the figure and forces it white with a
+`feColorMatrix` that zeroes the colour channels and passes alpha through, so
+the wordmark is out of frame and nothing of the red I survives as a tint. The
+viewBox is measured, not guessed: scanning the artwork's alpha per row puts the
+figure at x 149-384, y 21-287 of 555x407 with the wordmark starting below row
+288. Regenerate it if the artwork changes.
+
+Two traps in that file. XML forbids a double hyphen inside a comment, and a
+malformed SVG fails silently -- the browser never loads it and the tab shows an
+empty slot rather than an error. The first attempt did exactly that. And being
+white on transparency it disappears against a light tab strip; the client asked
+for white knowing that, and a dark rounded plate behind the figure is the fix if
+it is ever wanted.
+
+### Step 3p — Partnership glyph redrawn
 
 `Handshake` in `brand/Glyphs.jsx` is gone, replaced by `Partnership`: two
 interlocking rings. The handshake was four overlapping strokes in a 24-unit box
@@ -1053,17 +1081,7 @@ Step 4 — the remaining pages, in this order:
 5. `/policies` — legal utility. Note it is dated 22 March 2026, a future date,
    and uses `admin@akronix.org` while contact.md uses the Gmail address.
 
-Then SEO metadata, OG images, 404 polish. The favicon is done: it is
-`public/logo/favicon-mark.svg`, the supplied artwork cropped to the figure and
-forced white by a `feColorMatrix`. The viewBox is measured, not guessed -- the
-figure occupies x 149-384, y 21-287 of the 555x407 file and the wordmark begins
-below row 288 -- so regenerate it if the artwork ever changes.
-
-Two traps in that file. XML forbids a double hyphen inside a comment, and a
-malformed SVG does not fail loudly: the browser simply never loads it and the
-tab shows an empty slot. And being white on transparency, it disappears against
-a light tab strip; the client asked for white knowing that. A dark rounded plate
-behind the figure is the usual fix if it is ever wanted.
+Then SEO metadata, OG images, 404 polish. The favicon is done; see Step 3q.
 
 ## Waiting on the client
 
