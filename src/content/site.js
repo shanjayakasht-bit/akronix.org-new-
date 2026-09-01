@@ -22,6 +22,20 @@ export const site = {
    * While this is null the panel says the link arrives with the confirmation,
    * which is true and costs nothing. */
   meetLink: null,
+
+  /* Where a submitted booking is POSTed as JSON
+     ({ date, iso, time, timezone, email }).
+     
+     Null, because nothing is wired up yet. While it is null the booking panel
+     falls back to handing the filled-in request to the visitor's own mail
+     client, and its closing screen says only that -- it does NOT say the
+     meeting is scheduled, because with no endpoint nothing received it.
+
+     Set this to a form/email service URL (Formspree, Web3Forms, EmailJS, or a
+     serverless function) and the panel switches to POSTing and to the
+     scheduled wording. Whatever sits on the other end is also what has to
+     issue the Google Meet link, since `meetLink` above is still null. */
+  bookingEndpoint: null,
 }
 
 /* Policies is deliberately absent — it belongs in the footer, not the nav. */

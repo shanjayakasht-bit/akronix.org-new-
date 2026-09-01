@@ -81,7 +81,7 @@ export const advantages = [
   { title: 'AI-Powered Growth', copy: 'Smart solutions for faster, better decision making.', glyph: 'Bolt' },
   { title: 'Strategic Networking', copy: 'Opportunities that create real growth.', glyph: 'Link' },
   { title: 'Scalable Solutions', copy: 'Built to grow with your business at every stage.', glyph: 'Growth' },
-  { title: 'Long-Term Partnership', copy: 'We grow when you grow. Your success is ours.', glyph: 'Handshake' },
+  { title: 'Long-Term Partnership', copy: 'We grow when you grow. Your success is ours.', glyph: 'Partnership' },
 ]
 
 export const quote = {

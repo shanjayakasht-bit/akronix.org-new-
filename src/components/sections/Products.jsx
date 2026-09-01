@@ -25,7 +25,7 @@ export default function Products() {
     <Slab tone="forest">
       <Container>
         <div className="text-center">
-          <motion.p className="font-mono text-mark uppercase tracking-[0.16em] text-paper/45" {...up(0)}>
+          <motion.p className="font-sans text-mark uppercase tracking-[0.16em] text-paper/45" {...up(0)}>
             White-label SaaS
           </motion.p>
           <h2 className="mx-auto mt-6 max-w-[16ch] font-serif text-h1 leading-[1.04] tracking-[-0.025em] text-paper">
@@ -62,7 +62,7 @@ export default function Products() {
                   <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-paper/10 text-paper/80 transition-colors duration-500 group-hover:bg-clay-soft group-hover:text-paper">
                     {Glyph ? <Glyph className="h-5 w-5" /> : null}
                   </span>
-                  <span className="rounded-full border border-paper/20 px-3 py-1 font-mono text-mark uppercase text-paper/50">
+                  <span className="rounded-full border border-paper/20 px-3 py-1 font-sans text-mark uppercase text-paper/50">
                     {p.stage}
                   </span>
                 </div>

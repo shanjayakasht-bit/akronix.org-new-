@@ -1,17 +1,17 @@
 import { Link } from 'react-router-dom'
 import { Container } from '../primitives'
-import { Mark } from '../brand/Mark'
+import { RollText } from '../ui/RollText'
+import { Logo } from '../brand/Logo'
 import { site, socials, footerColumns } from '../../content/site'
 
 export default function Footer() {
   return (
     <footer className="bg-night text-white/70">
-      <Container className="py-16 md:py-20">
+      <Container className="pt-16 md:pt-22 pb-5 md:pb-8">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <Link to="/" className="inline-flex items-center gap-3 text-white">
-              <Mark className="h-8 w-8" />
-              <span className="font-sans text-xl font-bold tracking-tight">{site.name}</span>
+            <Link to="/" className="inline-flex items-center" aria-label={`${site.name} — home`}>
+              <Logo mono className="h-16" />
             </Link>
             <p className="mt-5 max-w-[38ch] font-sans text-body leading-relaxed text-white/60">
               Your complete business growth ecosystem — software, marketing,
@@ -20,13 +20,13 @@ export default function Footer() {
 
             <ul className="mt-7 space-y-2.5 font-sans text-ui">
               <li>
-                <a href={`mailto:${site.email}`} className="text-white/70 transition-colors hover:text-clay">
-                  {site.email}
+                <a href={`mailto:${site.email}`} className="group/roll inline-block text-white/70 transition-colors hover:text-clay">
+                  <RollText>{site.email}</RollText>
                 </a>
               </li>
               <li>
-                <a href={site.phoneHref} className="text-white/70 transition-colors hover:text-clay">
-                  {site.phone}
+                <a href={site.phoneHref} className="group/roll inline-block text-white/70 transition-colors hover:text-clay">
+                  <RollText>{site.phone}</RollText>
                 </a>
               </li>
               <li className="text-white/60">{site.location}</li>
@@ -39,9 +39,9 @@ export default function Footer() {
                     href={s.href}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="inline-flex h-10 items-center justify-center border border-white/20 px-4 font-sans text-[0.75rem] text-white/70 transition-colors duration-300 hover:border-white/60 hover:text-white"
+                    className="group/roll inline-flex h-10 items-center justify-center border border-white/20 px-4 font-sans text-[0.75rem] text-white/70 transition-colors duration-300 hover:border-white/60 hover:text-white"
                   >
-                    {s.label}
+                    <RollText>{s.label}</RollText>
                   </a>
                 </li>
               ))}
@@ -59,9 +59,9 @@ export default function Footer() {
                     <li key={l.label}>
                       <Link
                         to={l.to}
-                        className="font-sans text-ui text-white/70 transition-colors duration-300 hover:text-clay"
+                        className="group/roll inline-block font-sans text-ui text-white/70 transition-colors duration-300 hover:text-clay"
                       >
-                        {l.label}
+                        <RollText>{l.label}</RollText>
                       </Link>
                     </li>
                   ))}

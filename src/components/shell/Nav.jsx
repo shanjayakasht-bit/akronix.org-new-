@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react'
 import { useLenis } from 'lenis/react'
-import { Mark } from '../brand/Mark'
+import { Logo } from '../brand/Logo'
+import { RollText } from '../ui/RollText'
 import { cx } from '../../lib/cx'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
 import { nav, site } from '../../content/site'
@@ -11,14 +12,50 @@ const EASE = [0.16, 1, 0.3, 1]
 
 /* Glass pill.
  *
- * Full width across the hero. Once the reader leaves the hero it contracts and
- * drops the wordmark, leaving the mark seated in the pill's left curve. Hover
- * restores it to full width, so nothing is ever permanently hidden.
+ * Full width across the hero, contracting to its own contents once the reader
+ * leaves it and expanding again on the way back up. Scroll position is the only
+ * thing that drives it -- hover used to expand it too and that was wrong: the
+ * bar moved whenever the pointer crossed it.
+ *
+ * Wide, the name is set beside the mark. Contracted, the mark stands alone.
+ * That is only possible because the nav uses the cropped `mark` variant of the
+ * logo, which has no wordmark of its own to clash with.
+ *
+ * The pill has no fill, so the page runs straight under the type. The whole
+ * bar is drawn white and composited with `mix-blend-difference`, which makes
+ * each pixel the inverse of whatever is behind it: dark type over the cream
+ * page, light type over the forest and cocoa slabs, and -- because it is a
+ * per-pixel operation rather than a state flip -- a section edge crossing the
+ * bar inverts the letters it is halfway through rather than switching the
+ * whole bar at once.
+ *
+ * The blend sits on the OUTER sticky wrapper, and it has to. An element blends
+ * with its backdrop only as far as the nearest ancestor that forms a stacking
+ * context, and this wrapper forms one the moment it is `sticky z-50`. Put the
+ * blend on anything inside it and the group being blended is the bar itself --
+ * transparent -- so the type just renders white. It was built that way first
+ * and the links came out pale on the cream page.
+ *
+ * Everything inside is therefore authored as its own inverse: the CTA is a
+ * white pill with black type, which difference turns into the near-black pill
+ * with cream type it is meant to be, and flips on the dark slabs.
+ *
+ * Two consequences worth knowing. Difference against a saturated ground gives
+ * a tinted result, not a neutral one: over the forest slab the type lands
+ * slightly pink.
+ *
+ * And every piece of type in here is FULL white, never a dimmed white. Under
+ * difference, dimming the source dims the inversion with it -- a `text-white/65`
+ * link half-inverts and comes out muddy grey on both light and dark grounds,
+ * which reads as type that is not responding to the page at all. The current
+ * page is marked with a rule under it instead of with weight.
+ *
+ * The CTA is deliberately left out of the blend. It is a filled control, not
+ * type on the page, and it stays legible on any ground on its own.
  */
 export default function Nav() {
   const [open, setOpen] = useState(false)
   const [past, setPast] = useState(false)
-  const [hovered, setHovered] = useState(false)
   const location = useLocation()
   const lenis = useLenis()
   const reduced = usePrefersReducedMotion()
@@ -26,7 +63,7 @@ export default function Nav() {
 
   useMotionValueEvent(scrollY, 'change', (v) => setPast(v > 260))
 
-  const wide = !past || hovered
+  const wide = !past
 
   useEffect(() => setOpen(false), [location.pathname])
 
@@ -45,10 +82,8 @@ export default function Nav() {
 
   return (
     <>
-      <div className="pointer-events-none sticky top-0 z-50 px-3 pt-3 md:px-5 md:pt-4">
+      <div className="pointer-events-none sticky top-0 z-50 px-3 pt-3 mix-blend-difference md:px-5 md:pt-4">
         <motion.header
-          onHoverStart={() => setHovered(true)}
-          onHoverEnd={() => setHovered(false)}
           layout
           transition={{ duration: 0.7, ease: EASE }}
           className={cx(
@@ -60,29 +95,35 @@ export default function Nav() {
             wide ? 'w-full max-w-[76rem]' : 'w-fit max-w-full',
             /* glass: translucent ground, heavy blur, saturation lift, a bright
                top edge and a soft drop so it floats over dark slabs too */
-            'border border-white/45 bg-paper/55 shadow-[0_8px_40px_-16px_rgba(25,23,19,0.35)]',
-            'backdrop-blur-2xl backdrop-saturate-[1.6]',
+            'border border-white/25 bg-transparent',
           )}
         >
           <Link
             to="/"
-            className="group flex shrink-0 items-center gap-2.5 rounded-full py-1 pl-1.5 pr-2 text-ink"
+            className="group flex shrink-0 items-center gap-2.5 rounded-full pb-1.5 pl-1.5 pr-2"
             aria-label={`${site.name} — home`}
           >
-            <Mark className="h-8 w-8 shrink-0 transition-transform duration-500 group-hover:rotate-[-10deg]" />
-            <AnimatePresence initial={false}>
-              {wide ? (
-                <motion.span
-                  initial={reduced ? false : { opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={reduced ? { opacity: 1 } : { opacity: 0, width: 0 }}
-                  transition={{ duration: 0.45, ease: EASE }}
-                  className="overflow-hidden whitespace-nowrap font-sans text-lg font-bold tracking-tight"
-                >
-                  {site.name}
-                </motion.span>
-              ) : null}
-            </AnimatePresence>
+            <Logo mono mark alt="" className="h-10 shrink-0 transition-transform duration-500 group-hover:-rotate-[6deg]" />
+            {/* Only while the pill is wide. The mark carries it on its own once
+                the bar has contracted. */}
+            {/* It stays mounted and rides the SAME `layout` animation as the
+                pill rather than mounting and unmounting inside an
+                `AnimatePresence` that animates its own width to `auto`. That is
+                what made it arrive in a jerk on the way back up: the pill's
+                layout animation applies a scale to everything inside it, and a
+                child animating its own width on a different duration fights
+                that correction the whole way. One layout pass, one easing. */}
+            <motion.span
+              layout
+              transition={{ duration: 0.7, ease: EASE }}
+              className={cx(
+                'overflow-hidden whitespace-nowrap pt-1.5 font-sans text-lg font-bold tracking-tight text-white',
+                'transition-opacity duration-500',
+                wide ? 'w-auto opacity-100' : 'w-0 opacity-0',
+              )}
+            >
+              {site.name}
+            </motion.span>
           </Link>
 
           <nav className="ml-auto hidden items-center gap-0.5 lg:flex">
@@ -92,30 +133,31 @@ export default function Nav() {
                 to={item.to}
                 className={({ isActive }) =>
                   cx(
-                    'whitespace-nowrap rounded-full px-3.5 py-2 font-sans text-ui transition-colors duration-300',
-                    isActive ? 'bg-ink/[0.07] text-ink' : 'text-ink-2 hover:bg-ink/[0.05] hover:text-ink',
+                    'group/roll relative whitespace-nowrap px-3.5 py-2 font-sans text-ui text-white',
+                    isActive &&
+                      'after:absolute after:inset-x-3.5 after:bottom-1 after:h-px after:bg-white',
                   )
                 }
               >
-                {item.label}
+                <RollText>{item.label}</RollText>
               </NavLink>
             ))}
           </nav>
 
           <Link
             to="/contact"
-            className="ml-auto hidden shrink-0 whitespace-nowrap rounded-full bg-ink px-5 py-2.5 font-sans text-ui text-paper transition-colors duration-300 hover:bg-clay lg:ml-0 lg:inline-flex"
+            className="group/roll ml-auto hidden shrink-0 whitespace-nowrap rounded-full bg-white px-5 py-2.5 font-sans text-ui text-black transition-colors duration-300 hover:bg-clay-soft lg:ml-0 lg:inline-flex"
           >
-            Book a Consultation
+            <RollText>Book a Consultation</RollText>
           </Link>
 
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
-            className="ml-auto rounded-full border border-ink/15 px-4 py-2 font-sans text-ui text-ink lg:hidden"
+            className="group/roll ml-auto rounded-full border border-white/35 px-4 py-2 font-sans text-ui text-white lg:hidden"
           >
-            {open ? 'Close' : 'Menu'}
+            <RollText>{open ? 'Close' : 'Menu'}</RollText>
           </button>
         </motion.header>
       </div>
@@ -134,16 +176,16 @@ export default function Nav() {
                 <NavLink
                   key={item.label}
                   to={item.to}
-                  className="border-b border-rule py-5 font-serif text-h3 text-ink"
+                  className="group/roll border-b border-rule py-5 font-serif text-h3 text-ink"
                 >
-                  {item.label}
+                  <RollText>{item.label}</RollText>
                 </NavLink>
               ))}
               <Link
                 to="/contact"
-                className="mt-8 inline-flex justify-center rounded-full bg-ink px-6 py-3.5 font-sans text-ui text-paper"
+                className="group/roll mt-8 inline-flex justify-center rounded-full bg-ink px-6 py-3.5 font-sans text-ui text-paper"
               >
-                Book a Consultation
+                <RollText>Book a Consultation</RollText>
               </Link>
             </nav>
           </motion.div>

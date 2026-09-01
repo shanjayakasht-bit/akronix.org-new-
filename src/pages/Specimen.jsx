@@ -36,7 +36,7 @@ const SCALE = [
   ['lede', 'text-lede', '21 / 1.55'],
   ['body', 'text-body', '17 / 1.65'],
   ['ui', 'font-sans text-ui', '14 / 1.50'],
-  ['mark', 'font-mono text-mark uppercase', '11 / 1.20 / +0.12em'],
+  ['mark', 'font-sans text-mark uppercase', '11 / 1.20 / +0.12em'],
 ]
 
 export default function Specimen() {

@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { motion, useMotionValue, useMotionValueEvent, useScroll } from 'motion/react'
+import { animate, motion, useMotionValue, useMotionValueEvent, useScroll } from 'motion/react'
+import { Rising, letterRange } from '../motion/RisingLetters'
 import { Container } from '../primitives'
 import { Button } from '../ui/Button'
 import { cx } from '../../lib/cx'
-import { Mark } from '../brand/Mark'
+import { Logo } from '../brand/Logo'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
 import { hero } from '../../content/home'
 
 const EASE = [0.16, 1, 0.3, 1]
 const useIso = typeof window === 'undefined' ? useEffect : useLayoutEffect
+/* Seconds the headline takes to stand up, start of the first letter to end of
+   the last. Played once on load and never again. */
+const INTRO = 1.5
 
 /* Hero, split in two: type on the left, the demo video on the right.
  *
@@ -85,7 +89,7 @@ function VideoFrame() {
      this rebuild exists to remove. Set hero.videoUrl to replace it. */
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-5 bg-coal">
-      <Mark className="h-14 w-14 text-paper/70" />
+      <Logo mono className="h-20 opacity-60" alt="" />
       <p className="font-sans text-[0.6875rem] uppercase tracking-[0.2em] text-paper/40">Demo video</p>
     </div>
   )
@@ -200,14 +204,23 @@ export default function Hero() {
     applyFrame(scrollYProgress.get())
   }, [applyFrame, scrollYProgress])
 
-  const rise = (i) =>
-    reduced
-      ? {}
-      : {
-          initial: { y: '112%' },
-          animate: { y: '0%' },
-          transition: { duration: 1, ease: EASE, delay: 0.22 + i * 0.11 },
-        }
+  /* The headline uses the same hinge as the two scrolled headings, but this one
+     is *played*, not scrubbed: it runs once when the page loads and never
+     again. The hero is the first thing on the page, so there is no scroll to
+     drive it with, and re-running it on every pass up would be noise.
+
+     The driver is one MotionValue walked 0 -> 1 over `INTRO`; each letter takes
+     its own slice of that. Linear here because the easing is applied per
+     letter inside `Rising`. */
+  const intro = useMotionValue(0)
+  useEffect(() => {
+    if (reduced) {
+      intro.set(1)
+      return undefined
+    }
+    const run = animate(intro, 1, { duration: INTRO, ease: 'linear', delay: 0.2 })
+    return () => run.stop()
+  }, [reduced, intro])
 
   const fade = (d) =>
     reduced
@@ -225,13 +238,35 @@ export default function Hero() {
   const heroFrame =
     'flex min-h-[calc(100svh-5rem)] flex-col  gap-1 pb-1 pt-7 md:gap-7 md:pb-1 md:pt-7'
 
+  /* One continuous letter count across the three lines, so the stand-up runs
+     through the whole headline rather than restarting on each word. */
+  let seen = 0
+  const headlineLines = hero.headline.map((word) => {
+    const from = seen
+    seen += word.length
+    return { word, from }
+  })
+
   const heading = (
     <h1 className="text-[clamp(2.5rem,min(29vw,30svh),7rem)] leading-[0.94] tracking-[-0.035em] text-ink">
-      {hero.headline.map((word, i) => (
-        <span key={word} className="block overflow-hidden pb-[0.06em]">
-          <motion.span className={cx('block font-serif', i === 1 && 'italic text-clay')} {...rise(i)}>
-            {word}
-          </motion.span>
+      {/* Split into letters, so the real line is carried once for a reader and
+          the pieces are hidden from it. */}
+      <span className="sr-only">{hero.headline.join(' ')}</span>
+
+      {headlineLines.map(({ word, from }, i) => (
+        <span
+          key={word}
+          aria-hidden="true"
+          className={cx('block pb-[0.06em] font-serif', i === 1 && 'italic text-clay')}
+        >
+          {[...word].map((ch, j) => {
+            const [a, b] = letterRange(from + j, seen)
+            return (
+              <Rising key={`${ch}-${j}`} progress={intro} start={a} end={b}>
+                {ch}
+              </Rising>
+            )
+          })}
         </span>
       ))}
     </h1>

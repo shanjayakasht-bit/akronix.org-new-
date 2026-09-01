@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { RollText } from './RollText'
 import { cx } from '../../lib/cx'
 
 /* Radius 2px only, so a control reads as pressable without becoming a lozenge.
@@ -14,14 +15,14 @@ const styles = {
 export function Button({ as = 'link', to, href, variant = 'primary', className, children, ...rest }) {
   const pad = variant === 'quiet' ? '' : 'px-6 py-3.5'
   const cls = cx(
-    'group inline-flex items-center gap-2.5 font-sans text-ui transition-all duration-300',
+    'group/roll group inline-flex items-center gap-2.5 font-sans text-ui transition-all duration-300',
     pad,
     styles[variant],
     className,
   )
   const inner = (
     <>
-      {children}
+      <RollText>{children}</RollText>
       <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
     </>
   )

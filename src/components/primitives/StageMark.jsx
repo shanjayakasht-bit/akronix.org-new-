@@ -6,7 +6,7 @@ export function StageMark({ active = false, className, children, ...rest }) {
   return (
     <span
       className={cx(
-        'inline-flex items-center gap-2 font-mono text-mark uppercase',
+        'inline-flex items-center gap-2 font-sans text-mark uppercase',
         active ? 'text-ink-2' : 'text-ink-3',
         className,
       )}

@@ -5,14 +5,15 @@ import { tools } from '../../content/home'
  * with, not partnerships, so that second row is gone.
  *
  * A marquee rather than a static grid: it reads as a passing list of tools
- * rather than a wall of endorsements. */
+ * rather than a wall of endorsements.
+ *
+ * No slab behind it, by request -- it sits straight on the cream page. */
 export default function ToolStrip() {
   const run = [...tools, ...tools]
 
   return (
-    <section className="px-3 md:px-5">
-      <div className="rounded-slab bg-mist py-12 md:py-14">
-      <p className="text-center font-mono text-mark uppercase tracking-[0.16em] text-ink-3">
+    <section className="pb-12 md:pb-14">
+      <p className="text-center font-sans text-mark uppercase tracking-[0.16em] text-ink-3">
         Tools &amp; platforms we work with
       </p>
       <div className="relative mt-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
@@ -26,7 +27,6 @@ export default function ToolStrip() {
             </span>
           ))}
         </div>
-      </div>
       </div>
     </section>
   )

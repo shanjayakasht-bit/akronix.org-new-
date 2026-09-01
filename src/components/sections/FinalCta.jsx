@@ -1,6 +1,5 @@
 import { motion } from 'motion/react'
 import { Container } from '../primitives'
-import { Slab } from '../ui/Slab'
 import SectionHead from './SectionHead'
 import { Button } from '../ui/Button'
 import Booking from '../home/Booking'
@@ -8,6 +7,9 @@ import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
 import { finalCta } from '../../content/home'
 
 const EASE = [0.16, 1, 0.3, 1]
+
+/* No slab behind this one, by request -- it sits straight on the cream page.
+   Everything inside it, Booking included, is untouched. */
 
 export default function FinalCta() {
   const reduced = usePrefersReducedMotion()
@@ -20,7 +22,7 @@ export default function FinalCta() {
     }
 
   return (
-    <Slab tone="sand" id="book">
+    <section id="book" className="py-12">
       <Container>
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
@@ -29,6 +31,7 @@ export default function FinalCta() {
               tone="ochre"
               title="Ready to Talk About"
               accent="Your Project?"
+              reveal="letters"
               sub={finalCta.copy}
             />
             <motion.div className="mt-10 flex flex-wrap gap-4" {...up(0.2)}>
@@ -42,6 +45,6 @@ export default function FinalCta() {
           </motion.div>
         </div>
       </Container>
-    </Slab>
+    </section>
   )
 }

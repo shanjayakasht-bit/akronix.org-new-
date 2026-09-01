@@ -10,7 +10,7 @@ import FinalCta from '../components/sections/FinalCta'
    them read as blocks sitting on a page. */
 export default function Home() {
   return (
-    <div className="space-y-4 pb-4 md:space-y-5 md:pb-5">
+    <div className="space-y-0 pb-0 md:space-y-0 md:pb-0">
       <Hero />
       <ToolStrip />
       <Ecosystem />

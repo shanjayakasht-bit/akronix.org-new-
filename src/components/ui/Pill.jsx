@@ -13,7 +13,7 @@ export function Pill({ tone = 'clay', className, children, ...rest }) {
   return (
     <span
       className={cx(
-        'relative inline-flex items-center gap-3 pl-7 font-mono text-mark uppercase',
+        'relative inline-flex items-center gap-3 pl-7 font-sans text-mark uppercase',
         'before:absolute before:left-0 before:top-1/2 before:h-px before:w-5 before:-translate-y-1/2',
         tones[tone],
         className,

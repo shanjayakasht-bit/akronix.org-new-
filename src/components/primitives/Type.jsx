@@ -65,7 +65,7 @@ export function UI({ as: Tag = 'span', className, children, ...rest }) {
    counts -- and is never decorative. */
 export function Mark({ as: Tag = 'span', className, children, ...rest }) {
   return (
-    <Tag className={cx('font-mono text-mark uppercase text-ink-3', className)} {...rest}>
+    <Tag className={cx('font-sans text-mark uppercase text-ink-3', className)} {...rest}>
       {children}
     </Tag>
   )

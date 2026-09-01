@@ -33,6 +33,7 @@ export default function Advantages() {
           tone="moss"
           title="Why Businesses Choose"
           accent="Akronix"
+          reveal="letters"
           className="mx-auto text-center"
         />
 

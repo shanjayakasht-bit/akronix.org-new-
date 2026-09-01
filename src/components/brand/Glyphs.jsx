@@ -25,4 +25,9 @@ export const Compass = (p) => <G {...p}><circle cx="12" cy="12" r="9" /><path d=
 export const Bolt = (p) => <G {...p}><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12L13 2Z" /></G>
 export const Link = (p) => <G {...p}><path d="M10 13.5a4 4 0 0 0 5.7 0l2.8-2.8a4 4 0 1 0-5.7-5.7l-1.5 1.5" /><path d="M14 10.5a4 4 0 0 0-5.7 0l-2.8 2.8a4 4 0 1 0 5.7 5.7l1.5-1.5" /></G>
 export const Growth = (p) => <G {...p}><path d="M3 17.5 9 11l4 4 8-8.5" /><path d="M15.5 6.5H21V12" /></G>
-export const Handshake = (p) => <G {...p}><path d="m3 12 4-4 3.5 3.5a2 2 0 0 0 2.8 0L17 8l4 4" /><path d="m9 15 2.5 2.5a2 2 0 0 0 2.8 0L21 11M3 12l4.5 4.5" /></G>
+/* Two interlocking rings, not a handshake. The handshake this replaces was
+   four overlapping strokes in a 24-unit box and collapsed into a squiggle at
+   the size it is actually used -- a hand is not drawable at 20px on a 1.6
+   stroke. Rings read as two parties joined at any size, which is the whole
+   informational job here. */
+export const Partnership = (p) => <G {...p}><circle cx="9" cy="12" r="5.25" /><circle cx="15" cy="12" r="5.25" /></G>

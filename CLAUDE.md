@@ -127,6 +127,7 @@ Propose the sitemap before building it.
 - Minimal rounded corners. Sharp edges are the default; use radius sparingly
   and deliberately.
 - White / bone white is the primary color.
+- Do not use font style as "mono".
 
 **Direction:**
 The site should feel premium, considered, and editorial — not like a template.
@@ -140,6 +141,7 @@ deliberate and consistent, and you should be able to explain each one.
 - Fake dashboard mockups showing invented metrics
 - Filler copy like "empowering businesses to achieve more"
 - Every section following the same heading → subheading → grid rhythm
+- Every clickable button should have roll up animation. If you do not have any idea about roll up animation, refer the buttons in the home page, hover over any link in navbar to experience that animation!
 
 ---
 
