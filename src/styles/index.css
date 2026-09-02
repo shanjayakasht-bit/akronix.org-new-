@@ -5,6 +5,13 @@
 @import "@fontsource-variable/instrument-sans/wght.css";
 @import "tailwindcss";
 
+/* The project's markdown is documentation, not markup. Tailwind v4 scans every
+   file it is not told to skip, so a class name quoted in STATUS.md -- and this
+   file is written to be quoted from -- is harvested and shipped as a live rule.
+   `text-[min(2.2vw,0.875rem)]` outlived the code that used it exactly that way.
+   Excluded rather than worked around, so the notes can name classes freely. */
+@source not "../../*.md";
+
 @theme {
   /* ---- Color -------------------------------------------------------------
      Bone paper is the ground. Pure white is a *material* used only for panels,

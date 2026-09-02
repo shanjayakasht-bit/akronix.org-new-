@@ -247,14 +247,24 @@ export default function Hero() {
     return { word, from }
   })
 
-  /* 19vw in the clamp, not 29vw. Any viewport at or above ~589px hits the 7rem
-     cap either way, so desktop is untouched; below it, 29vw put the headline at
-     112px on a 375px screen, where "Connect." cannot fit the measure. The lines
-     are also `whitespace-nowrap`, because the letters inside them are
-     inline-blocks and would otherwise be free to break mid-word -- which is
-     exactly what they did. */
+  /* 24vw in the clamp. It was 19vw, set when the content column was 295px
+     wide; at 335px there is room for more, and the client asked for it. The
+     ceiling is not a guess: "Connect." is the widest of the three lines at
+     3.3567x the font size, measured, so 335px of column takes 99.8px of type
+     and 24vw asks for 90px on a 375px screen. That margin is what absorbs the
+     narrower case of a desktop window at this width, where a scrollbar takes
+     15px off the column but not off the vw.
+
+     Desktop is untouched: every viewport at or above 467px is at the 7rem cap
+     the client set, as it was before. The `30svh` term is a separate cap for
+     short windows and still governs -- raising the max alone will not work if
+     it is the lower of the two.
+
+     The lines are `whitespace-nowrap` because the letters inside them are
+     inline-blocks and would otherwise break mid-word, which is exactly what
+     they did. */
   const heading = (
-    <h1 className="text-[clamp(2.5rem,min(19vw,30svh),7rem)] leading-[0.94] tracking-[-0.035em] text-ink">
+    <h1 className="text-[clamp(2.5rem,min(24vw,30svh),7rem)] leading-[0.94] tracking-[-0.035em] text-ink">
       {/* Split into letters, so the real line is carried once for a reader and
           the pieces are hidden from it. */}
       <span className="sr-only">{hero.headline.join(' ')}</span>
@@ -281,15 +291,26 @@ export default function Hero() {
     </h1>
   )
 
+  /* Side by side on a phone, by request. They were wrapping by 4.8px at 375 --
+     327.8 of button against 335 of column -- so this is a small give, not a
+     redesign: see `snug` in `Button`. Back to the default size and free to wrap
+     again from `sm`. */
   const actions = (
-    <motion.div className="mt-2 flex flex-wrap items-center gap-3" {...fade(0.6)}>
-      <Button to="/contact">Get Started</Button>
-      <Button to="/building" variant="outline">
+    <motion.div className="mt-2 flex flex-nowrap items-center gap-2 sm:flex-wrap sm:gap-3" {...fade(0.6)}>
+      <Button to="/contact" size="snug" className="whitespace-nowrap">
+        Get Started
+      </Button>
+      <Button to="/building" variant="outline" size="snug" className="whitespace-nowrap">
         Explore Products
       </Button>
     </motion.div>
   )
 
+  /* Not shown on a phone. Fitting the four labels on one line needed 8.3px
+     type, which was tried and rejected on sight -- the row is only worth having
+     at a size it can be read at, and below `md` there is no such size. The four
+     capabilities are not lost with it: the Ecosystem section is the same four,
+     at length. From `md` the row is exactly what it was. */
   const capabilities = (
     <motion.ul className="flex flex-wrap items-center gap-x-8 gap-y-2" {...fade(0)}>
       {hero.capabilities.map((c) => (
@@ -304,7 +325,9 @@ export default function Hero() {
   const heroBody = (
     <header className={heroFrame}>
       <Container>
-        <div ref={caps}>{capabilities}</div>
+        <div ref={caps} className="hidden md:block">
+          {capabilities}
+        </div>
       </Container>
       <Container>
         {/* The video's ruler. Its width is the content column; its height is the

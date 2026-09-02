@@ -8,7 +8,133 @@ content audit, design system and homepage structure.
 
 ## Done
 
-### Step 3q — Rolling stragglers, 375px, favicon (current)
+### Step 3r — The mobile pass (current)
+
+Six changes from the client, all mobile-only. Everything at `md` and above is
+untouched; the desktop CTA pair still measures 188.3 / 232.7px, exactly what it
+did before.
+
+**The page's mobile gutter is now 20px, not 40px.** `Container` was `px-10` at
+every width, which spent 21% of a 375px screen before anything was drawn. It is
+`px-5 md:px-10`. This is the change three of the six asks are paid for out of --
+the booking card, the hero's capability row and the CTA pair are all width
+problems and there was no width. The alternative was widening the booking card
+alone, which would have left it out of line with the heading above it. If the
+20px is ever revisited, those three sizings are what have to move with it.
+
+**Nothing about the nav contracts below `lg` any more.** `wide` was `!past`;
+it is `!past || !roomy`, where `roomy` is the new `useMediaQuery` hook at
+`(min-width: 1024px)` -- the same line the inline links appear on. The pill
+holds `w-full` and the wordmark holds full opacity at any scroll depth.
+Confirmed at scrollY 3012.
+
+`useMediaQuery` reads its first value in the state initialiser rather than in an
+effect, deliberately. Read after mount, a page restored mid-scroll would render
+the desktop answer for one frame, contract the pill and expand it again. That
+frame is visible. `Hero`'s own `useIsDesktop` still exists and was left alone;
+the hero is signed off and its hook defaults the other way for a reason.
+
+**The Menu trigger has a hamburger, and it becomes an X.** Three bars in a 10px
+box, one element each, animating to +/-45 degrees with the middle one fading.
+The design rules ban decorative icons; this is the control's own state drawn,
+the word stays beside it, and it was asked for directly. It lives in `Nav.jsx`
+rather than `brand/Icons.jsx`, whose four icons exist to label the four kinds of
+work.
+
+**Three things now hold one line that could not before.** All three were sized
+against measured text, not estimated:
+
+| what | measured cost | what it got |
+|---|---|---|
+| "The Akronix Ecosystem" | 11.33x the font size | `text-[7.5vw] sm:text-h1`, 28px at 375 |
+| The two CTA buttons | 21.75x the font size + 68px of chrome | `size="compact"`, 11.3px at 375 |
+
+Both breakpoint handovers are placed where the two sizes meet rather than at a
+convenient width: 7.5vw is within 1.1px of `text-h1` at 640, and the capability
+row's cap is `text-ui`'s own 0.875rem, so only the dots and gaps change at `md`.
+Neither steps visibly.
+
+**Two components gained a prop rather than an override.** `SectionHead` takes
+`titleClass` (replacing `flex-wrap text-h1`) and `Button` takes `size`. Both
+*replace* rather than add, because `cx` is a plain `join` -- two competing
+paddings in one class list are settled by stylesheet order, not by which was
+written last. An override that looks right in the source silently loses.
+
+**The booking card is 335px wide, up from 295.** Its own padding drops to
+`px-5` below `sm` on top of the gutter change, so the date grid gets 295px
+instead of 239. Date tiles are 94px and hold a whole label on one line -- they
+had been wrapping to two lines on every phone, which nobody had seen because
+nothing had rendered this page below 1280. The tile is 13px below `sm`: the
+widest label the helper can ever emit is "Wed - 28 May" at 83px, and at
+`text-ui` it did not fit 94px. Card height across the three steps is
+618.7 / 620 / 620 -- the same sub-pixel spread it has at 1280.
+
+#### Then the hero, revised on sight
+
+The client saw the capability row at 8.3px and cut it. Three changes followed,
+all mobile-only, all still in Step 3r:
+
+**The four capabilities are not rendered below `md`.** Fitting them on one line
+needed 8.3px, which was the arithmetic ceiling and read as too small the moment
+it was on a screen -- 66 characters cannot share a 335px line at any larger
+size. So the row is `hidden md:block` on its wrapper, and the row itself is
+back to exactly the classes it had before the fluid treatment. The four
+capabilities are not lost with it; the Ecosystem section is the same four at
+length. The wrapper carries the hiding, not the `<ul>`, so the row leaves no
+flex gap behind it and the `caps` ref it holds is still measurable on the
+desktop, where the video's ceiling depends on it.
+
+**The hero's two buttons sit on one line.** They were overflowing by 4.8px --
+327.8 of button against 335 of column -- so the give is small: a third `Button`
+size, `snug`, that takes 8px of padding a side and drops the label to
+`min(3.6vw,0.875rem)`, which is 13.5px at 375 and full size from 389px up.
+`compact` would have worked and would have set the first controls on the page
+at 11.25px, which is why it is a third size and not a reuse.
+
+**The headline is 24vw, not 19vw.** 19vw was set when the column was 295px
+wide. "Connect." is the widest of the three lines at 3.3567x the font size,
+measured, so a 335px column carries 99.8px of type; 24vw asks for 90px at 375
+and leaves the rest as margin for a desktop window at this width, where a
+scrollbar takes 15px off the column but not off the vw. Desktop is untouched --
+every viewport from 480px up is at the 7rem cap the client set, as before.
+
+#### A Tailwind trap this file set for itself
+
+**Class names written in STATUS.md were being compiled and shipped.** Tailwind
+v4 scans every file in the project it is not told to skip, markdown included, so
+documenting `text-[min(2.2vw,0.875rem)]` in the table above kept emitting that
+rule long after the code stopped using it. `src/styles/index.css` now carries
+`@source not "../../*.md";`, which took 1.68kB of prose-harvested CSS out of the
+bundle. Notes can name classes freely again -- but if a utility ever appears in
+the CSS that nothing in `src/` uses, this is where it came from.
+
+#### Verified, and how
+
+Measured at real viewports in an `<iframe>`, then re-measured at 320, 360, 375,
+390, 414, 480, 600, 639, 640, 700, 767, 768, 900, 1023, 1280. At every one of
+them: no horizontal overflow, the Ecosystem heading on one line, both button
+pairs side by side, and the headline inside its column -- headroom runs 7.2px at
+320 up to 20.8px at 390, all of it measured with a scrollbar taking 15px that a
+real handset does not take. The capability row is absent below 768 and present
+from 768. All seven routes render.
+
+When walking widths this way, assert `iframe.contentWindow.innerWidth` actually
+equals the width you set before believing a measurement. Setting the attribute
+and reloading races the resize, and the rows that come back are a mix of two
+viewports -- which looks like a responsive bug and is not one.
+
+Two traps in measuring it, both hit:
+
+- **Synthetic `WheelEvent`s do not drive Lenis.** Scroll stayed at 0 through 60
+  dispatched events. Use the real input the browser tool sends; that works.
+- **rAF is throttled in an unfocused tab, so a Motion animation freezes
+  mid-flight and stays there.** The hamburger measured a stable 38.5 degrees --
+  exactly 85.5% of every target value, including the opacity -- and looked like
+  a bowtie in the screenshot. It is not a bug: one real hover restored the frame
+  loop and it settled on 45. Count rAF ticks before believing a frozen
+  transform.
+
+### Step 3q — Rolling stragglers, 375px, favicon
 
 **Two links had been missed by the roll.** "View All Products" and the 404's
 "Back to the homepage" are hand-rolled `<Link>`s rather than `<Button>`, so
@@ -870,9 +996,15 @@ every `rounded-*` is either a control or the stage dot.
 12. **The specimen lives at `/specimen`, dev-only.** Guarded by `import.meta.env.DEV`,
     so it never reaches production. Keep it as the token reference.
 
-13. **No browser available in this environment.** The Chrome extension is not
-    connected, so visual checks are the client's. Routes are verified instead by
-    server-rendering them: write a temporary `src/__smoke.jsx` that renders each path
+13. **The Chrome extension WAS connected on 2 Sep 2026** and the whole of Step 3r
+    was measured in it -- do not assume it is unavailable, try it. Load the site
+    into an `<iframe width="390">` served from `public/` (same origin, so
+    `contentDocument` is readable, and media queries answer to the iframe's own
+    box). Setting `iframe.width` and reloading walks a whole range of viewports
+    in one pass. Delete the harness file afterwards. A `canvas` 2d context
+    measuring text in the page's own computed font is what turns "make it fit on
+    one line" into a size you can solve for. If the extension is ever not
+    connected, routes can still be verified by server-rendering them: write a temporary `src/__smoke.jsx` that renders each path
     through `MemoryRouter`, `npx vite build --ssr src/__smoke.jsx --outDir .smoke`,
     run it, then delete both. The output dir must sit **inside** the project or Node
     cannot resolve `node_modules`. This catches import errors, hook misuse and render
@@ -1034,6 +1166,11 @@ saying so. If the word *Demo* is wanted, "Book a walkthrough" was offered.
   until a real URL exists. A Meet code cannot be invented.
 
 ### Responsive — checked at 375px, and how
+
+**Superseded in part by Step 3r**, which re-measured all of this at thirteen
+viewports from 320 to 1280 and changed the mobile gutter. The 2.5rem slab inset
+noted at the end of this section is the one thing here still standing.
+
 
 The browser here will not resize its width, which is why this went unchecked for
 so long. The way round it: load the site into an `<iframe width="390">` on a

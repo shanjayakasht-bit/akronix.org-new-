@@ -34,9 +34,16 @@ export default function FinalCta() {
               reveal="letters"
               sub={finalCta.copy}
             />
-            <motion.div className="mt-10 flex flex-wrap gap-4" {...up(0.2)}>
-              <Button to="/contact">Get Started Today</Button>
-              <Button as="a" href="#slots" variant="outline">Book a Free Consultation</Button>
+            {/* Side by side on a phone, by request, which is only possible at
+                the compact size -- see `Button`. They are back on their own
+                terms, and free to wrap again, from `sm`. */}
+            <motion.div className="mt-10 flex flex-nowrap items-center gap-2 sm:flex-wrap sm:gap-4" {...up(0.2)}>
+              <Button to="/contact" size="compact" className="whitespace-nowrap">
+                Get Started Today
+              </Button>
+              <Button as="a" href="#slots" variant="outline" size="compact" className="whitespace-nowrap">
+                Book a Free Consultation
+              </Button>
             </motion.div>
           </div>
 

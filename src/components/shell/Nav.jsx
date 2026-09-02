@@ -6,9 +6,49 @@ import { Logo } from '../brand/Logo'
 import { RollText } from '../ui/RollText'
 import { cx } from '../../lib/cx'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
+import { useMediaQuery } from '../../lib/useMediaQuery'
 import { nav, site } from '../../content/site'
 
 const EASE = [0.16, 1, 0.3, 1]
+
+/* Three bars that fold into an X.
+ *
+ * The design rules ban decorative icons, and this is not one: it is the
+ * control's own state drawn rather than described, and the word stays beside
+ * it so the mark never has to carry the meaning alone. Client's request.
+ *
+ * One element per bar rather than two swapped SVGs, so the two states are ends
+ * of a single movement -- the outer bars converge on the middle line and turn
+ * through 45 degrees while the middle one goes. Positions are literal pixels
+ * because they have to agree: in a 10px box the outer bars sit at 0 and 9, and
+ * both centres reach 4.5.
+ */
+function MenuGlyph({ open, reduced }) {
+  const bar = 'absolute left-0 h-px w-full bg-white'
+  const move = { duration: reduced ? 0 : 0.42, ease: EASE }
+  return (
+    <span aria-hidden="true" className="relative block h-2.5 w-4 shrink-0">
+      <motion.span
+        className={cx(bar, 'top-0')}
+        initial={false}
+        animate={{ y: open ? 4.5 : 0, rotate: open ? 45 : 0 }}
+        transition={move}
+      />
+      <motion.span
+        className={cx(bar, 'top-[4.5px]')}
+        initial={false}
+        animate={{ opacity: open ? 0 : 1, scaleX: open ? 0.3 : 1 }}
+        transition={{ duration: reduced ? 0 : 0.28, ease: EASE }}
+      />
+      <motion.span
+        className={cx(bar, 'bottom-0')}
+        initial={false}
+        animate={{ y: open ? -4.5 : 0, rotate: open ? -45 : 0 }}
+        transition={move}
+      />
+    </span>
+  )
+}
 
 /* Glass pill.
  *
@@ -63,7 +103,12 @@ export default function Nav() {
 
   useMotionValueEvent(scrollY, 'change', (v) => setPast(v > 260))
 
-  const wide = !past
+  /* The contraction is desktop-only, by request. On a phone the pill is
+     already near its contents and the mark alone is most of what is left, so
+     shrinking it read as the bar twitching rather than as it getting out of
+     the way. Gated at `lg`, the same line the inline links appear on. */
+  const roomy = useMediaQuery('(min-width: 1024px)', true)
+  const wide = !past || !roomy
 
   useEffect(() => setOpen(false), [location.pathname])
 
@@ -155,8 +200,9 @@ export default function Nav() {
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
-            className="group/roll ml-auto rounded-full border border-white/35 px-4 py-2 font-sans text-ui text-white lg:hidden"
+            className="group/roll ml-auto inline-flex items-center gap-2.5 rounded-full border border-white/35 px-4 py-2 font-sans text-ui text-white lg:hidden"
           >
+            <MenuGlyph open={open} reduced={reduced} />
             <RollText>{open ? 'Close' : 'Menu'}</RollText>
           </button>
         </motion.header>

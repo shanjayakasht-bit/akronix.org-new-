@@ -171,9 +171,17 @@ export default function Booking() {
   }
 
   /* Dates and times are the same kind of choice, so they are the same object:
-     one pill style, used by both grids. */
+     one pill style, used by both grids.
+
+     The tile has to hold a whole date on one line, and the widest the label
+     can ever be is "Wed - 28 May" -- 83px at 13px, measured. Three columns of
+     the widened card are 94px each, so 13px clears it; at `text-ui` it did
+     not, which is why every date wrapped to two lines on a phone. The padding
+     is nearly nothing below `sm` for the same reason: the label is centred, so
+     the padding buys no space it can be seen in, and it is the wrap that
+     matters. */
   const pill =
-    'rounded-full border px-2 py-3 text-center font-sans text-ui transition-all duration-300'
+    'rounded-full border px-0.5 py-3 text-center font-sans text-[0.8125rem] transition-all duration-300 sm:px-2 sm:text-ui'
   const chosen = 'border-clay bg-clay text-paper'
   const unchosen = 'border-rule text-ink-2 hover:border-clay hover:text-clay'
 
@@ -184,7 +192,7 @@ export default function Booking() {
           initial={reduced ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: EASE }}
-          className="px-7 py-12 text-center md:px-9"
+          className="px-5 py-12 text-center sm:px-7 md:px-9"
         >
           <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-clay text-xl text-paper">
             &#10003;
@@ -210,7 +218,7 @@ export default function Booking() {
           the date grid are a control with no stated purpose. The second line
           is the honest part and stays: there is no calendar integration
           behind this, so a chosen slot is a request, not a confirmation. */}
-      <div className="border-b border-rule px-7 pb-6 pt-7 md:px-9">
+      <div className="border-b border-rule px-5 pb-6 pt-7 sm:px-7 md:px-9">
         <h3 className="font-serif text-h3 tracking-tight text-ink">Schedule a meeting</h3>
         <p className="mt-2 max-w-[46ch] font-sans text-ui leading-relaxed text-ink-2">
           Pick a date and a time slot and we will set up a call. Nothing is
@@ -231,11 +239,11 @@ export default function Booking() {
           the date grid is three columns narrow and four wide, so which step is
           tallest changes with the column count. Only the rare submit-failed
           line can push past it. */}
-      <div className="min-h-[20rem] px-7 py-7 sm:min-h-[17.5rem] md:px-9 md:py-8">
+      <div className="min-h-[20rem] px-5 py-7 sm:min-h-[17.5rem] sm:px-7 md:px-9 md:py-8">
         <AnimatePresence mode="wait" initial={false}>
           {step === 0 ? (
             <Panel id="date" title={TITLES[0]} reduced={reduced}>
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2">
                 {days.map((d) => {
                   const active = day && d.toDateString() === day.toDateString()
                   return (
@@ -257,7 +265,7 @@ export default function Booking() {
           {step === 1 ? (
             <Panel id="time" title={TITLES[1]} reduced={reduced}>
               <p className="font-sans text-mark uppercase text-ink-3">{label} · IST</p>
-              <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-5">
+              <div className="mt-4 grid grid-cols-3 gap-1.5 sm:grid-cols-5 sm:gap-2">
                 {SLOTS.map((t) => (
                   <button
                     key={t}
@@ -312,7 +320,7 @@ export default function Booking() {
         </AnimatePresence>
       </div>
 
-      <div className="flex items-center justify-between gap-4 border-t border-rule px-7 py-6 md:px-9">
+      <div className="flex items-center justify-between gap-4 border-t border-rule px-5 py-6 sm:px-7 md:px-9">
         {step > 0 ? (
           <button
             type="button"

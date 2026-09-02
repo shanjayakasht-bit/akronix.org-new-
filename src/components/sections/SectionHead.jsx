@@ -29,6 +29,7 @@ export default function SectionHead({
   onDark = false,
   reveal = 'words',
   className,
+  titleClass,
 }) {
   const reduced = usePrefersReducedMotion()
   const head = useRef(null)
@@ -68,7 +69,11 @@ export default function SectionHead({
       <h2
         ref={head}
         className={cx(
-          'mt-7 flex flex-wrap font-serif text-h1 tracking-[-0.025em]',
+          'mt-7 flex font-serif tracking-[-0.025em]',
+          /* Size and wrapping together, because a caller that wants a heading
+             held to one line has to set both. Default is what every other
+             section gets. */
+          titleClass ?? 'flex-wrap text-h1',
           className?.includes('text-center') && 'justify-center',
           onDark ? 'text-paper' : 'text-ink',
         )}

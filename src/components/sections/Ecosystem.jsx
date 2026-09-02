@@ -45,6 +45,12 @@ export default function Ecosystem() {
           title="The Akronix"
           accent="Ecosystem"
           sub="One platform. Four pillars of growth."
+          /* Held to one line on a phone, by request. The three words come to
+             11.33x the font size set as they are here, measured, so 7.5vw
+             lands at 28px on a 375px screen and leaves 17px over. It meets
+             `text-h1` within a pixel at 640px, which is why the handover is
+             there and not at a width where it would visibly step. */
+          titleClass="flex-nowrap whitespace-nowrap text-[7.5vw] leading-none sm:flex-wrap sm:text-h1"
         />
       </Container>
 
