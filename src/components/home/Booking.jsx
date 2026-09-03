@@ -53,10 +53,10 @@ const dayLabel = (d) => (d ? `${DAY[d.getDay()]} - ${d.getDate()} ${MONTH[d.getM
 function Rail({ step, reduced }) {
   return (
     <div className="relative flex items-center justify-between gap-2 px-1">
-      <div aria-hidden="true" className="absolute inset-x-6 top-[0.9375rem] h-px bg-rule" />
+      <div aria-hidden="true" className="absolute inset-x-6 top-3.75 h-px bg-rule" />
       <motion.div
         aria-hidden="true"
-        className="absolute inset-x-6 top-[0.9375rem] h-px origin-left bg-clay"
+        className="absolute inset-x-6 top-3.75 h-px origin-left bg-clay"
         initial={false}
         animate={{ scaleX: step / (STEPS.length - 1) }}
         transition={{ duration: reduced ? 0 : 0.55, ease: EASE }}
@@ -71,7 +71,7 @@ function Rail({ step, reduced }) {
               animate={{ scale: i === step && !reduced ? 1.12 : 1 }}
               transition={{ duration: 0.45, ease: EASE }}
               className={cx(
-                'inline-flex h-[1.875rem] w-[1.875rem] items-center justify-center rounded-full font-sans text-[0.6875rem] ring-1 transition-colors duration-500',
+                'inline-flex h-7.5 w-7.5 items-center justify-center rounded-full font-sans text-[0.6875rem] ring-1 transition-colors duration-500',
                 reached ? 'bg-clay text-paper ring-clay' : 'bg-panel text-ink-3 ring-rule',
               )}
             >
@@ -239,7 +239,7 @@ export default function Booking() {
           the date grid is three columns narrow and four wide, so which step is
           tallest changes with the column count. Only the rare submit-failed
           line can push past it. */}
-      <div className="min-h-[20rem] px-5 py-7 sm:min-h-[17.5rem] sm:px-7 md:px-9 md:py-8">
+      <div className="min-h-80 px-5 py-7 sm:min-h-70 sm:px-7 md:px-9 md:py-8">
         <AnimatePresence mode="wait" initial={false}>
           {step === 0 ? (
             <Panel id="date" title={TITLES[0]} reduced={reduced}>
