@@ -296,19 +296,22 @@ export default function Hero() {
      redesign: see `snug` in `Button`. Back to the default size and free to wrap
      again from `sm`.
 
-     `flex-1` on each is the pair filling the column edge to edge instead of
-     hugging its labels, by request. Growth only: flex-basis is 0, so the free
-     space is offered equally and min-content stops either label being squeezed
-     below the width it needs -- the longer one holds its own size and the
-     shorter one takes the remainder. That is why the row fills exactly without
-     overflowing, and why the two are not always equal halves. Off again at
-     `sm` with `sm:flex-none`, so desktop is the content-width pair it was. */
+     `flex-auto` on each is the pair filling the column edge to edge instead of
+     hugging its labels, by request -- and `auto` rather than `1` is the whole
+     point of it. `flex-1` sets the basis to 0, which offers the free space
+     equally and lands the two on near-identical halves whatever their labels
+     say; the client rejected that. `flex-auto` starts each button at its own
+     label width and shares out only what is left over, so the pair keeps the
+     proportion the words have -- Explore Products is the wider control because
+     it is the longer label. Growth only either way: nothing is squeezed below
+     the width its label needs, so the row fills exactly without overflowing.
+     Off again at `sm` with `sm:flex-none`, the content-width pair it was. */
   const actions = (
     <motion.div className="mt-2 flex flex-nowrap items-center gap-2 sm:flex-wrap sm:gap-3" {...fade(0.6)}>
-      <Button to="/contact" size="snug" className="flex-1 justify-center whitespace-nowrap sm:flex-none">
+      <Button to="/contact" size="snug" className="flex-auto justify-center whitespace-nowrap sm:flex-none">
         Get Started
       </Button>
-      <Button to="/building" variant="outline" size="snug" className="flex-1 justify-center whitespace-nowrap sm:flex-none">
+      <Button to="/building" variant="outline" size="snug" className="flex-auto justify-center whitespace-nowrap sm:flex-none">
         Explore Products
       </Button>
     </motion.div>

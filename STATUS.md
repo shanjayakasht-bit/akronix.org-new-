@@ -8,7 +8,7 @@ content audit, design system and homepage structure.
 
 ## Done
 
-### Step 3t — The Ecosystem accordion is click-only (current)
+### Step 3t — The Ecosystem accordion is click-only
 
 Two client changes to `Ecosystem.jsx`, both desktop-facing.
 
@@ -49,31 +49,43 @@ covers `transform, translate, scale, rotate`. So a mid-animation read shows
 `transform: none` and an interpolated `rotate`. It is not broken; read
 `getComputedStyle(el).rotate` after the 500ms, where it is `45deg`.
 
-### Step 3s — Full-width CTA pairs, bigger menu items
+### Step 3s — Full-width CTA pairs, bigger menu items (revised, current)
 
 Two more mobile-only asks from the client. Desktop is untouched: the CTA pair
 still measures 188.3 / 232.7px at 1280, the same numbers Step 3r recorded.
 
 **Both button pairs now fill their column instead of hugging their labels.**
 The hero's Get Started / Explore Products and the final CTA's Get Started Today
-/ Book a Free Consultation each carry `flex-1 justify-center ... sm:flex-none`.
-Measured at a 375px viewport, both rows run 20 -> 340px, edge to edge inside the
-20px gutter, with no horizontal overflow.
+/ Book a Free Consultation each carry `flex-auto justify-center ...
+sm:flex-none`. Measured at a 375px viewport, both rows run 20 -> 340px, edge to
+edge inside the 20px gutter, with no horizontal overflow.
 
-They are growth-only, and that is the point: flex-basis is 0, so the free space
-is offered equally, and min-content stops either label being squeezed below the
-width it needs. The longer label holds its own size and the shorter one takes
-the remainder -- 151.5 / 160.5 in the hero, 141.2 / 170.8 in the final CTA. So
-the row fills exactly without ever overflowing, at the cost of the two halves
-not being identical. A `grid-cols-2` would have made them identical and pushed
-the longer label out of its column, which is worse.
+**`flex-auto`, not `flex-1`, and the difference is the whole ask.** It was
+built with `flex-1` first and the client rejected it on sight: `flex-1` sets
+the flex basis to 0, so the row's whole width is free space and it is offered
+equally, which lands the two controls on near-identical halves no matter what
+their labels say. Measured, that was 151.5 / 160.5 in the hero -- a 16-character
+label and an 11-character one in the same box, which is what made it look wrong.
+The two are not meant to match; the pair should read as two different labels.
+
+`flex-auto` starts each button at its own label width and shares out only what
+is left over, so the natural proportion survives. Measured at 375: 137.7 / 174.3
+in the hero and 138 / 174 in the final CTA, both 44 / 56 of the button width
+with the 8px gap taking the rest. That ratio is not set anywhere -- it is
+whatever the words come to, so it will move if the labels are ever rewritten,
+and that is correct.
+
+Growth-only either way: nothing is squeezed below the width its label needs, so
+the row fills exactly and never overflows. A `grid-cols-2` was the other option
+and is the wrong one twice over -- it forces the 50/50 the client rejected AND
+pushes the longer label out of its column.
 
 **The two knobs, for future asks.** Button *size* on mobile is `SIZES.snug` and
 `SIZES.compact` in `src/components/ui/Button.jsx` -- `pad` and `text`, each
 already `sm:`-reset to the default measurements. Button *width* is the
-`flex-1` at the two call sites. They are separate on purpose: the sizes exist
-because both labels plus their chrome have to fit on one 335px line, and that
-constraint did not change when the row started filling.
+`flex-auto` at the four call sites. They are separate on purpose: the sizes
+exist because both labels plus their chrome have to fit on one 335px line, and
+that constraint did not change when the row started filling.
 
 **The mobile menu items are 28px, up from 22px.** `text-h3` was shared with
 headings on the page, so the sheet's links carry `text-[1.75rem]

@@ -38,14 +38,15 @@ export default function FinalCta() {
                 the compact size -- see `Button`. They are back on their own
                 terms, and free to wrap again, from `sm`.
 
-                `flex-1` fills the column edge to edge rather than hugging the
-                labels -- the same growth-only sizing as the hero pair, and off
-                at `sm` the same way. */}
+                `flex-auto` fills the column edge to edge rather than hugging
+                the labels, and keeps the two in the proportion of their own
+                words rather than halving the row -- see the hero pair for why
+                the basis is `auto` and not 0. Off at `sm` the same way. */}
             <motion.div className="mt-10 flex flex-nowrap items-center gap-2 sm:flex-wrap sm:gap-4" {...up(0.2)}>
-              <Button to="/contact" size="compact" className="flex-1 justify-center whitespace-nowrap sm:flex-none">
+              <Button to="/contact" size="compact" className="flex-auto justify-center whitespace-nowrap sm:flex-none">
                 Get Started Today
               </Button>
-              <Button as="a" href="#slots" variant="outline" size="compact" className="flex-1 justify-center whitespace-nowrap sm:flex-none">
+              <Button as="a" href="#slots" variant="outline" size="compact" className="flex-auto justify-center whitespace-nowrap sm:flex-none">
                 Book a Free Consultation
               </Button>
             </motion.div>
