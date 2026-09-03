@@ -294,13 +294,21 @@ export default function Hero() {
   /* Side by side on a phone, by request. They were wrapping by 4.8px at 375 --
      327.8 of button against 335 of column -- so this is a small give, not a
      redesign: see `snug` in `Button`. Back to the default size and free to wrap
-     again from `sm`. */
+     again from `sm`.
+
+     `flex-1` on each is the pair filling the column edge to edge instead of
+     hugging its labels, by request. Growth only: flex-basis is 0, so the free
+     space is offered equally and min-content stops either label being squeezed
+     below the width it needs -- the longer one holds its own size and the
+     shorter one takes the remainder. That is why the row fills exactly without
+     overflowing, and why the two are not always equal halves. Off again at
+     `sm` with `sm:flex-none`, so desktop is the content-width pair it was. */
   const actions = (
     <motion.div className="mt-2 flex flex-nowrap items-center gap-2 sm:flex-wrap sm:gap-3" {...fade(0.6)}>
-      <Button to="/contact" size="snug" className="whitespace-nowrap">
+      <Button to="/contact" size="snug" className="flex-1 justify-center whitespace-nowrap sm:flex-none">
         Get Started
       </Button>
-      <Button to="/building" variant="outline" size="snug" className="whitespace-nowrap">
+      <Button to="/building" variant="outline" size="snug" className="flex-1 justify-center whitespace-nowrap sm:flex-none">
         Explore Products
       </Button>
     </motion.div>
@@ -340,7 +348,7 @@ export default function Hero() {
           </div>
 
           {!pinned ? (
-            <div className="mt-12 aspect-[16/10] overflow-hidden rounded-[28px] bg-coal">
+            <div className="mt-12 aspect-16/10 overflow-hidden rounded-[28px] bg-coal">
               <VideoFrame />
             </div>
           ) : null}
@@ -363,7 +371,7 @@ export default function Hero() {
           pill occupies in flow. Without it the frame spends the first 78px of
           scroll settling upward before it pins, and that settle eats the start
           of the movement. */}
-      <div className="pointer-events-none absolute -top-[4.875rem] bottom-0 left-0 right-0 z-0">
+      <div className="pointer-events-none absolute -top-19.5 bottom-0 left-0 right-0 z-0">
         <div ref={stage} className="sticky top-0 h-screen">
           <motion.div
             style={{

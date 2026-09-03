@@ -137,7 +137,7 @@ export default function Nav() {
                fixed width. A fixed 660px was narrower than the links plus the
                CTA, so the button hung outside the pill. `layout` animates
                between the two intrinsic widths. */
-            wide ? 'w-full max-w-[76rem]' : 'w-fit max-w-full',
+            wide ? 'w-full max-w-304' : 'w-fit max-w-full',
             /* glass: translucent ground, heavy blur, saturation lift, a bright
                top edge and a soft drop so it floats over dark slabs too */
             'border border-white/25 bg-transparent',
@@ -148,7 +148,7 @@ export default function Nav() {
             className="group flex shrink-0 items-center gap-2.5 rounded-full pb-1.5 pl-1.5 pr-2"
             aria-label={`${site.name} — home`}
           >
-            <Logo mono mark alt="" className="h-10 shrink-0 transition-transform duration-500 group-hover:-rotate-[6deg]" />
+            <Logo mono mark alt="" className="h-10 shrink-0 transition-transform duration-500 group-hover:-rotate-6" />
             {/* Only while the pill is wide. The mark carries it on its own once
                 the bar has contracted. */}
             {/* It stays mounted and rides the SAME `layout` animation as the
@@ -215,14 +215,27 @@ export default function Nav() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-paper px-6 pb-10 pt-28 lg:hidden"
+            className="fixed inset-0 z-40 overflow-y-auto bg-paper px-6 pb-10 pt-28 lg:hidden"
           >
+            {/* The sheet only ever renders below `lg`, so these sizes are the
+                mobile ones and there is no desktop case to guard against.
+
+                `text-[1.75rem]` is the item size, raised from `text-h3` -- 22px
+                on a phone -- at the client's request. It is spelled out rather
+                than taken from the type scale because `text-h3` is shared with
+                headings on the page and this had to move on its own.
+
+                The row padding came down to `py-4` as the type went up, which
+                is what keeps the five items and the CTA on one screen: at
+                `py-5` the 28px type puts the button below the fold on a 568px
+                phone. Raise the type further and `py` is the second knob -- the
+                sheet scrolls now, so nothing is lost either way. */}
             <nav className="flex flex-col">
               {nav.map((item) => (
                 <NavLink
                   key={item.label}
                   to={item.to}
-                  className="group/roll border-b border-rule py-5 font-serif text-h3 text-ink"
+                  className="group/roll border-b border-rule py-4 font-serif text-[1.75rem] leading-tight text-ink"
                 >
                   <RollText>{item.label}</RollText>
                 </NavLink>

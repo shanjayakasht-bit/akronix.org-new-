@@ -8,7 +8,86 @@ content audit, design system and homepage structure.
 
 ## Done
 
-### Step 3r — The mobile pass (current)
+### Step 3t — The Ecosystem accordion is click-only (current)
+
+Two client changes to `Ecosystem.jsx`, both desktop-facing.
+
+**Hover no longer opens a row.** `onMouseEnter` is gone; `onClick` is the only
+driver left. This reverses the decision Step 3i recorded, and it is the second
+driver this section has lost -- scroll went first, hover now. Read 3i for the
+scroll history, which still stands, but not for its hover rationale.
+
+Why it had to go: crossing the list on the way down the page threw all four rows
+open and shut behind the cursor, and a row that opens without being asked pushes
+everything below it while it is still being read. Click also makes the desktop
+behaviour the phone's -- there was never a hover there, so the two only agree
+once hover is gone.
+
+Confirmed with a real pointer at 1280: hovering row 02 leaves all four at
+`aria-expanded="false"`; clicking opens it and the panel animates to 258px.
+
+**The row gained `cursor-pointer`, and it is not cosmetic.** Preflight in
+Tailwind v4.3 leaves a `button` on the default arrow -- confirmed, there is no
+`cursor: pointer` rule in `preflight.css`. While hover expanded the row, the
+expansion was its own affordance. Without it, the faint `hover:bg-ink/[0.03]`
+and the cursor are the whole of it, and 3% ink alone is not enough.
+
+**The plus is 28px, up from 14px** -- `text-[1.75rem] leading-none` in place of
+`text-ui`. It carries more weight now that it is the only mark of an openable
+row. The row height does not move: it is set by the title block at ~109px and a
+28px glyph on a pinned line box is 28px, well under it. Measured 109px per row
+before and after.
+
+`leading-none` is doing real work there and should stay -- `text-ui` carried a
+1.5 line box from the type scale, and 28px on that inherited 1.5 would have been
+42px, still under the row but close enough that it is worth pinning rather than
+leaving to whatever the scale does next.
+
+One thing to know if the plus is ever read in code: `rotate-45` compiles to the
+CSS `rotate` property, not `transform`, and `transition-transform` in v4
+covers `transform, translate, scale, rotate`. So a mid-animation read shows
+`transform: none` and an interpolated `rotate`. It is not broken; read
+`getComputedStyle(el).rotate` after the 500ms, where it is `45deg`.
+
+### Step 3s — Full-width CTA pairs, bigger menu items
+
+Two more mobile-only asks from the client. Desktop is untouched: the CTA pair
+still measures 188.3 / 232.7px at 1280, the same numbers Step 3r recorded.
+
+**Both button pairs now fill their column instead of hugging their labels.**
+The hero's Get Started / Explore Products and the final CTA's Get Started Today
+/ Book a Free Consultation each carry `flex-1 justify-center ... sm:flex-none`.
+Measured at a 375px viewport, both rows run 20 -> 340px, edge to edge inside the
+20px gutter, with no horizontal overflow.
+
+They are growth-only, and that is the point: flex-basis is 0, so the free space
+is offered equally, and min-content stops either label being squeezed below the
+width it needs. The longer label holds its own size and the shorter one takes
+the remainder -- 151.5 / 160.5 in the hero, 141.2 / 170.8 in the final CTA. So
+the row fills exactly without ever overflowing, at the cost of the two halves
+not being identical. A `grid-cols-2` would have made them identical and pushed
+the longer label out of its column, which is worse.
+
+**The two knobs, for future asks.** Button *size* on mobile is `SIZES.snug` and
+`SIZES.compact` in `src/components/ui/Button.jsx` -- `pad` and `text`, each
+already `sm:`-reset to the default measurements. Button *width* is the
+`flex-1` at the two call sites. They are separate on purpose: the sizes exist
+because both labels plus their chrome have to fit on one 335px line, and that
+constraint did not change when the row started filling.
+
+**The mobile menu items are 28px, up from 22px.** `text-h3` was shared with
+headings on the page, so the sheet's links carry `text-[1.75rem]
+leading-[1.25]` spelled out instead -- it only ever renders below `lg`, so
+there is no desktop case to guard.
+
+Row padding came down to `py-4` with it. At `py-5` the taller type put the
+Book a Consultation button below the fold on a 568px phone; at `py-4` a row is
+67.7px, which is what it was at 22px/`py-5`, so the sheet ends at 531px on a
+667px screen and the type grew for free. The sheet is also `overflow-y-auto`
+now, so raising the size further cannot clip the CTA -- `py` is the second knob
+if it is raised much past this.
+
+### Step 3r — The mobile pass
 
 Six changes from the client, all mobile-only. Everything at `md` and above is
 untouched; the desktop CTA pair still measures 188.3 / 232.7px, exactly what it
@@ -482,6 +561,10 @@ versions come out slightly *narrower* rather than looser (`relationships,` is
 All 66 letters reach full opacity by the end of the range.
 
 ### Step 3i — The Ecosystem accordion, and why it is on hover
+
+**Superseded on the hover point by Step 3t**, which removed `onMouseEnter` at
+the client's request. The scroll-driver history below is still current and still
+worth reading; the case for hover is not.
 
 It is a hover accordion: one pillar open at a time, `onMouseEnter` opens the row
 you point at, click toggles, row 01 open by default. Straightforward — but the

@@ -29,7 +29,7 @@ export default function Products() {
           <motion.p className="font-sans text-mark uppercase tracking-[0.16em] text-paper/45" {...up(0)}>
             White-label SaaS
           </motion.p>
-          <h2 className="mx-auto mt-6 max-w-[16ch] font-serif text-h1 leading-[1.04] tracking-[-0.025em] text-paper">
+          <h2 className="mx-auto mt-6 max-w-[16ch] font-serif text-h1 leading-[1.04] tracking-tight text-paper">
             <span className="block overflow-hidden pb-[0.08em]">
               <motion.span
                 className="block"
@@ -57,7 +57,7 @@ export default function Products() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-8% 0px' }}
                 transition={{ duration: 0.7, ease: EASE, delay: (i % 3) * 0.09 + Math.floor(i / 3) * 0.06 }}
-                className="group rounded-[1.75rem] border border-paper/12 bg-paper/[0.04] p-7 transition-colors duration-500 hover:border-paper/30 hover:bg-paper/[0.08]"
+                className="group rounded-[1.75rem] border border-paper/12 bg-paper/4 p-7 transition-colors duration-500 hover:border-paper/30 hover:bg-paper/8"
               >
                 <div className="flex items-start justify-between gap-4">
                   <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-paper/10 text-paper/80 transition-colors duration-500 group-hover:bg-clay-soft group-hover:text-paper">

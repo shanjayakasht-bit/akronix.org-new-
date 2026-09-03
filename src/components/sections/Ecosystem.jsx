@@ -22,19 +22,34 @@ const TONE = {
 }
 
 /* Deliberately not the live site's 2x2 card grid. Four pillars as an opened
- * list: one is expanded at a time, and the row you point at takes over.
+ * list: one is expanded at a time, and the row you click takes over.
  *
- * Pointing, not scrolling. An earlier version drove this from scroll position,
- * opening each row as it reached the middle of the screen and closing it as the
- * next took over. It worked, and it was dropped on request -- the reader sets
- * the pace here, not the page. If it is ever revived, the one thing to keep
- * from it is that the driver must measure the *list's* top edge and never a
- * row's: a row's position depends on whether the rows above it are open, so
- * triggering on it feeds the layout back into the thing deciding the layout
- * and oscillates. */
+ * Clicking. Not scrolling, and no longer pointing either -- two drivers have
+ * been tried here and dropped, in that order, both on request.
+ *
+ * Scroll position went first: each row opened as it reached the middle of the
+ * screen and closed as the next took over. The reader sets the pace in this
+ * section, not the page.
+ *
+ * `onMouseEnter` went second, and is the current change. Crossing the list on
+ * the way down the page threw all four rows open and shut behind the cursor,
+ * and a row that opens without being asked pushes everything below it while it
+ * is still being read. Click is the only driver left, which also means the
+ * desktop behaviour is now the phone's -- there was never a hover there, so the
+ * two only agree once hover is gone.
+ *
+ * The row keeps its faint `hover:bg-ink/[0.03]` and gains `cursor-pointer`.
+ * With the expansion gone, those are the whole of the affordance: preflight
+ * leaves a `button` on the default arrow, and a row that neither moves nor
+ * changes the cursor does not read as pressable.
+ *
+ * If the scroll driver is ever revived, the one thing to keep from it is that
+ * it must measure the *list's* top edge and never a row's: a row's position
+ * depends on whether the rows above it are open, so triggering on it feeds the
+ * layout back into the thing deciding the layout and oscillates. */
 export default function Ecosystem() {
   const reduced = usePrefersReducedMotion()
-  /* Nothing is open until the reader points at a row. */
+  /* Nothing is open until the reader clicks a row. */
   const [open, setOpen] = useState(-1)
 
   return (
@@ -73,9 +88,8 @@ export default function Ecosystem() {
               <button
                 type="button"
                 onClick={() => setOpen(isOpen ? -1 : i)}
-                onMouseEnter={() => setOpen(i)}
                 aria-expanded={isOpen}
-                className="group flex w-full items-center gap-5 px-6 py-7 text-left md:gap-8 md:px-10 md:py-8 lg:px-14"
+                className="group flex w-full cursor-pointer items-center gap-5 px-6 py-7 text-left md:gap-8 md:px-10 md:py-8 lg:px-14"
               >
                 <span
                   className={cx(
@@ -99,10 +113,19 @@ export default function Ecosystem() {
                     {p.title}
                   </span>
                 </span>
+                {/* 28px, up from 14px, by request -- and it carries more weight
+                    now that it is the only thing marking the row as openable.
+                    `leading-none` is what keeps the row height where it was:
+                    the row is set by the title block at ~51.7px, and a 28px
+                    glyph on the default 1.5 line box would have been 42px and
+                    still under it, but the two are close enough that the line
+                    height is worth pinning rather than leaving to the scale.
+                    Rotation is about the centre, so the 45 degrees costs no
+                    layout. */}
                 <span
                   aria-hidden="true"
                   className={cx(
-                    'shrink-0 font-sans text-ui text-ink-3 transition-transform duration-500',
+                    'shrink-0 font-sans text-[1.75rem] leading-none text-ink-3 transition-transform duration-500',
                     isOpen && 'rotate-45',
                   )}
                 >
