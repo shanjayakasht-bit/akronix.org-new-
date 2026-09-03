@@ -8,7 +8,7 @@ content audit, design system and homepage structure.
 
 ## Done
 
-### Step 3t — The Ecosystem accordion is click-only
+### Step 3t — The Ecosystem accordion is click-only (current)
 
 Two client changes to `Ecosystem.jsx`, both desktop-facing.
 
@@ -49,7 +49,7 @@ covers `transform, translate, scale, rotate`. So a mid-animation read shows
 `transform: none` and an interpolated `rotate`. It is not broken; read
 `getComputedStyle(el).rotate` after the 500ms, where it is `45deg`.
 
-### Step 3s — Full-width CTA pairs, bigger menu items (revised, current)
+### Step 3s — Full-width CTA pairs, bigger menu items (revised after 3t)
 
 Two more mobile-only asks from the client. Desktop is untouched: the CTA pair
 still measures 188.3 / 232.7px at 1280, the same numbers Step 3r recorded.
