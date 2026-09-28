@@ -7,9 +7,14 @@ import { cx } from '../../lib/cx'
  * the hero's four capabilities beyond any legible size on one line. 20px below
  * `md` is a real margin still, and it is what every one-line ask on the phone
  * is paid for out of. Above `md` nothing moves. */
-export function Container({ as: Tag = 'div', className, children, ...rest }) {
+export function Container({ as: Tag = 'div', wide = false, className, children, ...rest }) {
+  /* `wide` lifts the 1280 measure to 1600 for content that should run near
+     the screen edges -- /building's product section and its four boxes, at
+     the client's request: at 1512 the 1280 measure left 156px of empty cream
+     either side. The gutter is unchanged, so from 1512 down it is the gutter
+     alone that holds the content off the edge. */
   return (
-    <Tag className={cx('mx-auto w-full max-w-7xl px-5 md:px-10', className)} {...rest}>
+    <Tag className={cx('mx-auto w-full px-5 md:px-10', wide ? 'max-w-[100rem]' : 'max-w-7xl', className)} {...rest}>
       {children}
     </Tag>
   )

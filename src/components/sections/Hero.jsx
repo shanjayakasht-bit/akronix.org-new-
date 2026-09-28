@@ -89,7 +89,7 @@ function VideoFrame() {
      this rebuild exists to remove. Set hero.videoUrl to replace it. */
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-5 bg-coal">
-      <Logo mono className="h-20 opacity-60" alt="" />
+      <Logo light className="h-20 opacity-60" alt="" />
       <p className="font-sans text-[0.6875rem] uppercase tracking-[0.2em] text-paper/40">Demo video</p>
     </div>
   )
@@ -232,11 +232,14 @@ export default function Hero() {
         }
 
   /* The nav pill is sticky *in flow* and already occupies its own ~5rem at the
-     top of the page, so the hero only accounts for the rest. Centring the
+     top of the page, so the hero only accounts for the rest. From `lg` the
+     group is centred in that height (Step 4.5): with the headline now sized to
+     the screen there is only a little height left over, and centred it splits
+     above and below instead of pooling as a band under the buttons. Centring the
      content group is what closes the dead band that used to open above the
      headline -- spare height now splits evenly instead of piling on top. */
   const heroFrame =
-    'flex min-h-[calc(100svh-5rem)] flex-col  gap-1 pb-1 pt-7 md:gap-7 md:pb-1 md:pt-7'
+    'flex min-h-[calc(100svh-5rem)] flex-col gap-1 pb-1 pt-7 md:gap-7 md:pb-1 md:pt-7 lg:justify-center lg:pb-7'
 
   /* One continuous letter count across the three lines, so the stand-up runs
      through the whole headline rather than restarting on each word. */
@@ -255,16 +258,31 @@ export default function Hero() {
      narrower case of a desktop window at this width, where a scrollbar takes
      15px off the column but not off the vw.
 
-     Desktop is untouched: every viewport at or above 467px is at the 7rem cap
-     the client set, as it was before. The `30svh` term is a separate cap for
-     short windows and still governs -- raising the max alone will not work if
-     it is the lower of the two.
+     From `lg` it is sized to fill the first screen (Step 4.5). The 7rem cap
+     left ~220px of bare cream under the hero on a 1512x860 MacBook Pro, and
+     the client read it as the page not fitting the screen. Two limits, and
+     the smaller wins:
+       - width: the type column is 46% of the content box, (min(vw, 100rem)
+         - 5rem) * 0.46 -- the hero uses `Container wide` since Step 4.6 --
+         and "Connect." is 3.36x its size, so size <= column / 3.5 -- the
+         0.1314 factor, with a little over 4% to spare;
+       - height: the lines are ~1.0x the size each, three of them, and the
+         nav, capability row, gaps and buttons take ~18rem of the screen, so
+         size <= (100svh - 18rem) / 3.1.
+     At 1512x860 height governs, ~184px; on a narrower window width does.
+     The video's rest frame is measured off this same type block and the
+     wide row, so it grows with both and needs no change. Floors at 4rem,
+     tops out at 12rem.
+
+     The hero sits in `Container wide` (1600 measure, same 40px gutter) since
+     Step 4.6: in the 1280 measure its content left ~156px of empty cream
+     either side on a 1512 MacBook screen and the client flagged it.
 
      The lines are `whitespace-nowrap` because the letters inside them are
      inline-blocks and would otherwise break mid-word, which is exactly what
      they did. */
   const heading = (
-    <h1 className="text-[clamp(2.5rem,min(24vw,30svh),7rem)] leading-[0.94] tracking-[-0.035em] text-ink">
+    <h1 className="text-[clamp(2.5rem,min(24vw,30svh),7rem)] leading-[0.94] tracking-[-0.035em] text-ink lg:text-[clamp(4rem,min(calc((min(100vw,100rem)_-_5rem)*0.1314),calc((100svh_-_18rem)/3.1)),12rem)]">
       {/* Split into letters, so the real line is carried once for a reader and
           the pieces are hidden from it. */}
       <span className="sr-only">{hero.headline.join(' ')}</span>
@@ -335,12 +353,12 @@ export default function Hero() {
 
   const heroBody = (
     <header className={heroFrame}>
-      <Container>
+      <Container wide>
         <div ref={caps} className="hidden md:block">
           {capabilities}
         </div>
       </Container>
-      <Container>
+      <Container wide>
         {/* The video's ruler. Its width is the content column; its height is the
             type block, which is what puts the frame's bottom edge on the same
             line as the bottom of the buttons. */}

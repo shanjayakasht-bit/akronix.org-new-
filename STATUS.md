@@ -8,7 +8,429 @@ content audit, design system and homepage structure.
 
 ## Done
 
-### Step 3t — The Ecosystem accordion is click-only (current)
+### Step 4.8 — Nav wordmark centred; project docs brought up to date (current)
+
+Client report: the AKRONIX wordmark in the nav was not vertically centred.
+
+**Measured, then fixed.** The wordmark's centre sat 4.2px above the pill's
+at both 1512 and 375. Two causes, both in `Nav.jsx`:
+
+1. **The logo link carried `pb-1.5`** -- the 3px lift for the figure's foot --
+   so it lifted the wordmark as well. Step 4.7's `pt-2.5`/`pt-3` nudges only
+   moved the wordmark half their size, because the padded box was itself
+   being centred. The `pb-1.5` now sits on the mark's own span; the figure is
+   exactly where it was (46 of 49 at 1512, unchanged).
+2. **A real bug from Step 4.7:** the white-wordmark overlay was positioned by
+   passing `absolute` to `Logo`, whose crop box sets `relative` itself -- and
+   `relative` won. The overlay never overlaid: it stacked under the black copy,
+   doubling the wordmark's height to 28.9px and holding the visible copy at
+   the top. On dark grounds the white wordmark would have shown 14px low. It
+   is now positioned by its own wrapper span.
+
+**Rule this leaves:** never position a `Logo` crop by passing `absolute` in
+its `className` -- wrap it. `cx` is a plain join, so two position utilities
+are settled by stylesheet order, not by which was written last.
+
+**Verified:** wordmark centre 48.99 vs pill 49 at 1512, 44.99 vs 45 at 375;
+black and white copies at the same top (41.8); screenshots over cream and on
+a phone; overflow probe clean at all eleven widths on `/` and `/building`.
+
+Also this step: the summary sections below (nav decision, headline size,
+Next, Waiting on the client) rewritten to match Steps 4.1-4.8, and CLAUDE.md
+updated -- see its "Client decisions" section.
+
+### Step 4.7 — The real logo (red I), and black-or-white nav links
+
+Client direction, 28 Sep 2026, with the supplied logo image: the I in
+AKRONIX is red, and it must show as red in the nav "and where all needed".
+Also: the nav links should switch between black and white only, like the
+logo and button -- no pink or pale blue.
+
+Two questions asked first; answers:
+- **Nav name: the logo's own wordmark.** The name typed in the sans beside
+  the mark is gone; the AKRONIX wordmark is cropped from the artwork, red I
+  included.
+- **Links: black or white only.** `mix-blend-difference` cannot give that on a
+  coloured ground -- it inverts it, hence pink on forest and pale blue on
+  cocoa. So the links are toned like the logo now.
+
+**What was built:**
+
+| Change | Where |
+|---|---|
+| `logo-new-light.webp`: the artwork with every non-red pixel turned white, red I and alpha untouched. Generated in headless Chromium from `logo-new.webp` (683 red pixels kept, 36,141 whitened). Red in the artwork measures ~#DD1916 | `public/logo/` |
+| `Logo` gains `light` (the white-with-red-I artwork) and `word` (the AKRONIX wordmark alone, crop numbers in the comment) | `brand/Logo.jsx` |
+| Footer logo and the hero's demo-video placeholder use `light` -- red I shows on dark. Both used `mono` before, which whitened the I | `shell/Footer.jsx`, `sections/Hero.jsx` |
+| Nav name: `Logo word`, 8.5rem wide, dark artwork on light grounds, light artwork on dark, cross-faded (both rendered) so the swap never flashes an unloaded image. `pt-3` sits it on the links' baseline | `shell/Nav.jsx` |
+| Nav links toned by `useBackdropTone` on the links group: ink on light grounds, white on dark. The second, blended copy of the pill is **gone** -- the nav is one pill again | `shell/Nav.jsx` |
+
+**Nothing in the nav is blended now.** Every piece -- mark, wordmark, links,
+CTA, Menu -- is solid and toned by what is painted under its group. The
+trade: a link flips as a whole at a section edge rather than per pixel. That
+is the client's choice, made knowingly (the per-pixel option was offered).
+The Step 3 open question about tinted links over forest and cocoa is closed
+by this.
+
+**Verified (Chromium, 2x):** nav over cream (black links, black wordmark
+with red I), forest and cocoa (white links, white mark, white wordmark with
+red I, paper button), footer logo white with red I, phone at 375 (mark +
+wordmark + Menu fit); overflow probe clean at all eleven widths on `/` and
+`/building`; build clean.
+
+### Step 4.6 — Logo restored, wider hero, glass for Safari
+
+Client feedback on Step 4.5, 28 Sep 2026 (viewing in Safari):
+- **The logo plate was not asked for.** Only the hover tilt was to go. The
+  Step 4.4 bare, centred mark is to come back exactly, minus the tilt. Do not
+  add a plate or chip behind the nav logo again.
+- Too much space either side of the homepage hero content.
+- "The text is not bending at the edges" and "there is no glassmorphism
+  effect". In Safari the SVG bend cannot run at all (see Step 4.5); the
+  client wants the glass to read as glass there too.
+- "Have a Unique Requirement?" on /building: no background.
+
+**What was built:**
+
+| Change | Where |
+|---|---|
+| Nav logo back to the Step 4.4 bare mark (h-10, `pb-1.5 pl-1.5` on the link, tone by `brightness-0`/`invert`), hover tilt removed. Plate gone | `shell/Nav.jsx` |
+| Glass body in every browser: 2px frost, saturate 1.2, brightness 1.03, 6% white, specular rim (bright top-left, soft bottom-right, inner glow), hairline dark ring, soft drop | `shell/Nav.jsx` |
+| Chromium: the true lens displacement runs first in the same `backdrop-filter` stack. Band 14px, shift 30px -- the middle ~38px of the pill stays readable | `shell/Nav.jsx` |
+| Safari/Firefox: a second span, the pill's 9px padding ring masked out with `mask-composite: exclude`, frosted at 7px -- text crossing the rim smears as through a thick lens edge. The stand-in for the bend they cannot run | `shell/Nav.jsx` |
+| Homepage hero in `Container wide`; headline width term re-derived for the 1600 measure, cap raised to 12rem. 185px at 1512x860 (height-limited), "Connect." 619px in a 659px column, buttons end at 803 of 860 | `sections/Hero.jsx` |
+| Nav pill widened to line up with `Container wide`: wrapper `md:px-8`, pill `max-w-[96rem]` -- 8px proud of the content edge at every width | `shell/Nav.jsx` |
+| "Have a Unique Requirement?": no slab, straight on the cream page | `building/UniqueRequirement.jsx` |
+
+**Glass tuning, for the record:** the saturate lift was 1.8 on first try
+and tinted the cream inside the pill visibly yellow; 1.2 does not. The lens
+band was 22px / shift 46 on first try and scrambled any text lying across
+the middle of the pill; 14 / 30 bends the rim and leaves the middle legible.
+Checked by placing the homepage's "The Akronix Ecosystem" heading under the
+rim and under the middle, at 2x.
+
+**Safari path, how it was checked:** Playwright's WebKit will not paint
+`backdrop-filter`, so the Safari path was rendered in Chromium with
+`navigator.userAgentData` hidden (an init script) -- that switches `bends`
+off and serves exactly the markup Safari gets. Real Safari is still
+unverified by eye.
+
+**Verified:** build clean; overflow probe clean at all eleven widths on `/`
+and `/building`; screenshots of the homepage hero at eight desktop sizes and
+at 375, the glass on both paths, and the /building close.
+
+### Step 4.5 — Clear-glass nav, products page polish, homepage at 1512
+
+Client feedback on Step 4.4, 28 Sep 2026: the nav reads as blurred, tinted
+glass; the reference is the iOS camera mode pill -- CLEAR glass, text bending
+only at the rim. Also: the four boxes should look like the homepage's "Why
+Businesses Choose Akronix"; a quote band between them and "Custom software
+development"; a whole-card entrance for the product cards as they scroll in;
+no hover tilt on the nav logo; and "home page is not responsive on a MacBook
+Pro screen".
+
+**The homepage complaint, pinned down.** Screenshotted at 1512x860 in both
+Chromium and WebKit: no broken layout, no overflow. Asked the client which of
+three candidates they meant; the answer was **the empty band under the
+hero** -- ~220px of bare cream below the buttons, because the headline was
+capped at 7rem while the hero is held to the full screen.
+
+**What was built:**
+
+| Change | Where |
+|---|---|
+| Nav glass is CLEAR: no blur, saturate or tint. Bend only in a 20px band along the rim, from a displacement map drawn at the pill's pixel size by `lensMap` and redrawn on resize (`LENS_BAND` 20, `LENS_SHIFT` 36) | `shell/Nav.jsx`, `lib/lensMap.js` (new) |
+| Nav mark on a solid round plate (CTA colours: ink on light grounds, paper on dark) so text passes behind the logo through clear glass; hover tilt removed | `shell/Nav.jsx` |
+| Homepage headline from `lg` sized to the screen: min of column width / 3.5 and (100svh - 18rem) / 3.1, floor 4rem, cap 10.5rem. 158px at 1512x860 (was 112). Hero group centred vertically from `lg` | `sections/Hero.jsx` |
+| `Advantages` takes `eyebrow`, `title`, `accent`, `items`, `four`, `wide`; defaults are the homepage's. /building's four boxes now use it: "In Every *Product*" | `sections/Advantages.jsx` |
+| Glyphs `Shield`, `Cloud`, `Sliders` for the four boxes (fourth uses `Chat`) | `brand/Glyphs.jsx` |
+| Quote band between the four boxes and "Have a Unique Requirement?": "We build software for clients, / and these twelve for ourselves.", CTA to /work | `pages/Building.jsx`, `content/building.js` |
+| Product cards: whole-card entrance scrubbed by scroll -- rise 96px, grow from 92%, swing out of a 12deg tilt about the top edge, fade over the first half; reverses on the way back. Nothing inside the card animates on its own (client's call). `useScroll` measures an untransformed wrapper, never the card | `building/ProductIndex.jsx` |
+| `building/Traits.jsx` deleted -- replaced by `Advantages` | -- |
+
+**The glass is Chromium-only in its bend, and that is final, not a gap.**
+Safari and Firefox cannot run SVG filters inside `backdrop-filter`, and no
+CSS filter can displace. There they get clear glass with its rim, no bend.
+The client uses Safari, so they will not see the bend on their own machine
+-- they were told.
+
+**Homepage hero numbers (Chromium, measured):** at 1512x860 the headline is
+158px, "Connect." 529px in a 552px column, buttons end at 759 of 860. At
+1280x720 height governs (139px). At 1920 and up the 1280 measure caps it at
+158px and the screen shows more cream around it -- widening the hero to the
+`wide` measure is the lever if that is raised.
+
+**Headings: the 22-character rule held again.** "Planned Into Every
+Product" broke inside its accent at 1512; now "In Every Product".
+
+**Verified:** build clean; overflow probe clean at all eleven widths on both
+`/` and `/building`; Chromium screenshots of the glass over text at the rim
+(2x), the four boxes, the quote band, the card entrance mid-run, and the
+homepage hero at eight desktop sizes.
+
+### Step 4.4 — `/building` follows the live page; glass nav
+
+Client direction and answers, 28 Sep 2026:
+
+- **Headline: the live site's exact wording**, "Our Products, Built to Power
+  Your Business". Asked whether to say "Being Built" given nothing has
+  shipped; the client chose the exact wording. The lede under it states the
+  real stage.
+- **Structure follows the live page**: hero -> products -> four boxes ->
+  "Have a Unique Requirement?" -> footer. The Questions section, the
+  "We build for clients" band and the booking calendar are removed from
+  /building (client's choice; the homepage keeps its own).
+- **The four boxes are the live four**: Enterprise Security, Cloud-Based,
+  Fully Customizable -- and the fourth, "Dedicated Support -- our expert
+  support team is always here", replaced by "Support from the builders"
+  (client chose the honest version). Worded as plans, since nothing ships.
+- **The name rows above the headline are removed.**
+- **Side space**: the four boxes and the product section run near edge to edge
+  (40px margin) instead of the 1280 measure.
+- **Nav**: no underline under the active link. The pill becomes liquid glass
+  -- frosted, with a bright rim, and in Chromium an SVG displacement filter
+  that bends what passes behind it (Safari and Firefox cannot run an SVG
+  filter in `backdrop-filter`; they get the frost and rim only). The CTA /
+  Menu button and the logo are solid, not blended; link text keeps the
+  colour-inverting blend.
+
+**What was built:**
+
+| Change | Where |
+|---|---|
+| Hero: "Our Products, / *Built to Power* / Your Business." -- three lines like the homepage's, middle one clay italic; name rows gone; lede states six being built, six planned, none shipped | `building/PageHero.jsx`, `content/building.js` |
+| Order: hero -> products -> four boxes -> Unique Requirement -> footer | `pages/Building.jsx` |
+| Four boxes: Enterprise Security, Cloud-Based, Fully Customizable, Support from the Builders; now after the products | `building/Traits.jsx` |
+| "Have a Unique Requirement?" on a sand slab, "Talk to an Expert" -> /contact, "Book a Free Consultation" -> /#slots | `building/UniqueRequirement.jsx` (new) |
+| Removed from /building: Questions, statement band, FinalCta + Booking. `ProductQuestions.jsx` deleted; `QuoteBand` / `FinalCta` keep their props for later pages | -- |
+| `Container wide`: 1600 measure instead of 1280, same gutter. Product section and four boxes use it | `primitives/Container.jsx` |
+| Cross-page hash links now land: `ScrollToTop` waits for the element after the page swap. Fixes the footer's "Book a Call" too, which always landed at the top of the homepage | `shell/ScrollToTop.jsx` |
+| Nav rebuilt -- see below | `shell/Nav.jsx`, `lib/useBackdropTone.js` (new) |
+
+**The nav is two copies of the pill, and must stay that way.** Read the
+comment at the top of `Nav.jsx` before touching it. In short:
+
+- Copy one (sticky, in flow): the glass span, then the solid mark, name,
+  CTA and Menu button. Link stand-ins are `invisible`.
+- Copy two (`fixed`, same inset, `z-[51]`, `mix-blend-difference` on its
+  wrapper): the links only; everything else an `invisible` stand-in.
+- Both are built by one `pill(layer)` function from the same state, so their
+  `layout` animations can never drift apart.
+- **Links blended inside the glass pill do not work** -- tried first: they
+  blend only with the pill's own faint tint, not the frosted page, and came
+  out pale grey on cream. Measured in Chromium.
+- **The glass must not be `-z-10` inside an `isolate` pill.** Suspected of
+  voiding the frost in WebKit; the pieces after the glass are `relative`
+  instead and paint over it in source order.
+- The solid pieces read the ground under them with `useBackdropTone`
+  (`elementsFromPoint`, first opaque background up the tree). Mark and
+  action are read separately -- at a slab's rounded corner they can sit over
+  different grounds.
+- Links over the forest slab still come out pink under difference -- the
+  open design question from Step 3 is unchanged.
+
+**Glass, by engine:** Chromium gets frost + rim + the SVG displacement
+(`#akx-glass`, `scale="18"` -- 26 smeared solid shapes into blobs).
+Everything else gets frost + rim; `bends` is read from
+`navigator.userAgentData`, which only Chromium has.
+
+**Verified:** build clean; overflow probe clean at all eleven widths;
+Chromium screenshots of the nav over cream, over overlapping page text, over
+the forest slab, over the homepage's tools strip and product grid, at 1512
+and 375; hash link from /building lands `#slots` 112px under the top.
+**Not verified: the frost in Safari.** Playwright's headless WebKit does not
+paint `backdrop-filter` into screenshots at all -- a bare test page with a
+`blur(6px)` overlay renders unblurred -- though it reports support and the
+computed style is right. Needs one look in real Safari.
+
+**Headline measurement:** widest line "Your Business." is 6.11x its font
+size at the 7rem cap, 5.82x at phone sizes. `min(12vw, 26svh)` fits with
+room at every width (262px in a 335px column at 375).
+
+### Step 4.3 — All twelve products, and the rest of the legacy products page
+
+Client direction (28 Sep 2026): list **all twelve** products from the live
+products page, not six, and bring over the page's other content. This
+**reverses Step 3's "Twelve products became six"** -- the client's call to
+make. What is kept honest: the six added products carry the stage
+**"Planned"**, not "Coming soon", because they were dropped in Step 3 for not
+being in active development. If any of them is being built, change its
+`stage` and `building` in `products.js`.
+
+Live page re-read with WebFetch the same day; it matches the scrape in
+`_legacy_content/pages/products.md` exactly. What carries over and what
+does not:
+
+- Carried: all 12 products, their categories and feature lists; the
+  White-Label / Secure / Customizable and Enterprise Security / Cloud-Based
+  blocks, reworded as what every product is being built with.
+- Not carried: the "Dashboard Preview" ($250k revenue, 1,420 users, 320
+  active) -- invented metrics, hard rule in CLAUDE.md. "Dedicated Support --
+  our expert support team is always here" -- a staffing promise for products
+  that have not shipped. "View Roadmap" -- there is no roadmap page.
+
+Client also reported too much empty space around the hero text (Safari,
+MacBook Pro). Cause: Step 4.2's `min-h-[calc(100svh-5rem)]` centring padded a
+short hero out to a full screen. **Removed** -- the hero's height is its
+content now. Do not put a full-screen min-height back on a hero with no video.
+
+**What was built:**
+
+| Change | Where |
+|---|---|
+| Six products added (`stage: 'Planned'`, `building: false`, `live: false`), `category` on all twelve, `building`/`planned` exports | `src/content/products.js` |
+| Four glyphs in the house style: `Clock` (Attendance), `Book` (Books), `Bag` (E-commerce), `Chat` (Helpdesk). Project Management uses `Grid`, LMS uses `Cap` | `brand/Glyphs.jsx` |
+| Homepage Products grid shows only the six being built -- unchanged on screen | `sections/Products.jsx` |
+| Hero: "Twelve products, / *six in the making.*" -- the qualifier states how many are actually being built. Names row split by stage, planned ones quieter with grey dots; hidden below `md` like the homepage capability row | `building/PageHero.jsx` |
+| "Planned into every product" -- four-column spec strip on cream (white-label, access and data, hosted for you, fitted to you), from the legacy benefit blocks | `building/Traits.jsx` (new) |
+| Index and entries grouped "In development" / "Planned", numbered 01-12 across both; category label on each card; group pill above each group so phones see the split | `building/ProductIndex.jsx` |
+| FAQ: the white-label question (now covered by the strip) swapped for "Coming soon vs Planned" | `content/building.js` |
+| Statement now "...and these twelve for ourselves." | `content/building.js` |
+
+**`Slab` gained `anchor="top"`.** The grow-into-place scale runs from the
+slab's centre, so its top edge drops by 3% of its height on arrival. That is
+~30px on a homepage slab but ~200px on the twelve-product slab (~7000px
+tall), which opened a wide cream band above it. `anchor="top"` scales from
+the top edge. Opt-in; only the /building product slab uses it. **Any future
+very tall slab wants it.**
+
+**Headline size measured, not estimated.** "Twelve products," is 7.27x its
+font size at the 7rem cap, 6.88x at phone sizes. `min(12vw, 26svh)` fits the
+column at every width; the arithmetic is in the comment above the `<h1>`. If
+the headline copy changes, re-measure.
+
+**Sticky index with twelve rows:** names down to `text-xl`, rows `py-2.5`.
+Measured 625px tall -- fits under `top-28` on a 768px-tall screen with ~30px
+to spare. A thirteenth product would need the rows tighter still, or the index
+to scroll.
+
+**Verified:** `vite build` clean; overflow probe clean at all eleven widths
+(320-2560); screenshots at 375, 1024 and 1512 of hero, strip, both groups and
+the index; homepage product grid re-shot at 1512 and still six cards.
+
+**Needs the client:** (1) confirm the six added products are "Planned" -- if
+any is being built, flip its `stage` and `building`; (2) the four trait lines
+and the six new summaries are written from the legacy lists and claim nothing
+beyond them, but want a read before launch.
+
+### Step 4.2 — `/building` responsive pass
+
+Client report: on their MacBook Pro the page was "not centered and not proper".
+Reproduced at that machine's own viewport, 1512px (a 3024x1964 Retina panel at
+2x), in headless Chromium. Then checked at eleven widths -- 320, 375, 390, 768,
+1024, 1280, 1440, 1512, 1728, 1920, 2560 -- with a horizontal-overflow probe at
+each. **No element overflows the viewport at any of them.**
+
+**What was wrong, and the fix:**
+
+- **The hero hugged the left half.** The homepage hero can sit left because
+  its video holds the right half. `/building` has no video, so at 1512 the
+  headline, lede and buttons sat on the left with the right half empty, and a
+  dead band opened above the forest slab. The hero is now **centred** at every
+  width and takes the first screen the way the homepage hero does
+  (`min-h-[calc(100svh-5rem)]`, content centred in it), so the slab starts at
+  the fold.
+- **Slab heads centred** (`className="mx-auto text-center"` on SectionHead),
+  as the homepage's Products and Advantages heads are.
+- **Centred headings broke inside their accent** -- "Every product, and where /
+  it stands.", "Questions about the / products". SectionHead's words are flex
+  items, so `text-balance` cannot reach them; the fix is length. Now "Where
+  each *one stands.*" and "Four plain *answers.*", one line from ~768px up.
+  **Any future centred SectionHead: keep it under ~22 characters or it will
+  wrap mid-phrase at desktop.**
+- **Scope list cramped at 1024.** With the "Being built to do" label beside
+  the list inside a card that shares the row with the index, "Inventory
+  management" broke onto two lines. The label now sits beside the list only
+  from `xl`, above it below that.
+- **Statement orphaned a word on phones.** "We build software for / clients,"
+  left "clients," alone at 375. Now "We build for clients, / and these six for
+  ourselves."
+
+**Homepage:** screenshotted at 1512 too, and it is centred and balanced there
+-- the hero video holds the right half. Nothing was changed on it. If the
+client's "not centered" report was about a specific homepage section, it needs
+a screenshot or a name; nothing off-centre was found.
+
+**How to reproduce, for future sessions:** Playwright's Chromium is cached at
+`~/Library/Caches/ms-playwright/chromium-1243/`. Install `playwright-core`
+into the scratchpad (never the project), launch it with that `executablePath`,
+and screenshot the running dev server (`localhost:5173`) at any viewport. This
+works when the Chrome extension is not connected. Scroll with
+`window.scrollTo` and wait ~1.8s before each shot so slabs finish growing and
+reveals finish running. Step 4.1's "headline size is estimated, not measured"
+note is now resolved: measured at all eleven widths, it fits at every one.
+
+**The other six products -- answered, and deliberately not built.** The
+legacy scrape (`_legacy_content/pages/products.md`) does list twelve: LMS,
+Helpdesk, Attendance, Project Management, Books and E-commerce on top of the
+six on the site. Dropping them was a content decision taken with the client in
+Step 3 ("Twelve products became six" -- see below): CLAUDE.md says to list
+only products actively being built and drop the ones still ideas. The legacy
+data for all six is still in that file (a one-line description and four
+features each) if the client says any of them IS being built -- add it to
+`src/content/products.js` with a glyph and every page picks it up.
+
+### Step 4.1 — `/building`, the six products at length
+
+Built only from the homepage's own parts -- same tokens, slabs, SectionHead
+reveals, Rising letters, RollText buttons, the one EASE curve. Nothing in the
+design system was added to; the page differs from the homepage in content only.
+
+**Order, and why:** cream hero -> forest -> sand -> cocoa -> cream, the
+homepage's alternation of light and dark. Forest because that is where the
+products already live on the homepage. The last two sections are the homepage's
+own `QuoteBand` and `FinalCta` (Booking included) saying this page's words.
+
+| Section | File | Shape |
+|---|---|---|
+| Hero | `building/PageHero.jsx` | Home hero's type half: dotted row (the six names, each jumps to its entry), headline standing up once on load, "*in the making.*" in clay italic, lede + compact button pair |
+| The six | `building/ProductIndex.jsx` | Forest slab. Sticky numbered index (lg+) marks the entry being read; entries are the homepage product card at full length, with glyph, stage tag, summary and a "Being built to do" scope list |
+| Questions | `building/ProductQuestions.jsx` | Sand slab. Four questions, always open, question left / answer right. Not an accordion -- the answers are the evidence |
+| Statement | `sections/QuoteBand.jsx` | "We build software for clients, / and these six for ourselves." lit letter by letter; CTA to /work |
+| Close | `sections/FinalCta.jsx` | "Want One Before *It Ships?*" + Booking |
+
+**Shared components gained props, and the homepage is unchanged by them.**
+`QuoteBand` takes `lines`, `cta`, `videoUrl`; `FinalCta` takes `eyebrow`,
+`title`, `accent`, `copy`, `primary`, `secondary`. Every default is exactly what
+the homepage rendered before -- confirmed by server-rendering `/` and finding
+its copy intact.
+
+**`Slab` gained an opt-in `clip` prop, and it is load-bearing.** The slab's two
+clipping layers are `overflow-hidden`, which makes them scroll containers, and a
+`position: sticky` child inside one sticks to a box that never scrolls -- so
+never sticks. `clip` swaps both for `overflow-clip`, which looks identical and
+does not become a scroller. Only `/building` passes it. Any future sticky
+element inside a slab needs it.
+
+**In-page jumps go through `src/lib/useScrollToId.js`.** It routes the scroll
+through Lenis so it eases like every other scroll, and measures the target with
+`offsetTop` rather than `getBoundingClientRect`: the latter reads after the
+slab's scale transform, and a card six down a slab still growing at 0.97 reads
+~45px out. The anchors keep real `href`s, so without script they still work.
+
+**Content added.** `src/content/building.js` holds the page's copy.
+`products.js` gained `summary` and `scope` per product, plus `productSlug` and
+`productShort` helpers. `scope` is the legacy products page's feature list,
+shown only under "Being built to do" -- never as features that work. The
+summaries are written from those same lists and claim nothing beyond them.
+**Both want the client's eye before launch**, and so does the open question in
+the next point.
+
+**Still open with the client:** CLAUDE.md says to list only products actively
+being built and drop the ones that are still ideas. All six are marked
+"Coming soon" and `products.js` says they are specified and being built, but
+this page puts each one under a spotlight. If any of the six is still an idea,
+it should come out of `products.js` -- every page reads from there.
+
+**Headline size** is `min(15vw, 26svh)` capped at 7rem. Estimated here;
+measured and confirmed in Step 4.2.
+
+**Verified:** `vite build` clean; server-rendered `/` and `/building` through
+`MemoryRouter` with no errors; every new arbitrary class
+(`overflow-clip`, `pl-13`, `md:mt-18`, the `nth-child(2)` variant) confirmed in
+the emitted CSS. Visual checks followed in Step 4.2: sticky index and
+its reading band confirmed working at 1024, 1512 and 1920.
+
+### Step 3t — The Ecosystem accordion is click-only
 
 Two client changes to `Ecosystem.jsx`, both desktop-facing.
 
@@ -1076,10 +1498,16 @@ every `rounded-*` is either a control or the stage dot.
    `dist/` but never downloaded. If dist size matters later, hand-written `@font-face`
    rules limited to `latin`/`latin-ext` would cut roughly 250KB of unused files.
 
-9. **Nav is sticky, with a hairline bottom border and nothing else.** No shadow, no
-   blur, no pills — it stays a rule and some text, which is why it reads as a document
-   rather than an app shell. The mobile trigger is the word "Menu"/"Close" rather than
-   a hamburger, because the design rules ban decorative icons.
+9. **The nav is one liquid-glass pill** (superseded the hairline bar long ago; this
+   entry rewritten in Step 4.8). Sticky, full width across the hero, contracting to
+   its contents past 260px on desktop. Glass: 2px frost + rim, with a true SVG
+   lens bend at the rim in Chromium only and a harder-frosted rim band standing in
+   for it in Safari/Firefox. Every piece in it -- mark, AKRONIX wordmark (from the
+   artwork, red I), links, CTA, Menu -- is solid and toned black or white by what
+   `useBackdropTone` finds painted under it. Nothing is blended. No active-link
+   underline, no logo plate, no hover tilt: all three were removed or rejected by
+   the client. Read the comment at the top of `Nav.jsx` before changing it; Steps
+   4.4-4.8 record why each piece is the way it is.
 
 10. **Page transitions are asymmetric on purpose:** 500ms in, 200ms out. Symmetric
     600ms made navigation feel laggy. The plan's 600ms still governs scroll reveals.
@@ -1104,6 +1532,26 @@ every `rounded-*` is either a control or the stage dot.
     run it, then delete both. The output dir must sit **inside** the project or Node
     cannot resolve `node_modules`. This catches import errors, hook misuse and render
     crashes.
+
+14. **Verify where the client looks: Safari on a MacBook Pro, 1512x860.** The
+    Chrome extension has not been connected since Step 3r. What works instead:
+    Playwright's Chromium and WebKit are cached in `~/Library/Caches/ms-playwright/`;
+    install `playwright-core` into the session scratchpad (never the project),
+    point it at the running dev server, and screenshot any viewport. WebKit lays
+    out like Safari but does **not** paint `backdrop-filter` in screenshots; to see
+    Safari's glass, render in Chromium with `navigator.userAgentData` hidden by an
+    init script -- that serves exactly the markup Safari gets. The overflow probe
+    used since Step 4.2 walks eleven widths, 320 to 2560.
+
+15. **Centred `SectionHead` titles stay under ~22 characters.** Its words are flex
+    items, so `text-balance` cannot reach them, and a longer centred title wraps
+    inside its accent at desktop. Broke three times (Steps 4.2, 4.5).
+
+16. **Shared sections take props, with the homepage as the default.** `QuoteBand`,
+    `FinalCta` and `Advantages` render the homepage exactly when given nothing,
+    and another page's words when given props. `Container wide` (1600 measure),
+    `Slab clip` (sticky children) and `Slab anchor="top"` (very tall slabs) are
+    opt-in. Build new pages from these rather than copying them.
 
 ---
 
@@ -1236,10 +1684,11 @@ The rest frame is measured from the DOM and re-measured on resize:
 
 ### Headline size
 
-`Hero.jsx` line ~229, the `clamp()` on the `<h1>`:
-`clamp(<floor>, min(<width-driven>, <height-driven>), <max>)`. The client set
-the max to `7rem`. The `svh` term is a cap that stops three lines running off a
-short window — raising the max alone will not work if that cap is lower.
+`Hero.jsx`, the `clamp()` on the `<h1>`. Below `lg`: `clamp(2.5rem, min(24vw,
+30svh), 7rem)`. From `lg` (Step 4.5/4.6): sized to fill the first screen --
+`clamp(4rem, min(column / 3.5, (100svh - 18rem) / 3.1), 12rem)`, the column
+being 46% of the `Container wide` box. 185px at 1512x860. The derivation is in
+the comment above the heading; re-derive it if the words or the column change.
 
 ### Standing refusal — carry this forward
 
@@ -1300,24 +1749,30 @@ say otherwise.
 
 ## Next
 
-Step 4 — the remaining pages, in this order:
+Step 5 — the remaining pages, in this order. `/building` is done (Steps
+4.1-4.8). Build the rest from the same parts -- see decision 16 -- and verify
+at 1512x860 and 375 before calling anything finished (decision 14).
 
-1. `/building` — the six products at length. Reads `src/content/products.js`.
-2. `/work` — services and pricing on one page. Reads `src/content/services.js`.
+1. `/work` — services and pricing on one page. Reads `src/content/services.js`.
    Pricing is settled: the ₹999 / ₹2,499 / ₹4,999 tiers ship with their current
    contents. Raised twice and reaffirmed; do not re-litigate.
-3. `/studio` — the thesis and working method, long-form. No people, no timeline,
+2. `/studio` — the thesis and working method, long-form. No people, no timeline,
    no mission/vision/values.
-4. `/contact` — the four-step flow from contact.md is usable; the form belongs
+3. `/contact` — the four-step flow from contact.md is usable; the form belongs
    here rather than on the homepage.
-5. `/policies` — legal utility. Note it is dated 22 March 2026, a future date,
+4. `/policies` — legal utility. Note it is dated 22 March 2026, a future date,
    and uses `admin@akronix.org` while contact.md uses the Gmail address.
 
 Then SEO metadata, OG images, 404 polish. The favicon is done; see Step 3q.
 
+The client has been following the live site's page structure closely (Step
+4.4 rebuilt /building to it). Before proposing a page, read its legacy file in
+`_legacy_content/pages/` and ask whether to follow that structure.
+
 ## Waiting on the client
 
-Three things are built and idle until someone supplies the missing half:
+Items 1-3 are built and idle until someone supplies the missing half; 4-6 want
+the client's eye:
 
 1. **A booking endpoint.** `site.bookingEndpoint` is null, so submitting the
    booking form falls back to the visitor's own mail client and the closing
@@ -1329,10 +1784,17 @@ Three things are built and idle until someone supplies the missing half:
    the frame shows a plainly labelled placeholder. Drop an `.mp4` into
    `/public` and set the two values; the choreography needs no other change.
 
-And one open design question: over the `forest` and `cocoa` slabs the inverting
-nav lands tinted (pink and pale blue respectively), because inverting a
-saturated colour gives its complement. Raised twice; the client has not picked
-between accepting it, outlining the CTA so the largest tinted shape goes, or
-dropping to a per-section colour flip.
+4. **Stage of the six added products.** Attendance, Project Management, Books,
+   E-commerce, LMS and Helpdesk show "Planned" (Step 4.3). If any is being
+   built, flip its `stage` and `building` in `src/content/products.js`.
+5. **A read of the product copy.** The twelve summaries and scope lists
+   (`products.js`) and the four boxes (`content/building.js`) are written from
+   the legacy lists and claim nothing beyond them, but nobody at Akronix has
+   signed them off.
+6. **One look at the nav glass in real Safari.** Every Safari-path check so far
+   was the Safari markup rendered in Chromium (decision 14).
+
+The old open question -- the nav tinting pink and pale blue over the forest and
+cocoa slabs -- is **closed**: the client chose black-or-white links in Step 4.7.
 
 Run with `npm run dev`.

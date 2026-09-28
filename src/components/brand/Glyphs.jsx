@@ -31,3 +31,12 @@ export const Growth = (p) => <G {...p}><path d="M3 17.5 9 11l4 4 8-8.5" /><path 
    stroke. Rings read as two parties joined at any size, which is the whole
    informational job here. */
 export const Partnership = (p) => <G {...p}><circle cx="9" cy="12" r="5.25" /><circle cx="15" cy="12" r="5.25" /></G>
+/* Added with the six planned products. Same box, stroke and joins. */
+export const Clock = (p) => <G {...p}><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></G>
+export const Book = (p) => <G {...p}><path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H19v13H6.5A1.5 1.5 0 0 0 5 18.5v-13Z" /><path d="M5 18.5A1.5 1.5 0 0 0 6.5 20H19M9 8h6" /></G>
+export const Bag = (p) => <G {...p}><path d="M5 8h14l-1.2 12H6.2L5 8Z" /><path d="M9 10V6.5a3 3 0 0 1 6 0V10" /></G>
+export const Chat = (p) => <G {...p}><path d="M6 4.5h12a2.5 2.5 0 0 1 2.5 2.5v7a2.5 2.5 0 0 1-2.5 2.5h-7l-4.5 3.5v-3.5H6A2.5 2.5 0 0 1 3.5 14V7A2.5 2.5 0 0 1 6 4.5Z" /><path d="M8 9h8M8 12h5" /></G>
+/* Added for /building's four boxes. */
+export const Shield = (p) => <G {...p}><path d="M12 3 5 6v5.5c0 4.2 2.9 7.9 7 9.5 4.1-1.6 7-5.3 7-9.5V6l-7-3Z" /><path d="m9 12 2 2 4-4" /></G>
+export const Cloud = (p) => <G {...p}><path d="M7.5 18.5h9.5a4 4 0 0 0 .7-7.94A5.5 5.5 0 0 0 7.1 9.2 4.7 4.7 0 0 0 7.5 18.5Z" /></G>
+export const Sliders = (p) => <G {...p}><path d="M4 7h9M17 7h3M4 17h3M11 17h9" /><circle cx="15" cy="7" r="2" /><circle cx="9" cy="17" r="2" /></G>

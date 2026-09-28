@@ -38,8 +38,21 @@ const TONES = {
  * of cream either side, which is the `px-10` the margin used to be fixed at. */
 const SHRINK = 0.06
 
+/* `clip` swaps both clipping layers from overflow-hidden to overflow-clip. They
+ * look identical, but `hidden` makes the element a scroll container, and a
+ * `position: sticky` child then sticks to that box -- which never scrolls -- so
+ * it simply never sticks. `clip` clips without becoming a scroller. Opt-in, so
+ * no homepage slab changes; /building's sticky index is what needs it.
+ *
+ * `anchor="top"` scales from the top edge rather than the centre. The scale is
+ * a fraction of the slab's height, so the top edge drops by 3% of it on arrival
+ * -- ~30px on a homepage slab, but ~200px on /building's twelve-product slab,
+ * which opened a wide band of cream above it. Anchored to the top, the edge
+ * stays where the layout put it and only the sides draw in. Opt-in, so no
+ * homepage slab changes. */
+
 export const Slab = forwardRef(function Slab(
-  { as: Tag = 'section', tone = 'cream', flush = false, className, children, ...rest },
+  { as: Tag = 'section', tone = 'cream', flush = false, clip = false, anchor = 'center', className, children, ...rest },
   ref,
 ) {
   const reduced = usePrefersReducedMotion()
@@ -58,12 +71,16 @@ export const Slab = forwardRef(function Slab(
     <div ref={frame} className={cx('[--slab-radius:2.5rem]', !live && !flush && 'px-10')}>
       <motion.div
         style={live ? { scale, borderRadius: radius } : undefined}
-        className={cx(live && 'overflow-hidden')}
+        className={cx(
+          live && (clip ? 'overflow-clip' : 'overflow-hidden'),
+          live && anchor === 'top' && 'origin-top',
+        )}
       >
         <Tag
           ref={ref}
           className={cx(
-            'relative overflow-hidden py-12 md:py-12 lg:py-12',
+            'relative py-12 md:py-12 lg:py-12',
+            clip ? 'overflow-clip' : 'overflow-hidden',
             !live && !flush && 'rounded-slab',
             TONES[tone],
             className,

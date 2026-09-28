@@ -9,9 +9,27 @@ import { finalCta } from '../../content/home'
 const EASE = [0.16, 1, 0.3, 1]
 
 /* No slab behind this one, by request -- it sits straight on the cream page.
-   Everything inside it, Booking included, is untouched. */
+   Everything inside it, Booking included, is untouched.
 
-export default function FinalCta() {
+   Every piece of copy is a prop so another page can close the same way with
+   its own words. Left out, each one is the homepage's, exactly as it was. */
+const HOME = {
+  eyebrow: finalCta.eyebrow,
+  title: 'Ready to Talk About',
+  accent: 'Your Project?',
+  copy: finalCta.copy,
+  primary: { label: 'Get Started Today', to: '/contact' },
+  secondary: { label: 'Book a Free Consultation', href: '#slots' },
+}
+
+export default function FinalCta({
+  eyebrow = HOME.eyebrow,
+  title = HOME.title,
+  accent = HOME.accent,
+  copy = HOME.copy,
+  primary = HOME.primary,
+  secondary = HOME.secondary,
+}) {
   const reduced = usePrefersReducedMotion()
   const up = (d) =>
     reduced ? {} : {
@@ -27,12 +45,12 @@ export default function FinalCta() {
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <SectionHead
-              eyebrow={finalCta.eyebrow}
+              eyebrow={eyebrow}
               tone="ochre"
-              title="Ready to Talk About"
-              accent="Your Project?"
+              title={title}
+              accent={accent}
               reveal="letters"
-              sub={finalCta.copy}
+              sub={copy}
             />
             {/* Side by side on a phone, by request, which is only possible at
                 the compact size -- see `Button`. They are back on their own
@@ -43,11 +61,11 @@ export default function FinalCta() {
                 words rather than halving the row -- see the hero pair for why
                 the basis is `auto` and not 0. Off at `sm` the same way. */}
             <motion.div className="mt-10 flex flex-nowrap items-center gap-2 sm:flex-wrap sm:gap-4" {...up(0.2)}>
-              <Button to="/contact" size="compact" className="flex-auto justify-center whitespace-nowrap sm:flex-none">
-                Get Started Today
+              <Button to={primary.to} size="compact" className="flex-auto justify-center whitespace-nowrap sm:flex-none">
+                {primary.label}
               </Button>
-              <Button as="a" href="#slots" variant="outline" size="compact" className="flex-auto justify-center whitespace-nowrap sm:flex-none">
-                Book a Free Consultation
+              <Button as="a" href={secondary.href} variant="outline" size="compact" className="flex-auto justify-center whitespace-nowrap sm:flex-none">
+                {secondary.label}
               </Button>
             </motion.div>
           </div>

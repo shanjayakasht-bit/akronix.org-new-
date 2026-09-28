@@ -5,6 +5,7 @@ import SectionHead from './SectionHead'
 import * as Glyphs from '../brand/Glyphs'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
 import { advantages } from '../../content/home'
+import { cx } from '../../lib/cx'
 
 const EASE = [0.16, 1, 0.3, 1]
 
@@ -22,23 +23,39 @@ const TONE = [
   { chip: 'bg-moss-tint text-moss', ring: 'hover:ring-moss/35' },
 ]
 
-export default function Advantages() {
+/* Every piece of copy is a prop so /building can use the same section for
+ * its four boxes (Step 4.5). Left out, each is the homepage's, exactly as it
+ * was. `four` sets the grid four across from `xl` rather than three from `lg`;
+ * `wide` takes the 1600 measure. */
+export default function Advantages({
+  eyebrow = 'Our advantage',
+  title = 'Why Businesses Choose',
+  accent = 'Akronix',
+  items = advantages,
+  four = false,
+  wide = false,
+}) {
   const reduced = usePrefersReducedMotion()
 
   return (
     <Slab tone="cream">
-      <Container>
+      <Container wide={wide}>
         <SectionHead
-          eyebrow="Our advantage"
+          eyebrow={eyebrow}
           tone="moss"
-          title="Why Businesses Choose"
-          accent="Akronix"
+          title={title}
+          accent={accent}
           reveal="letters"
           className="mx-auto text-center"
         />
 
-        <div className="mt-16 grid gap-4 md:mt-20 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
-          {advantages.map((a, i) => {
+        <div
+          className={cx(
+            'mt-16 grid gap-4 md:mt-20 md:grid-cols-2',
+            four ? 'xl:grid-cols-4 xl:gap-5' : 'lg:grid-cols-3 lg:gap-5',
+          )}
+        >
+          {items.map((a, i) => {
             const Glyph = Glyphs[a.glyph]
             return (
               <motion.article

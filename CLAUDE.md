@@ -57,7 +57,10 @@ Chasing the second is what forces the fabrication. Aim for the first.
 
 - Never present the SaaS products as available, purchasable, or in use.
 - State the actual stage: in development, early access, waitlist.
-- Only list products actively being built. Drop the ones that are still ideas.
+- List every product the client names, each with its true stage. The client
+  chose to show all twelve from the live site (STATUS Step 4.3): the six being
+  built read "Coming soon", the six not yet started read "Planned". The stage
+  label is what keeps this honest -- never drop it, never soften it.
 - Replace "View All Products" and buy-now framing with follow-along framing:
   waitlist, early access, build updates.
 - Building in public is a positioning, not an admission. "We're a studio
@@ -183,6 +186,31 @@ Where we lack real proof, the section should be simpler and quieter, not faked.
 
 ---
 
+## Client decisions that override this file
+
+The client has overruled parts of this file on purpose. These stand until they
+say otherwise; the reasons and the history are in `STATUS.md`.
+
+- **Rounded shapes.** Slabs (rounded section blocks), pill buttons and a pill
+  nav are the site's look (Step 3c). "Sharp edges by default" no longer holds.
+- **Twelve products, not six** (Step 4.3) -- see Products above.
+- **`/building` follows the live products page's structure and headline**
+  ("Our Products, Built to Power Your Business") (Step 4.4). The lede under it
+  carries the true stage.
+- **The nav is a liquid-glass pill** with a solid, black-or-white logo,
+  wordmark, links and button (Steps 4.4-4.8). Read the comment at the top of
+  `src/components/shell/Nav.jsx` before touching it.
+
+Declined requests stay declined: no "Demo" button and nothing that presents a
+product as shipped (STATUS, "Standing refusal").
+
+## Verification
+
+The client reviews in **Safari on a MacBook Pro, at a 1512x860 viewport**.
+Check every change there and at 375 before calling it done. How to do that
+without a connected browser extension is in `STATUS.md` ("Decisions future
+sessions need", no. 14).
+
 ## Workflow
 
 **Before touching the project:**
@@ -192,6 +220,10 @@ project currently stands.
 **While working:**
 Maintain `TODO.md` as the task list for the feature or section currently being
 built. Keep it granular enough to be useful.
+
+Update `STATUS.md` as you go -- after each meaningful change or finding, not
+only at the end. Anything found but deferred goes into `STATUS.md` before you
+move on. (Client instruction.)
 
 **On completing a feature:**
 1. Clear `TODO.md` completely.

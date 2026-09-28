@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <Link to="/" className="inline-flex items-center" aria-label={`${site.name} — home`}>
-              <Logo mono className="h-16" />
+              <Logo light className="h-16" />
             </Link>
             <p className="mt-5 max-w-[38ch] font-sans text-body leading-relaxed text-white/60">
               Your complete business growth ecosystem — software, marketing,

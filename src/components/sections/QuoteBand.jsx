@@ -11,8 +11,13 @@ const EASE = [0.16, 1, 0.3, 1]
 
 /* The quote lights up word by word as it is scrolled through, so the reader
  * sets the pace. The Watch Video button renders only when `quote.videoUrl` is
- * set -- it is null, because there is no video. */
-export default function QuoteBand() {
+ * set -- it is null, because there is no video.
+ *
+ * `lines` and `cta` let another page say its own line in the same band; left
+ * out, it is the homepage's quote exactly as it was. */
+const HOME_CTA = { label: 'Get in Touch', to: '/contact' }
+
+export default function QuoteBand({ lines = quote.text, cta = HOME_CTA, videoUrl = quote.videoUrl }) {
   const reduced = usePrefersReducedMotion()
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
@@ -36,7 +41,7 @@ export default function QuoteBand() {
 
           <blockquote className="lg:col-span-10">
             <ScrollHighlight
-              lines={quote.text}
+              lines={lines}
               className="font-serif text-h1 leading-[1.14] tracking-[-0.025em]"
               dim="text-paper/12"
               lit="text-paper"
@@ -49,9 +54,9 @@ export default function QuoteBand() {
               viewport={{ once: true, margin: '-15% 0px' }}
               transition={{ duration: 0.8, ease: EASE, delay: 0.15 }}
             >
-              <Button to="/contact" variant="onDark">Get in Touch</Button>
-              {quote.videoUrl ? (
-                <Button as="a" href={quote.videoUrl} variant="onDarkGhost">Watch Video</Button>
+              <Button to={cta.to} variant="onDark">{cta.label}</Button>
+              {videoUrl ? (
+                <Button as="a" href={videoUrl} variant="onDarkGhost">Watch Video</Button>
               ) : null}
             </motion.div>
           </blockquote>

@@ -5,13 +5,16 @@ import { RollText } from '../ui/RollText'
 import { Slab } from '../ui/Slab'
 import * as Glyphs from '../brand/Glyphs'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
-import { products } from '../../content/products'
+import { building } from '../../content/products'
 
 const EASE = [0.16, 1, 0.3, 1]
 
 /* On the dark slab, so the six products read as the centrepiece rather than a
  * list buried mid-page. Every card keeps its stage: none has shipped, and a
- * card read on its own must not look purchasable. */
+ * card read on its own must not look purchasable.
+ *
+ * Only the six being built. The six planned ones are on /building, which
+ * "View All Products" leads to. */
 export default function Products() {
   const reduced = usePrefersReducedMotion()
   const up = (d) =>
@@ -48,7 +51,7 @@ export default function Products() {
         </div>
 
         <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
-          {products.map((p, i) => {
+          {building.map((p, i) => {
             const Glyph = Glyphs[p.glyph]
             return (
               <motion.article
