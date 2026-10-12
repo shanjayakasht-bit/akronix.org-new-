@@ -1,7 +1,7 @@
-import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'motion/react'
+import { motion } from 'motion/react'
 import { Container } from '../primitives'
-import { Slab } from '../ui/Slab'
+import { Band } from '../ui/Band'
+import { Label } from '../ui/Pill'
 import { Button } from '../ui/Button'
 import ScrollHighlight from '../motion/ScrollHighlight'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
@@ -9,59 +9,46 @@ import { quote } from '../../content/home'
 
 const EASE = [0.16, 1, 0.3, 1]
 
-/* The quote lights up word by word as it is scrolled through, so the reader
- * sets the pace. The Watch Video button renders only when `quote.videoUrl` is
- * set -- it is null, because there is no video.
+/* A statement on black, lit a letter at a time as it is scrolled through.
  *
- * `lines` and `cta` let another page say its own line in the same band; left
- * out, it is the homepage's quote exactly as it was. */
+ * It was a quote on cocoa with a large quotation mark behind it; it is a
+ * statement now, because nobody is being quoted. `lines` and `cta` let each page
+ * say its own line in the same band; left out, it is the homepage's closing
+ * line exactly as it was. `videoUrl` is accepted for old callers and ignored --
+ * there is no film to watch. */
 const HOME_CTA = { label: 'Get in Touch', to: '/contact' }
 
-export default function QuoteBand({ lines = quote.text, cta = HOME_CTA, videoUrl = quote.videoUrl }) {
+export default function QuoteBand({ lines = quote.text, cta = HOME_CTA, label = 'In one line', index }) {
   const reduced = usePrefersReducedMotion()
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const markY = useTransform(scrollYProgress, [0, 1], ['-18%', '18%'])
 
   return (
-    <Slab tone="cocoa" ref={ref}>
-      <motion.span
-        aria-hidden="true"
-        style={reduced ? undefined : { y: markY }}
-        className="pointer-events-none absolute -right-24 top-1/2 select-none font-serif text-[24rem] leading-none text-paper/[0.035]"
-      >
-        &rdquo;
-      </motion.span>
-
-      <Container className="relative">
-        <div className="grid gap-10 lg:grid-cols-12">
-          <span aria-hidden="true" className="font-serif text-[4rem] leading-[0.6] text-clay lg:col-span-1">
-            &ldquo;
-          </span>
-
-          <blockquote className="lg:col-span-10">
+    <Band tone="dark">
+      <Container wide>
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-3">
+            <Label onDark index={index}>{label}</Label>
+          </div>
+          <div className="lg:col-span-9">
             <ScrollHighlight
               lines={lines}
-              className="font-serif text-h1 leading-[1.14] tracking-[-0.025em]"
-              dim="text-paper/12"
-              lit="text-paper"
+              className="font-light text-[clamp(1.875rem,1.1rem+3.1vw,4.25rem)] leading-[1.1] tracking-[-0.035em]"
+              dim="text-white/[0.15]"
+              lit="text-white"
             />
-
-            <motion.div
-              className="mt-12 flex flex-wrap gap-4"
-              initial={reduced ? false : { opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-15% 0px' }}
-              transition={{ duration: 0.8, ease: EASE, delay: 0.15 }}
-            >
-              <Button to={cta.to} variant="onDark">{cta.label}</Button>
-              {videoUrl ? (
-                <Button as="a" href={videoUrl} variant="onDarkGhost">Watch Video</Button>
-              ) : null}
-            </motion.div>
-          </blockquote>
+            {cta ? (
+              <motion.div
+                className="mt-12"
+                initial={reduced ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-15% 0px' }}
+                transition={{ duration: 0.8, ease: EASE, delay: 0.1 }}
+              >
+                <Button to={cta.to} variant="onDark">{cta.label}</Button>
+              </motion.div>
+            ) : null}
+          </div>
         </div>
       </Container>
-    </Slab>
+    </Band>
   )
 }

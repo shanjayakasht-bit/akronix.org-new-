@@ -1,83 +1,64 @@
 import { motion } from 'motion/react'
 import { Container } from '../primitives'
-import { Slab } from '../ui/Slab'
-import SectionHead from './SectionHead'
-import * as Glyphs from '../brand/Glyphs'
+import { Band } from '../ui/Band'
+import { SectionIntro } from './SectionHead'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
 import { advantages } from '../../content/home'
 import { cx } from '../../lib/cx'
 
 const EASE = [0.16, 1, 0.3, 1]
 
-/* An aligned three-up grid. The previous version offset the right column to
- * break symmetry and the client was right that it just read as scattered --
- * alignment is what makes a grid legible. The icon sits inline with the title
- * rather than centred above it, which keeps it clear of the icon-above-heading
- * pattern CLAUDE.md warns about. */
-const TONE = [
-  { chip: 'bg-clay-tint text-clay', ring: 'hover:ring-clay/35' },
-  { chip: 'bg-moss-tint text-moss', ring: 'hover:ring-moss/35' },
-  { chip: 'bg-slate-tint text-slate', ring: 'hover:ring-slate/35' },
-  { chip: 'bg-ochre-tint text-ochre', ring: 'hover:ring-ochre/35' },
-  { chip: 'bg-clay-tint text-clay', ring: 'hover:ring-clay/35' },
-  { chip: 'bg-moss-tint text-moss', ring: 'hover:ring-moss/35' },
-]
-
-/* Every piece of copy is a prop so /building can use the same section for
- * its four boxes (Step 4.5). Left out, each is the homepage's, exactly as it
- * was. `four` sets the grid four across from `xl` rather than three from `lg`;
- * `wide` takes the 1600 measure. */
+/* A row of ruled cells -- number, title, one sentence. On hover a black ground
+ * rises from the foot of the cell and the text turns white; that is the whole
+ * interaction. No glyphs, no coloured chips, no cards: the number and the words
+ * identify it.
+ *
+ * Every piece of copy is a prop so /building can use it for "In every product".
+ * `four` sets four across from `xl`; the default is three from `lg`. */
 export default function Advantages({
   eyebrow = 'Our advantage',
+  index = '02',
   title = 'Why Businesses Choose',
   accent = 'Akronix',
   items = advantages,
   four = false,
-  wide = false,
+  tone = 'mist',
 }) {
   const reduced = usePrefersReducedMotion()
 
   return (
-    <Slab tone="cream">
-      <Container wide={wide}>
-        <SectionHead
-          eyebrow={eyebrow}
-          tone="moss"
-          title={title}
-          accent={accent}
-          reveal="letters"
-          className="mx-auto text-center"
-        />
+    <Band tone={tone}>
+      <Container wide>
+        <SectionIntro eyebrow={eyebrow} index={index} title={title} accent={accent} />
 
-        <div
+        <ul
           className={cx(
-            'mt-16 grid gap-4 md:mt-20 md:grid-cols-2',
-            four ? 'xl:grid-cols-4 xl:gap-5' : 'lg:grid-cols-3 lg:gap-5',
+            'mt-16 grid border-l border-t border-rule bg-white md:grid-cols-2',
+            four ? 'xl:grid-cols-4' : 'lg:grid-cols-3',
           )}
         >
-          {items.map((a, i) => {
-            const Glyph = Glyphs[a.glyph]
-            return (
-              <motion.article
-                key={a.title}
-                initial={reduced ? false : { opacity: 0, y: 34 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-8% 0px' }}
-                transition={{ duration: 0.75, ease: EASE, delay: (i % 3) * 0.1 + Math.floor(i / 3) * 0.06 }}
-                className={`group flex h-full flex-col rounded-[1.5rem] bg-panel p-7 ring-1 ring-rule transition-all duration-500 hover:-translate-y-1 ${TONE[i].ring}`}
-              >
-                <div className="flex items-center gap-4">
-                  <span className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-transform duration-500 group-hover:scale-110 ${TONE[i].chip}`}>
-                    {Glyph ? <Glyph className="h-5 w-5" /> : null}
-                  </span>
-                  <h3 className="font-serif text-h3 leading-tight tracking-tight text-ink">{a.title}</h3>
+          {items.map((a, i) => (
+            <motion.li
+              key={a.title}
+              className="border-b border-r border-rule"
+              initial={reduced ? false : { opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-5% 0px' }}
+              transition={{ duration: 0.8, ease: EASE, delay: (i % 4) * 0.08 }}
+            >
+              <div className="group relative isolate flex h-full min-h-[18rem] flex-col justify-between overflow-hidden p-8 transition-colors duration-500 before:absolute before:inset-0 before:-z-10 before:origin-bottom before:scale-y-0 before:bg-ink before:transition-transform before:duration-[650ms] before:ease-[cubic-bezier(0.16,1,0.3,1)] hover:before:scale-y-100 hover:text-white">
+                <span className="tnum font-sans text-mark text-ink-3 transition-colors duration-500 group-hover:text-white/55">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div>
+                  <h3 className="font-display text-h3 text-ink transition-colors duration-500 group-hover:text-white">{a.title}</h3>
+                  <p className="mt-4 max-w-[34ch] font-sans text-ui text-ink-2 transition-colors duration-500 group-hover:text-white/75">{a.copy}</p>
                 </div>
-                <p className="mt-4 font-sans text-body leading-relaxed text-ink-2">{a.copy}</p>
-              </motion.article>
-            )
-          })}
-        </div>
+              </div>
+            </motion.li>
+          ))}
+        </ul>
       </Container>
-    </Slab>
+    </Band>
   )
 }

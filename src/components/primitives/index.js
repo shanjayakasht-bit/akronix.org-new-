@@ -1,6 +1,1 @@
-export { Display, H1, H2, H3, Lede, Body, UI, Mark } from './Type'
-export { Qualifier } from './Qualifier'
-export { Rule } from './Rule'
-export { StageMark } from './StageMark'
 export { Container, Grid } from './Container'
-export { Section } from './Section'

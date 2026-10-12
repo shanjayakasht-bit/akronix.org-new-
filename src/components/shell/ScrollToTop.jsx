@@ -16,7 +16,16 @@ export default function ScrollToTop() {
   const lenis = useLenis()
 
   useEffect(() => {
-    const top = (y) => (lenis ? lenis.scrollTo(y, { immediate: true }) : window.scrollTo(0, y))
+    /* Lenis clamps a jump to the page height it last measured. A lazy page
+       arrives after a moment of Suspense fallback, when the document is one
+       screen tall, and Lenis has measured THAT -- so a jump to "#pos" was
+       clamped to 832px and landed far short. Asking it to measure again first
+       is the whole fix. */
+    const top = (y) => {
+      if (!lenis) return window.scrollTo(0, y)
+      lenis.resize()
+      return lenis.scrollTo(y, { immediate: true, force: true })
+    }
     top(0)
     if (!hash) return undefined
 

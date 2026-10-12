@@ -1,22 +1,28 @@
+import Seo from '../components/shell/Seo'
 import Hero from '../components/sections/Hero'
-import ToolStrip from '../components/sections/ToolStrip'
-import Ecosystem from '../components/sections/Ecosystem'
-import Products from '../components/sections/Products'
-import Advantages from '../components/sections/Advantages'
-import QuoteBand from '../components/sections/QuoteBand'
+import Film from '../components/sections/Film'
+import Pillars from '../components/sections/Pillars'
+import Showcase from '../components/sections/Showcase'
+import WhyAkronix from '../components/sections/WhyAkronix'
+import Tools from '../components/sections/Tools'
 import FinalCta from '../components/sections/FinalCta'
 
-/* Slabs are separated by cream, not butted together -- the gap is what makes
-   them read as blocks sitting on a page. */
+/* The homepage: a white hero, the four pillars, the products, the reasons, the
+   tools, and the close. White, grey, white, grey, white, grey, then the black
+   footer -- the change of ground between sections does the separating that
+   rounded slabs used to. (The hero was black in Step 6; the client asked for it
+   to stop starting that way.) (A bar of the four disciplines and a "Who we are" statement used to sit
+   between the hero and the pillars; the client had them removed, Step 6.1.) */
 export default function Home() {
   return (
-    <div className="space-y-0 pb-0 md:space-y-0 md:pb-0">
+    <div>
+      <Seo description="Akronix is a studio in Chennai. Software, AI, marketing and mentorship for startups and growing businesses, and twelve products of our own in the works." />
       <Hero />
-      <ToolStrip />
-      <Ecosystem />
-      <Products />
-      <Advantages />
-      <QuoteBand />
+      <Film />
+      <Pillars />
+      <Showcase />
+      <WhyAkronix />
+      <Tools />
       <FinalCta />
     </div>
   )

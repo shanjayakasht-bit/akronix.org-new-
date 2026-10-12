@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { RollText } from '../ui/RollText'
+import { Arrow } from '../ui/Arrow'
 import { site } from '../../content/site'
 import { cx } from '../../lib/cx'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
@@ -56,7 +57,7 @@ function Rail({ step, reduced }) {
       <div aria-hidden="true" className="absolute inset-x-6 top-3.75 h-px bg-rule" />
       <motion.div
         aria-hidden="true"
-        className="absolute inset-x-6 top-3.75 h-px origin-left bg-clay"
+        className="absolute inset-x-6 top-3.75 h-px origin-left bg-brand"
         initial={false}
         animate={{ scaleX: step / (STEPS.length - 1) }}
         transition={{ duration: reduced ? 0 : 0.55, ease: EASE }}
@@ -71,15 +72,15 @@ function Rail({ step, reduced }) {
               animate={{ scale: i === step && !reduced ? 1.12 : 1 }}
               transition={{ duration: 0.45, ease: EASE }}
               className={cx(
-                'inline-flex h-7.5 w-7.5 items-center justify-center rounded-full font-sans text-[0.6875rem] ring-1 transition-colors duration-500',
-                reached ? 'bg-clay text-paper ring-clay' : 'bg-panel text-ink-3 ring-rule',
+                'tnum inline-flex h-7.5 w-7.5 items-center justify-center font-sans text-[0.75rem] ring-1 transition-colors duration-500',
+                reached ? 'bg-ink text-white ring-ink' : 'bg-panel text-ink-3 ring-rule',
               )}
             >
               {i + 1}
             </motion.span>
             <span
               className={cx(
-                'font-sans text-mark uppercase transition-colors duration-500',
+                'font-sans text-mark font-medium uppercase transition-colors duration-500',
                 reached ? 'text-ink' : 'text-ink-3',
               )}
             >
@@ -101,7 +102,7 @@ function Panel({ id, title, reduced, children }) {
       exit={reduced ? { opacity: 0 } : { opacity: 0, x: -18 }}
       transition={{ duration: reduced ? 0 : 0.4, ease: EASE }}
     >
-      <p className="font-serif text-lede tracking-tight text-ink">{title}</p>
+      <p className="font-display text-lede tracking-tight text-ink">{title}</p>
       <div className="mt-5">{children}</div>
     </motion.div>
   )
@@ -181,23 +182,23 @@ export default function Booking() {
      the padding buys no space it can be seen in, and it is the wrap that
      matters. */
   const pill =
-    'rounded-full border px-0.5 py-3 text-center font-sans text-[0.8125rem] transition-all duration-300 sm:px-2 sm:text-ui'
-  const chosen = 'border-clay bg-clay text-paper'
-  const unchosen = 'border-rule text-ink-2 hover:border-clay hover:text-clay'
+    'border px-0.5 py-3 text-center font-sans text-[0.8125rem] transition-all duration-300 sm:px-2 sm:text-ui'
+  const chosen = 'border-ink bg-ink text-white'
+  const unchosen = 'border-rule text-ink-2 hover:border-ink hover:text-ink'
 
   if (status === 'done') {
     return (
-      <div className="overflow-hidden rounded-[1.75rem] bg-panel ring-1 ring-rule">
+      <div className="overflow-hidden bg-panel ring-1 ring-rule">
         <motion.div
           initial={reduced ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: EASE }}
           className="px-5 py-12 text-center sm:px-7 md:px-9"
         >
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-clay text-xl text-paper">
+          <span className="inline-flex h-12 w-12 items-center justify-center bg-ink text-xl text-white">
             &#10003;
           </span>
-          <h3 className="mt-6 font-serif text-h3 tracking-tight text-ink">
+          <h3 className="mt-6 font-display text-h3 tracking-tight text-ink">
             {route === 'endpoint'
               ? 'Your meeting is scheduled with us successfully!'
               : 'Your request is on its way.'}
@@ -213,13 +214,13 @@ export default function Booking() {
   }
 
   return (
-    <div className="overflow-hidden rounded-[1.75rem] bg-panel ring-1 ring-rule">
+    <div className="overflow-hidden bg-panel ring-1 ring-rule">
       {/* What the panel is for, said once at the top. Without it the rail and
           the date grid are a control with no stated purpose. The second line
           is the honest part and stays: there is no calendar integration
           behind this, so a chosen slot is a request, not a confirmation. */}
       <div className="border-b border-rule px-5 pb-6 pt-7 sm:px-7 md:px-9">
-        <h3 className="font-serif text-h3 tracking-tight text-ink">Schedule a meeting</h3>
+        <h3 className="font-display text-h3 tracking-tight text-ink">Schedule a meeting</h3>
         <p className="mt-2 max-w-[46ch] font-sans text-ui leading-relaxed text-ink-2">
           Pick a date and a time slot and we will set up a call. Nothing is
           confirmed until we reply.
@@ -298,12 +299,12 @@ export default function Booking() {
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={() => setTouched(true)}
                 placeholder="you@company.com"
-                className="mt-2.5 w-full rounded-2xl border border-rule bg-paper px-4 py-3.5 font-sans text-ui text-ink outline-none transition-colors duration-300 placeholder:text-ink-3 focus:border-clay"
+                className="mt-2.5 w-full border border-rule bg-paper px-4 py-3.5 font-sans text-ui text-ink outline-none transition-colors duration-300 placeholder:text-ink-3 focus:border-ink"
               />
               <p
                 className={cx(
                   'mt-2.5 font-sans text-ui',
-                  touched && !validEmail ? 'text-clay' : 'text-ink-3',
+                  touched && !validEmail ? 'text-brand' : 'text-ink-3',
                 )}
               >
                 {touched && !validEmail
@@ -311,7 +312,7 @@ export default function Booking() {
                   : 'We send the Google Meet link here.'}
               </p>
               {status === 'error' ? (
-                <p className="mt-3 font-sans text-ui text-clay">
+                <p className="mt-3 font-sans text-ui text-brand">
                   That did not go through. Try again, or email {site.email} directly.
                 </p>
               ) : null}
@@ -325,11 +326,9 @@ export default function Booking() {
           <button
             type="button"
             onClick={() => setStep((v) => v - 1)}
-            className="group/roll group inline-flex items-center gap-2 rounded-full border border-ink px-6 py-2 font-sans text-ui text-ink transition-colors duration-300 hover:border-clay hover:text-clay"
+            className="group/roll group inline-flex items-center gap-2.5 border border-ink px-5 py-2.5 font-sans text-ui font-medium text-ink transition-colors duration-300 hover:bg-ink hover:text-white"
           >
-            <span aria-hidden="true" className="transition-transform duration-300 group-hover:-translate-x-1">
-              &larr;
-            </span>
+            <Arrow className="rotate-180 transition-transform duration-300 group-hover:-translate-x-1" />
             <RollText>Back</RollText>
           </button>
         ) : (
@@ -341,18 +340,16 @@ export default function Booking() {
           onClick={() => (step === STEPS.length - 1 ? send() : setStep((v) => v + 1))}
           disabled={!canAdvance || status === 'sending'}
           className={cx(
-            'group/roll group inline-flex items-center gap-2 rounded-full px-6 py-2 font-sans text-ui transition-all duration-300',
+            'group/roll group inline-flex items-center gap-2.5 px-5 py-2.5 font-sans text-ui font-medium transition-all duration-300',
             canAdvance && status !== 'sending'
-              ? 'bg-ink text-paper hover:bg-clay'
-              : 'cursor-not-allowed bg-ink/[0.07] text-ink-3',
+              ? 'bg-ink text-white hover:bg-brand'
+              : 'cursor-not-allowed bg-mist text-ink-3',
           )}
         >
           <RollText>
             {step === STEPS.length - 1 ? (status === 'sending' ? 'Sending' : 'Submit') : 'Next'}
           </RollText>
-          <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
-            &rarr;
-          </span>
+          <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
         </button>
       </div>
     </div>

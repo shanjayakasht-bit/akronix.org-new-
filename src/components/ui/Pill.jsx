@@ -1,26 +1,26 @@
 import { cx } from '../../lib/cx'
 
-/* Section marker. Sharp edges per CLAUDE.md -- the shape is a rule-bounded
-   tag, not a lozenge. Colour is a tint, never a fill. */
-export function Pill({ tone = 'clay', className, children, ...rest }) {
-  const tones = {
-    clay: 'text-clay before:bg-clay',
-    moss: 'text-moss before:bg-moss',
-    slate: 'text-slate before:bg-slate',
-    ochre: 'text-ochre before:bg-ochre',
-    onDark: 'text-paper/70 before:bg-paper/50',
-  }
+/* The section marker: a short red bar -- the I of the wordmark, stood on end --
+ * then an optional index and the label, in small tracked capitals.
+ *
+ * It was a pill with a leading rule in the cream design; it is a plain label
+ * now. `Pill` is kept as an alias so older call sites still resolve. */
+export function Label({ onDark = false, tone, index, className, children, ...rest }) {
+  const dark = onDark || tone === 'onDark'
   return (
     <span
       className={cx(
-        'relative inline-flex items-center gap-3 pl-7 font-sans text-mark uppercase',
-        'before:absolute before:left-0 before:top-1/2 before:h-px before:w-5 before:-translate-y-1/2',
-        tones[tone],
+        'inline-flex items-center gap-3 font-sans text-mark font-medium uppercase',
+        dark ? 'text-white/75' : 'text-ink-2',
         className,
       )}
       {...rest}
     >
+      <span aria-hidden="true" className={cx('h-[0.95em] w-[3px] shrink-0', dark ? 'bg-brand-soft' : 'bg-brand')} />
+      {index ? <span className={cx('tnum', dark ? 'text-white/45' : 'text-ink-3')}>{index}</span> : null}
       {children}
     </span>
   )
 }
+
+export const Pill = Label

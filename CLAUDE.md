@@ -164,6 +164,8 @@ deliberate and consistent, and you should be able to explain each one.
    FAQ are all structurally different. Do not repeat one section rhythm.
 4. **Typography does the work.** Wispr mixes roman and italic within single
    headings as a signature device. Pick one such device and use it consistently.
+   (Step 6: ours is a heading in ink with its second half in grey, and a single
+   red full stop on the hero headline. Not italic.)
 5. **Long-form where it earns attention.** Their FAQ answers are essays, not
    one-liners, because the questions are real.
 
@@ -191,15 +193,63 @@ Where we lack real proof, the section should be simpler and quieter, not faked.
 The client has overruled parts of this file on purpose. These stand until they
 say otherwise; the reasons and the history are in `STATUS.md`.
 
-- **Rounded shapes.** Slabs (rounded section blocks), pill buttons and a pill
-  nav are the site's look (Step 3c). "Sharp edges by default" no longer holds.
+- **The look is corporate, not editorial (Step 6, 10 Oct 2026).** The client
+  said the cream-and-terracotta site "looks AI generated" and asked for the
+  look of a high-end multinational's website. That **supersedes** the cream
+  palette, the rounded section slabs, the pill buttons and the roman/italic
+  accent device (Steps 3c-5.1): sharp edges are the default again, white is the
+  ground, black and the logo's red are the only neutrals and accent. Details
+  and the rules that follow from it are in STATUS Step 6. Do not bring back
+  rounded section blocks, pill buttons, cream, an italic accent word in a
+  heading, or a centred eyebrow-heading-subtext stack: they are what read as a
+  template.
+- **The nav is the liquid-glass pill** (Steps 4.4-4.8), **restored in Step 6.1**
+  after the client rejected the corporate full-width header that replaced it.
+  Round, floating, with a solid black-or-white logo, wordmark, links and
+  button, **the word "Home" first** (not an icon, Step 7), and cards under
+  Products and Solutions that list **only the core items** -- the six products
+  in development, the four main lines of work -- with a "See all" row for the
+  rest (Step 7). It is the one rounded thing left in the system apart from the
+  pricing page (below), on purpose. Read the comment at the top of
+  `src/components/shell/Nav.jsx` before touching it.
+- **The first screen is white, and the nav blends into it** (Step 7). The client
+  said a company profile should not open black and that the nav sat on a
+  separate strip. Every opening block takes `NAV_PULL` (`src/lib/navPull.js`) so
+  it runs up behind the pill. Do not put a black hero or a strip above the page
+  back.
+- **The pricing page is glossy and curved** (Step 7, the client's request):
+  `.gloss` / `.gloss-dark` and large radii, on that page only. It is a deliberate,
+  page-limited exception to "sharp edges by default"; the rest of the site stays
+  flat and square.
+- **The About page has interface sound** (Step 7, the client's request):
+  synthesised, off until the visitor turns it on, About-only, opt-in, remembered
+  in `localStorage`. Keep it off by default and never play a sound without an
+  unlocked, running audio context (STATUS, decision 18).
+- **The policies page is the live site's four-document page, ported** (Step 7);
+  the live site has no separate privacy or terms pages, so the footer's "Privacy
+  Policy" and "Terms & Conditions" deep-link to its Overview and Startup
+  Execution documents. Text was reworded to claim nothing untrue -- see the
+  header of `src/content/policies.js`.
+- **Two phone numbers, as given** (Step 7): `site.phones`. The second is nine
+  digits; it is published exactly as supplied until the client says otherwise.
 - **Twelve products, not six** (Step 4.3) -- see Products above.
 - **`/building` follows the live products page's structure and headline**
   ("Our Products, Built to Power Your Business") (Step 4.4). The lede under it
   carries the true stage.
-- **The nav is a liquid-glass pill** with a solid, black-or-white logo,
-  wordmark, links and button (Steps 4.4-4.8). Read the comment at the top of
-  `src/components/shell/Nav.jsx` before touching it.
+- **One typeface: IBM Plex Sans** (Step 6; Schibsted Grotesk in 5.1, a serif
+  pairing before that). Headings are regular or light weight, never bold; there
+  is no italic and no monospace anywhere.
+- **Every product has its own colour** (Step 5.1), taken from the live
+  products page. Colour marks the product; the stage is always written as a
+  word, and solid-versus-pale repeats it as a second cue (Step 6.1) -- never the
+  only one.
+- **The nav has no active-link underline** (Step 4.4).
+- **`/building` is a filterable portfolio of twelve cards** (or a ruled list --
+  the page has a Cards / List switch, Step 7) with a spectrum of twelve colours
+  above it (Step 6.1), not a stack of long panels; the client rejected that.
+  Every card still opens the contact form with the product chosen, as a request
+  for early access. The home page's products section is a colour showcase
+  (`Showcase.jsx`, Step 7) that links the same way.
 
 Declined requests stay declined: no "Demo" button and nothing that presents a
 product as shipped (STATUS, "Standing refusal").

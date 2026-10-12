@@ -1,139 +1,98 @@
-import { useRef } from 'react'
-import { motion, useScroll } from 'motion/react'
-import { Rising, letterRange } from '../motion/RisingLetters'
-import { Pill } from '../ui/Pill'
+import { motion } from 'motion/react'
+import { Label } from '../ui/Pill'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
 import { cx } from '../../lib/cx'
 
 const EASE = [0.16, 1, 0.3, 1]
 
-/* The heading's per-letter reveal is scrubbed by scroll rather than played:
- * the run begins as the heading's top edge crosses the bottom of the screen
- * and is finished by the time that edge is 30% of the way down it, so the
- * title is fully standing well before it reaches the middle. Being scrubbed,
- * it also runs backwards when the page is scrolled back. The letter itself
- * lives in `motion/RisingLetters` and is shared with the hero headline. */
-
-/* Marker, heading, sub. The heading is the only bold thing in a section --
-   CLAUDE.md allows weight on main headings and nowhere else.
-
-   `reveal` picks how the heading arrives: "words" is the default, each word
-   rising once as it comes into view; "letters" is the scrolled per-letter
-   version above. */
-export default function SectionHead({
-  eyebrow,
-  tone = 'clay',
+/* `Headline` and `SectionIntro` are the two heading components every section
+ * uses. (The centred, stacked `SectionHead` they replaced is gone.)
+ *
+ * A heading set the way large type is set on enterprise sites: left-aligned,
+ * regular weight, tight, in ONE colour -- no italic, no word picked out in a
+ * brand colour. The accent half of a title (`accent`) is carried on as the
+ * second half of the sentence in a quieter grey, which gives the line a
+ * hierarchy without a hue.
+ *
+ * Each word rises out of its own mask, one after another. Masked rather than
+ * faded: the word is cut off by an invisible edge as it climbs, which reads as
+ * the line being drawn on to the page rather than switched on. */
+export function Headline({
+  as: Tag = 'h2',
   title,
   accent,
-  sub,
   onDark = false,
-  reveal = 'words',
   className,
-  titleClass,
+  size = 'text-h1',
+  delay = 0,
+  once = true,
 }) {
   const reduced = usePrefersReducedMotion()
-  const head = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: head,
-    offset: ['start end', 'start 0.3'],
-  })
-
-  const up = (d) =>
-    reduced ? {} : {
-      initial: { opacity: 0, y: 32 },
-      whileInView: { opacity: 1, y: 0 },
-      viewport: { once: true, margin: '-12% 0px' },
-      transition: { duration: 0.8, ease: EASE, delay: d },
-    }
-
   const words = [
-    ...title.split(' ').map((w) => ({ w, accent: false })),
-    ...(accent ? accent.split(' ').map((w) => ({ w, accent: true })) : []),
+    ...title.split(' ').map((w) => ({ w, soft: false })),
+    ...(accent ? accent.split(' ').map((w) => ({ w, soft: true })) : []),
   ]
-  const accentClass = onDark ? 'text-paper/55' : 'text-clay'
-  const byLetter = reveal === 'letters' && !reduced
-
-  /* One continuous letter index across every word, so the wave crosses the
-     whole heading instead of restarting on each word. */
-  const letters = words.reduce((n, { w }) => n + w.length, 0)
-  let cursor = 0
+  const soft = onDark ? 'text-white/45' : 'text-ink-3'
 
   return (
-    <div className={cx('max-w-[46rem]', className)}>
-      {eyebrow ? (
-        <motion.div {...up(0)}>
-          <Pill tone={onDark ? 'onDark' : tone}>{eyebrow}</Pill>
-        </motion.div>
-      ) : null}
+    <Tag className={cx(size, 'text-balance', onDark ? 'text-white' : 'text-ink', className)}>
+      {words.map(({ w, soft: isSoft }, i) => (
+        <span key={`${w}-${i}`} className="mr-[0.24em] inline-block overflow-hidden pb-[0.14em] align-top last:mr-0">
+          <motion.span
+            className={cx('inline-block', isSoft && soft)}
+            initial={reduced ? false : { y: '112%' }}
+            whileInView={{ y: '0%' }}
+            viewport={{ once, margin: '-8% 0px' }}
+            transition={{ duration: 0.95, ease: EASE, delay: delay + i * 0.045 }}
+          >
+            {w}
+          </motion.span>
+        </span>
+      ))}
+    </Tag>
+  )
+}
 
-      <h2
-        ref={head}
-        className={cx(
-          'mt-7 flex font-serif tracking-[-0.025em]',
-          /* Size and wrapping together, because a caller that wants a heading
-             held to one line has to set both. Default is what every other
-             section gets. */
-          titleClass ?? 'flex-wrap text-h1',
-          className?.includes('text-center') && 'justify-center',
-          onDark ? 'text-paper' : 'text-ink',
-        )}
-      >
-        {/* Split into letters, the heading must not be read out one letter at
-            a time, so the real line is carried here and the pieces are hidden. */}
-        {byLetter ? <span className="sr-only">{[title, accent].filter(Boolean).join(' ')}</span> : null}
+/* The split intro every full-width section opens with: the marker and index in
+ * a narrow left column, the heading and its sentence in the wide right one.
+ * Two columns instead of a centred stack is the single biggest difference
+ * between a corporate page and a template. */
+export function SectionIntro({ eyebrow, index, title, accent, sub, onDark = false, actions, className, titleClass }) {
+  const reduced = usePrefersReducedMotion()
+  const up = (d) =>
+    reduced
+      ? {}
+      : {
+          initial: { opacity: 0, y: 18 },
+          whileInView: { opacity: 1, y: 0 },
+          viewport: { once: true, margin: '-10% 0px' },
+          transition: { duration: 0.8, ease: EASE, delay: d },
+        }
 
-        {words.map(({ w, accent: isAccent }, i) =>
-          byLetter ? (
-            <span
-              key={`${w}-${i}`}
-              aria-hidden="true"
-              className="mr-[0.26em] inline-block whitespace-nowrap"
-            >
-              {[...w].map((ch) => {
-                const n = cursor++
-                const [from, to] = letterRange(n, letters)
-                return (
-                  <Rising
-                    key={`${ch}-${n}`}
-                    progress={scrollYProgress}
-                    start={from}
-                    end={to}
-                    className={isAccent ? accentClass : undefined}
-                  >
-                    {ch}
-                  </Rising>
-                )
-              })}
-            </span>
-          ) : (
-            /* Word by word, each rising out of its own mask. */
-            <span key={`${w}-${i}`} className="mr-[0.26em] inline-block overflow-hidden pb-[0.1em]">
-              <motion.span
-                className={cx('inline-block', isAccent && accentClass)}
-                initial={reduced ? false : { y: '110%', opacity: 0 }}
-                whileInView={{ y: '0%', opacity: 1 }}
-                viewport={{ once: true, margin: '-10% 0px' }}
-                transition={{ duration: 0.85, ease: EASE, delay: 0.06 + i * 0.07 }}
-              >
-                {w}
-              </motion.span>
-            </span>
-          ),
-        )}
-      </h2>
-
-      {sub ? (
-        <motion.p
-          className={cx(
-            'mt-5 max-w-[52ch] font-sans text-lede leading-relaxed',
-            className?.includes('text-center') && 'mx-auto',
-            onDark ? 'text-paper/65' : 'text-ink-2',
-          )}
-          {...up(0.3)}
-        >
-          {sub}
-        </motion.p>
-      ) : null}
+  return (
+    <div className={cx('grid gap-8 lg:grid-cols-12 lg:gap-10', className)}>
+      <motion.div className="lg:col-span-3" {...up(0)}>
+        <Label onDark={onDark} index={index}>
+          {eyebrow}
+        </Label>
+      </motion.div>
+      <div className="lg:col-span-9">
+        <Headline title={title} accent={accent} onDark={onDark} size={titleClass ?? 'text-h1'} className="max-w-[18ch]" delay={0.05} />
+        {sub ? (
+          <motion.p
+            className={cx('mt-8 max-w-[58ch] font-sans text-lede', onDark ? 'text-white/65' : 'text-ink-2')}
+            {...up(0.3)}
+          >
+            {sub}
+          </motion.p>
+        ) : null}
+        {actions ? (
+          <motion.div className="mt-10 flex flex-wrap gap-3" {...up(0.4)}>
+            {actions}
+          </motion.div>
+        ) : null}
+      </div>
     </div>
   )
 }
+

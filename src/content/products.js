@@ -25,6 +25,13 @@
  *
  * `category` is the legacy page's own filter label.
  *
+ * `accent` is the product's colour identity as literal class strings -- they
+ * must stay literal so Tailwind sees them. The hues are in the @theme block of
+ * index.css under "Product identity". Colour identifies a product. The stage is
+ * ALWAYS its own written word as well; where a surface also repeats the stage
+ * with intensity (a solid block for a product in development, a pale or outlined
+ * one for a planned product) that is a second cue, never the only one.
+ *
  * `summary` and `scope` feed /building. `scope` is the feature list the legacy
  * products page published, and it is shown there as what each product is
  * being BUILT to do -- labelled as planned, never as a list of things that
@@ -34,9 +41,9 @@
 export const products = [
   {
     name: 'Akronix CRM',
+    accent: { chip: 'bg-p-crm-tint text-p-crm', dot: 'bg-p-crm', edge: 'hover:border-p-crm', bar: 'bg-p-crm', soft: 'bg-p-crm/35', fill: 'before:bg-p-crm', border: 'border-p-crm', text: 'text-p-crm' },
     category: 'CRM',
     code: 'CRM',
-    glyph: 'Card',
     line: 'Manage leads and customers.',
     stage: 'Coming soon',
     live: true,
@@ -46,9 +53,9 @@ export const products = [
   },
   {
     name: 'Akronix HRMS',
+    accent: { chip: 'bg-p-hrms-tint text-p-hrms', dot: 'bg-p-hrms', edge: 'hover:border-p-hrms', bar: 'bg-p-hrms', soft: 'bg-p-hrms/35', fill: 'before:bg-p-hrms', border: 'border-p-hrms', text: 'text-p-hrms' },
     category: 'HR & Workforce',
     code: 'HRM',
-    glyph: 'Badge',
     line: 'Simplify HR and employee management.',
     stage: 'Coming soon',
     live: true,
@@ -58,9 +65,9 @@ export const products = [
   },
   {
     name: 'Akronix ERP',
+    accent: { chip: 'bg-p-erp-tint text-p-erp', dot: 'bg-p-erp', edge: 'hover:border-p-erp', bar: 'bg-p-erp', soft: 'bg-p-erp/35', fill: 'before:bg-p-erp', border: 'border-p-erp', text: 'text-p-erp' },
     category: 'Operations',
     code: 'ERP',
-    glyph: 'Layers',
     line: 'Complete ERP solution for your business.',
     stage: 'Coming soon',
     live: true,
@@ -70,9 +77,9 @@ export const products = [
   },
   {
     name: 'Akronix Inventory',
+    accent: { chip: 'bg-p-inventory-tint text-p-inventory', dot: 'bg-p-inventory', edge: 'hover:border-p-inventory', bar: 'bg-p-inventory', soft: 'bg-p-inventory/35', fill: 'before:bg-p-inventory', border: 'border-p-inventory', text: 'text-p-inventory' },
     category: 'Operations',
     code: 'INV',
-    glyph: 'Box',
     line: 'Track inventory and stock levels.',
     stage: 'Coming soon',
     live: true,
@@ -82,9 +89,9 @@ export const products = [
   },
   {
     name: 'Akronix POS',
+    accent: { chip: 'bg-p-pos-tint text-p-pos', dot: 'bg-p-pos', edge: 'hover:border-p-pos', bar: 'bg-p-pos', soft: 'bg-p-pos/35', fill: 'before:bg-p-pos', border: 'border-p-pos', text: 'text-p-pos' },
     category: 'Retail',
     code: 'POS',
-    glyph: 'Contact',
     line: 'Point of sale for retail businesses.',
     stage: 'Coming soon',
     live: true,
@@ -94,9 +101,9 @@ export const products = [
   },
   {
     name: 'Akronix AI Assistant',
+    accent: { chip: 'bg-p-ai-assistant-tint text-p-ai-assistant', dot: 'bg-p-ai-assistant', edge: 'hover:border-p-ai-assistant', bar: 'bg-p-ai-assistant', soft: 'bg-p-ai-assistant/35', fill: 'before:bg-p-ai-assistant', border: 'border-p-ai-assistant', text: 'text-p-ai-assistant' },
     category: 'AI & Automation',
     code: 'AI',
-    glyph: 'Spark',
     line: 'A remote assistant with AI intelligence.',
     stage: 'Coming soon',
     live: true,
@@ -106,9 +113,9 @@ export const products = [
   },
   {
     name: 'Akronix Attendance',
+    accent: { chip: 'bg-p-attendance-tint text-p-attendance', dot: 'bg-p-attendance', edge: 'hover:border-p-attendance', bar: 'bg-p-attendance', soft: 'bg-p-attendance/35', fill: 'before:bg-p-attendance', border: 'border-p-attendance', text: 'text-p-attendance' },
     category: 'HR & Workforce',
     code: 'ATT',
-    glyph: 'Clock',
     line: 'Track attendance as it happens.',
     stage: 'Planned',
     live: false,
@@ -118,9 +125,9 @@ export const products = [
   },
   {
     name: 'Akronix Project Management',
+    accent: { chip: 'bg-p-project-management-tint text-p-project-management', dot: 'bg-p-project-management', edge: 'hover:border-p-project-management', bar: 'bg-p-project-management', soft: 'bg-p-project-management/35', fill: 'before:bg-p-project-management', border: 'border-p-project-management', text: 'text-p-project-management' },
     category: 'Operations',
     code: 'PM',
-    glyph: 'Grid',
     line: 'Plan, track and deliver projects.',
     stage: 'Planned',
     live: false,
@@ -130,9 +137,9 @@ export const products = [
   },
   {
     name: 'Akronix Books',
+    accent: { chip: 'bg-p-books-tint text-p-books', dot: 'bg-p-books', edge: 'hover:border-p-books', bar: 'bg-p-books', soft: 'bg-p-books/35', fill: 'before:bg-p-books', border: 'border-p-books', text: 'text-p-books' },
     category: 'Finance',
     code: 'BKS',
-    glyph: 'Book',
     line: 'Bookkeeping and invoicing.',
     stage: 'Planned',
     live: false,
@@ -142,9 +149,9 @@ export const products = [
   },
   {
     name: 'Akronix E-commerce',
+    accent: { chip: 'bg-p-e-commerce-tint text-p-e-commerce', dot: 'bg-p-e-commerce', edge: 'hover:border-p-e-commerce', bar: 'bg-p-e-commerce', soft: 'bg-p-e-commerce/35', fill: 'before:bg-p-e-commerce', border: 'border-p-e-commerce', text: 'text-p-e-commerce' },
     category: 'Retail',
     code: 'EC',
-    glyph: 'Bag',
     line: 'Run an online store.',
     stage: 'Planned',
     live: false,
@@ -154,9 +161,9 @@ export const products = [
   },
   {
     name: 'Akronix LMS',
+    accent: { chip: 'bg-p-lms-tint text-p-lms', dot: 'bg-p-lms', edge: 'hover:border-p-lms', bar: 'bg-p-lms', soft: 'bg-p-lms/35', fill: 'before:bg-p-lms', border: 'border-p-lms', text: 'text-p-lms' },
     category: 'Education',
     code: 'LMS',
-    glyph: 'Cap',
     line: 'A learning management system.',
     stage: 'Planned',
     live: false,
@@ -166,9 +173,9 @@ export const products = [
   },
   {
     name: 'Akronix Helpdesk',
+    accent: { chip: 'bg-p-helpdesk-tint text-p-helpdesk', dot: 'bg-p-helpdesk', edge: 'hover:border-p-helpdesk', bar: 'bg-p-helpdesk', soft: 'bg-p-helpdesk/35', fill: 'before:bg-p-helpdesk', border: 'border-p-helpdesk', text: 'text-p-helpdesk' },
     category: 'AI & Automation',
     code: 'HD',
-    glyph: 'Chat',
     line: 'Customer support as tickets.',
     stage: 'Planned',
     live: false,

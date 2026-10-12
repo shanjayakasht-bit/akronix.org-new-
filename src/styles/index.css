@@ -1,116 +1,145 @@
-/* Self-hosted faces. Newsreader carries the optical-size axis (opsz 6-72) the
-   type scale depends on, plus a true drawn italic for the qualifier device. */
-@import "@fontsource-variable/newsreader/opsz.css";
-@import "@fontsource-variable/newsreader/opsz-italic.css";
-@import "@fontsource-variable/instrument-sans/wght.css";
+/* Self-hosted face. IBM Plex Sans, variable weight: a grotesque built for
+   enterprise interfaces, which is the register the site now speaks in. It
+   replaced Schibsted Grotesk (Step 5.1) and, before that, a serif-on-cream
+   pairing the client read as AI-generated. One family, upright only -- there is
+   no italic anywhere on the site (the roman/italic device was retired in Step
+   6 with the cream palette). Hierarchy comes from size, weight and tracking. */
+@import "@fontsource-variable/ibm-plex-sans/wght.css";
 @import "tailwindcss";
 
 /* The project's markdown is documentation, not markup. Tailwind v4 scans every
    file it is not told to skip, so a class name quoted in STATUS.md -- and this
    file is written to be quoted from -- is harvested and shipped as a live rule.
-   `text-[min(2.2vw,0.875rem)]` outlived the code that used it exactly that way.
    Excluded rather than worked around, so the notes can name classes freely. */
 @source not "../../*.md";
 
 @theme {
-  /* ---- Color -------------------------------------------------------------
-     Bone paper is the ground. Pure white is a *material* used only for panels,
-     which is what gives depth without shadows or rounded cards.              */
-  /* ---- Colour -----------------------------------------------------------
-     Warm cream page. Rich, deep slabs sit ON it as rounded blocks, with the
-     cream showing at the edges -- the structural device taken from the
-     reference sites. Accents stay muted; the depth comes from the slabs.   */
-  --color-paper: #faf7ef;
+  /* ---- Colour ------------------------------------------------------------
+     Step 6 (corporate system). White is the ground. The one accent is the
+     red of the I in the AKRONIX wordmark, used small and on purpose: a
+     marker, a hover, a full stop. Everything else is black, white and the
+     greys between. The earlier palette -- cream, terracotta, forest green,
+     cocoa -- is gone; it was the other half of what read as AI-generated. */
+  --color-paper: #ffffff;
   --color-panel: #ffffff;
-  --color-mist: #f2ecdf;
+  --color-mist: #f3f4f6;
+  --color-fog: #e9ebef;
 
-  --color-ink: #191713;
-  --color-ink-2: #5c564c;
-  --color-ink-3: #918a7c;
-  --color-rule: #e4dccb;
+  --color-ink: #0b0c0f;
+  --color-ink-2: #454b54;
+  --color-ink-3: #78808b;
+  --color-rule: #e1e3e8;
 
-  /* slabs */
-  --color-forest: #12403a;
-  --color-coal: #191713;
-  --color-cocoa: #43302a;
+  /* the dark sections */
+  --color-coal: #0b0c0f;
+  --color-graphite: #14171c;
 
-  --color-clay: #b4552f;
-  --color-clay-soft: #d98b5f;
-  --color-moss: #55684c;
-  --color-slate: #47596b;
-  --color-ochre: #99803f;
+  /* the brand red, measured off the logo (~#DD1916). `brand-soft` is the same
+     red lifted for use on black, where #DD1916 loses weight. */
+  --color-brand: #dd1916;
+  --color-brand-soft: #ff574d;
 
-  --color-clay-tint: #f6e8df;
-  --color-moss-tint: #eaeee5;
-  --color-slate-tint: #e8ecef;
-  --color-ochre-tint: #f2eddd;
+  /* ---- Legacy names ---------------------------------------------------------
+     The old palette's token names, pointed at the new one so nothing left over
+     from the earlier design can show a cream or a green. New code uses the
+     names above. */
+  --color-clay: #dd1916;
+  --color-clay-soft: #ff574d;
+  --color-signal: #dd1916;
+  --color-forest: #0b0c0f;
+  --color-cocoa: #14171c;
+  --color-night: #0b0c0f;
+  --color-sand: #f3f4f6;
+  --color-cream: #ffffff;
+  --color-shell: #f3f4f6;
+  --color-line: #e1e3e8;
+  --color-moss: #454b54;
+  --color-slate: #454b54;
+  --color-ochre: #454b54;
+  --color-clay-tint: #f3f4f6;
+  --color-moss-tint: #f3f4f6;
+  --color-slate-tint: #f3f4f6;
+  --color-ochre-tint: #f3f4f6;
 
-  --color-night: #191713;
-  --color-cream: #faf7ef;
-  --color-shell: #f2ecdf;
-  --color-line: #e4dccb;
-  --color-signal: #b4552f;
-  --color-ember: #b4552f;
-  --color-ember-2: #99803f;
-  --color-ember-tint: #f6e8df;
-  --color-teal: #47596b;
-  --color-teal-tint: #e8ecef;
-  --color-plum: #43302a;
-  --color-plum-tint: #f0e8e4;
-  --color-sage: #55684c;
-  --color-sage-tint: #eaeee5;
-  --color-sand: #f2ecdf;
+  /* ---- Product identity ---------------------------------------------------
+     One colour per product, taken from the live site's products page (read
+     from its markup, Step 5.1) so a product keeps the colour the client
+     already knows. In the corporate system it is the only chroma on the page
+     besides the brand red, and it earns that: it is how twelve products are
+     told apart. The live page gave CRM and Helpdesk the same blue; Helpdesk is
+     lime here so no two products share a colour. */
+  --color-p-crm: #2563EB;
+  --color-p-crm-tint: #DBEAFE;
+  --color-p-hrms: #16A34A;
+  --color-p-hrms-tint: #DCFCE7;
+  --color-p-erp: #EA580C;
+  --color-p-erp-tint: #FFEDD5;
+  --color-p-inventory: #0D9488;
+  --color-p-inventory-tint: #CCFBF1;
+  --color-p-pos: #E11D48;
+  --color-p-pos-tint: #FFE4E6;
+  --color-p-ai-assistant: #7C3AED;
+  --color-p-ai-assistant-tint: #EDE9FE;
+  --color-p-attendance: #0284C7;
+  --color-p-attendance-tint: #E0F2FE;
+  --color-p-project-management: #059669;
+  --color-p-project-management-tint: #D1FAE5;
+  --color-p-books: #D97706;
+  --color-p-books-tint: #FDE68A;
+  --color-p-e-commerce: #DB2777;
+  --color-p-e-commerce-tint: #FBCFE8;
+  --color-p-lms: #9333EA;
+  --color-p-lms-tint: #F3E8FF;
+  --color-p-helpdesk: #65A30D;
+  --color-p-helpdesk-tint: #ECFCCB;
 
   /* ---- Families ---------------------------------------------------------- */
-  /* Two faces, no third. The monospace one was dropped at the client's
-     request -- every small caps label that used it is set in the sans now,
-     which keeps the uppercase-and-tracked treatment that gave those labels
-     their character without the typewriter texture. Do not reintroduce a
-     mono family, and do not use `font-mono`: with no token behind it, it
-     falls through to the browser default and looks like an accident. */
-  --font-serif: "Newsreader Variable", Georgia, "Times New Roman", serif;
-  --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  /* One family. No monospace anywhere (client's call, Step 3o): do not use
+     `font-mono`, it falls through to the browser default. `font-display` and
+     `font-sans` are the same face; the names stay because forty call sites
+     use them. */
+  --font-display: "IBM Plex Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans Variable", ui-sans-serif, system-ui, sans-serif;
 
   /* ---- Type scale --------------------------------------------------------
-     14>17>21>26 runs at ~1.23, then a deliberate break to 40 (x1.54) so no
-     mid-weight heading competes for rank. Fluid between the mobile and
-     desktop sizes named in the plan.                                        */
-  --text-display: clamp(2.75rem, 1.5rem + 5.5vw, 5.5rem);
-  --text-display--line-height: 0.95;
-  --text-display--letter-spacing: -0.03em;
+     Large and light on top, small and exact underneath. The headings are set
+     at 300-400 with tight tracking -- the way enterprise sites set a big line
+     -- and the weight is spent on the small uppercase labels instead. */
+  --text-display: clamp(3.25rem, 1.2rem + 8vw, 9rem);
+  --text-display--line-height: 0.94;
+  --text-display--letter-spacing: -0.045em;
 
-  --text-h1: clamp(2.25rem, 1.35rem + 3.95vw, 4rem);
-  --text-h1--line-height: 1;
-  --text-h1--letter-spacing: -0.025em;
+  --text-h1: clamp(2.5rem, 1.35rem + 3.9vw, 5rem);
+  --text-h1--line-height: 1.02;
+  --text-h1--letter-spacing: -0.035em;
 
-  --text-h2: clamp(1.75rem, 1.3rem + 1.85vw, 2.5rem);
-  --text-h2--line-height: 1.1;
-  --text-h2--letter-spacing: -0.02em;
+  --text-h2: clamp(1.875rem, 1.3rem + 1.9vw, 3.125rem);
+  --text-h2--line-height: 1.08;
+  --text-h2--letter-spacing: -0.03em;
 
-  --text-h3: clamp(1.375rem, 1.2rem + 0.75vw, 1.625rem);
-  --text-h3--line-height: 1.25;
-  --text-h3--letter-spacing: -0.01em;
+  --text-h3: clamp(1.375rem, 1.15rem + 0.85vw, 1.875rem);
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.02em;
 
-  --text-lede: clamp(1.1875rem, 1.1rem + 0.35vw, 1.3125rem);
-  --text-lede--line-height: 1.55;
+  --text-lede: clamp(1.125rem, 1.04rem + 0.4vw, 1.375rem);
+  --text-lede--line-height: 1.5;
 
   --text-body: 1.0625rem;
   --text-body--line-height: 1.65;
 
-  --text-ui: 0.875rem;
+  --text-ui: 0.9375rem;
   --text-ui--line-height: 1.5;
 
-  --text-mark: 0.6875rem;
+  --text-mark: 0.75rem;
   --text-mark--line-height: 1.2;
-  --text-mark--letter-spacing: 0.12em;
+  --text-mark--letter-spacing: 0.14em;
 
   /* ---- Radius ------------------------------------------------------------
-     Sharp by default. 2px exists only so controls read as pressable.        */
-  /* Sharp edges are the default. Radius only where something must read
-     as pressable. */
-  --radius-control: 999px;
-  /* Slabs are the one place a large radius is used, and it is the point. */
-  --radius-slab: 2.5rem;
+     Square. The rounded slabs, pill buttons and pill nav of Steps 3c-4.8 are
+     retired (Step 6): round corners on every surface were a large part of the
+     template look. The only circles left are status dots. */
+  --radius-control: 0px;
+  --radius-slab: 0px;
 }
 
 @layer base {
@@ -121,29 +150,149 @@
   body {
     background-color: var(--color-paper);
     color: var(--color-ink);
-    font-family: var(--font-serif);
-    /* Lets the browser pick opsz from the rendered size, which is what keeps
-       an 88px headline from looking like inflated body text. */
-    font-optical-sizing: auto;
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01" 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Headings are regular weight: size and tracking carry them. Set here so the
+     per-word reveal spans inherit it. */
+  h1, h2, h3 {
+    font-weight: 400;
+  }
+
   ::selection {
-    background-color: var(--color-signal);
-    color: var(--color-paper);
+    background-color: var(--color-brand);
+    color: #fff;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-signal);
+    outline: 2px solid var(--color-brand);
     outline-offset: 3px;
   }
 }
 
-/* Body measure: ~62-68 characters at 17px Newsreader. */
+/* Body measure: ~62-68 characters at 17px. */
 @utility measure {
   max-width: 38.75rem;
 }
+
+/* Tabular figures, for anywhere numbers are compared or counted. */
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Gloss (Step 7: the pricing page, at the client's request) ---------------
+   The rest of the site is flat and square; the pricing page is glossy and
+   curved. Two surfaces:
+
+   .gloss       a light panel with a vertical sheen, a hairline lit along the top
+                edge and a pale dome across it -- the curved highlight of a
+                glazed button -- and a band of light that crosses it on hover.
+   .gloss-dark  frosted dark glass: a diagonal wash, a blurred backdrop, a bright
+                top rim, the same dome and the same band.
+
+   Both are used with a radius (rounded-[2rem] and up) and rely on the element's
+   own `overflow: hidden` to clip the dome and the band to the curve. The dome and
+   the band are pseudo-elements at z-index -1 inside an isolated stacking
+   context, so they sit behind the content and above the surface. */
+@layer components {
+  .gloss {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-image: linear-gradient(180deg, #ffffff 0%, #f1f3f7 58%, #e5e9ef 100%);
+    border: 1px solid rgba(11, 12, 15, 0.09);
+    box-shadow:
+      inset 0 1px 0 #ffffff,
+      inset 0 -1px 0 rgba(11, 12, 15, 0.05),
+      0 1px 2px rgba(11, 12, 15, 0.05),
+      0 30px 56px -34px rgba(11, 12, 15, 0.34);
+  }
+  .gloss::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: -12%;
+    right: -12%;
+    top: -64%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.5) 100%);
+  }
+
+  .gloss-dark {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.06) 44%, rgba(255, 255, 255, 0.025) 100%);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    backdrop-filter: blur(24px) saturate(1.5);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+      0 44px 90px -48px rgba(0, 0, 0, 0.95);
+  }
+  .gloss-dark::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: -14%;
+    right: -14%;
+    top: -66%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0));
+  }
+
+  .gloss::after,
+  .gloss-dark::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: -20%;
+    bottom: -20%;
+    left: -60%;
+    width: 38%;
+    opacity: 0;
+    transform: translateX(0) skewX(-18deg);
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .gloss:hover::after,
+  .gloss-dark:hover::after {
+    opacity: 1;
+    transform: translateX(560%) skewX(-18deg);
+  }
+}
+
+/* A colon that blinks once a second, for the studio clock. */
+@keyframes akx-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.18; }
+}
+.akx-blink { animation: akx-blink 1s steps(1, end) infinite; }
+
+/* The sweep of the studio radar: a wedge of light with a sharp leading edge and
+   a trail that fades behind it, turning once every nine seconds. */
+@keyframes akx-radar {
+  to { transform: rotate(360deg); }
+}
+.akx-radar {
+  background: conic-gradient(from 0deg, rgba(255, 255, 255, 0) 0deg, rgba(255, 255, 255, 0.22) 54deg, rgba(255, 255, 255, 0) 55deg);
+  animation: akx-radar 9s linear infinite;
+}
+
+/* The slow light that crosses the hero figure once it has finished drawing. */
+@keyframes akx-sweep {
+  0%   { transform: translateX(-130%) skewX(-18deg); }
+  55%  { transform: translateX(260%) skewX(-18deg); }
+  100% { transform: translateX(260%) skewX(-18deg); }
+}
+.akx-sweep { animation: akx-sweep 7s ease-in-out 3.4s infinite; }
 
 /* Reduced motion is a hard stop, not a softening. Lenis is bypassed in JS. */
 @media (prefers-reduced-motion: reduce) {
@@ -155,16 +304,6 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* The tools marquee. Driven by CSS rather than JS: Motion's repeat ran the
-   track once to -50% and stopped, leaving the strip frozen mid-scroll. */
-@keyframes akx-marquee {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-50%, 0, 0); }
-}
-.akx-marquee { animation: akx-marquee 38s linear infinite; }
-.akx-marquee:hover { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) {
-  .akx-marquee { animation: none; }
+  .akx-sweep { animation: none; opacity: 0; }
+  .akx-blink, .akx-radar { animation: none; }
 }

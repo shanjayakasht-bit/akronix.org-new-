@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react'
 import { useLenis } from 'lenis/react'
 import { Logo } from '../brand/Logo'
+import { Chevron } from '../brand/Glyphs'
 import { RollText } from '../ui/RollText'
 import { cx } from '../../lib/cx'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
@@ -57,6 +58,198 @@ function MenuGlyph({ open, reduced }) {
         transition={move}
       />
     </span>
+  )
+}
+
+/* Home, as a word (Step 7). It was a house icon -- the client asked for one in
+ * Step 5.2 and then for the word instead. It is set exactly like the other
+ * links and rolls like them. */
+function HomeLink({ dark }) {
+  return (
+    <NavLink
+      to="/"
+      end
+      className={cx(
+        'group/roll relative whitespace-nowrap px-3.5 py-2 font-sans text-ui transition-colors duration-500',
+        dark ? 'text-white' : 'text-ink',
+      )}
+    >
+      <RollText>Home</RollText>
+    </NavLink>
+  )
+}
+
+/* A link with subdivisions. The label still goes to the parent page; hovering
+ * or focusing it also opens a panel listing the subdivisions, each linking to
+ * its own place on that page. The panel is a solid card whatever is behind the
+ * pill, so it never has to be toned.
+ *
+ * Opening has a short grace on the way out, so crossing the 16px between the
+ * label and the panel does not close it. Escape closes; focus leaving the
+ * whole group closes. The panel's rows come in one after another. */
+function NavMenu({ item, dark, reduced }) {
+  const [open, setOpen] = useState(false)
+  const timer = useRef(null)
+  const location = useLocation()
+  const show = () => {
+    clearTimeout(timer.current)
+    setOpen(true)
+  }
+  const hide = () => {
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => setOpen(false), 140)
+  }
+  useEffect(() => setOpen(false), [location.pathname, location.hash])
+  useEffect(() => () => clearTimeout(timer.current), [])
+
+  const wide = item.children.length > 9
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={show}
+      onMouseLeave={hide}
+      onFocus={show}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) hide()
+      }}
+      onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
+    >
+      <NavLink
+        to={item.to}
+        aria-haspopup="true"
+        aria-expanded={open}
+        className={cx(
+          'group/roll relative inline-flex items-center gap-1 whitespace-nowrap px-3.5 py-2 font-sans text-ui transition-colors duration-500',
+          dark ? 'text-white' : 'text-ink',
+        )}
+      >
+        <RollText>{item.label}</RollText>
+        <Chevron className={cx('h-3.5 w-3.5 transition-transform duration-500', open && 'rotate-180')} />
+      </NavLink>
+
+      <AnimatePresence>
+        {open ? (
+          <div className="absolute left-1/2 top-full z-20 -translate-x-1/2 pt-4">
+            <motion.div
+              initial={reduced ? false : { opacity: 0, y: 10, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 6, scale: 0.98, transition: { duration: 0.16 } }}
+              transition={{ duration: 0.34, ease: EASE }}
+              className={cx(
+                'origin-top rounded-[1.75rem] bg-paper p-3 text-ink shadow-[0_24px_60px_-20px_rgba(25,23,19,0.45)] ring-1 ring-rule',
+                wide ? 'w-[36rem]' : 'w-[31rem]',
+              )}
+            >
+              <p className="px-4 pb-2 pt-3 font-sans text-mark uppercase text-ink-3">{item.note}</p>
+              <motion.ul
+                className="grid grid-cols-2 gap-x-1"
+                initial="hide"
+                animate="show"
+                variants={{ show: { transition: { staggerChildren: reduced ? 0 : 0.028, delayChildren: 0.05 } } }}
+              >
+                {item.children.map((c, i) => (
+                  <motion.li
+                    key={c.label}
+                    variants={{ hide: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
+                    transition={{ duration: 0.35, ease: EASE }}
+                  >
+                    <Link
+                      to={c.to}
+                      className="group/roll flex items-center gap-3 rounded-2xl px-4 py-2.5 transition-colors duration-300 hover:bg-mist"
+                    >
+                      {c.dot ? (
+                        <span aria-hidden="true" className={cx('size-2 shrink-0 rounded-full', c.dot)} />
+                      ) : (
+                        <span aria-hidden="true" className="w-4 shrink-0 font-sans text-[0.6875rem] text-ink-3">
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                      )}
+                      <span className="min-w-0">
+                        <span className="block font-sans text-ui text-ink">
+                          <RollText>{c.label}</RollText>
+                        </span>
+                        <span className="block truncate font-sans text-[0.75rem] leading-snug text-ink-3">{c.hint}</span>
+                      </span>
+                    </Link>
+                  </motion.li>
+                ))}
+              </motion.ul>
+              <Link
+                to={item.to}
+                className="group/roll mt-1 flex items-center justify-between rounded-2xl border-t border-rule px-4 pb-2.5 pt-3.5 font-sans text-ui text-ink"
+              >
+                <span className="flex items-baseline gap-3">
+                  <RollText>{item.all}</RollText>
+                  <span className="text-[0.75rem] text-ink-3">{item.rest}</span>
+                </span>
+                <span aria-hidden="true" className="transition-transform duration-300 group-hover/roll:translate-x-1">&rarr;</span>
+              </Link>
+            </motion.div>
+          </div>
+        ) : null}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/* The mobile sheet's version: a row that goes to the page, with a toggle that
+ * folds out the subdivisions beneath it. */
+function SheetItem({ item, reduced }) {
+  const [open, setOpen] = useState(false)
+  if (!item.children) {
+    return (
+      <NavLink
+        to={item.to}
+        className="group/roll border-b border-rule py-4 font-display text-[1.75rem] leading-[1.25] text-ink"
+      >
+        <RollText>{item.label}</RollText>
+      </NavLink>
+    )
+  }
+  return (
+    <div className="border-b border-rule">
+      <div className="flex items-center justify-between">
+        <NavLink to={item.to} className="group/roll flex-1 py-4 font-display text-[1.75rem] leading-[1.25] text-ink">
+          <RollText>{item.label}</RollText>
+        </NavLink>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-label={`${open ? 'Hide' : 'Show'} ${item.label.toLowerCase()} list`}
+          className="flex size-11 items-center justify-center rounded-full text-ink"
+        >
+          <Chevron className={cx('h-5 w-5 transition-transform duration-500', open && 'rotate-180')} />
+        </button>
+      </div>
+      <AnimatePresence initial={false}>
+        {open ? (
+          <motion.ul
+            initial={reduced ? false : { height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="grid grid-cols-2 gap-x-4 overflow-hidden pb-4"
+          >
+            {item.children.map((c) => (
+              <li key={c.label}>
+                <Link to={c.to} className="group/roll flex items-center gap-2.5 py-2 font-sans text-ui text-ink-2">
+                  {c.dot ? <span aria-hidden="true" className={cx('size-2 shrink-0 rounded-full', c.dot)} /> : null}
+                  <RollText>{c.label}</RollText>
+                </Link>
+              </li>
+            ))}
+            <li className="col-span-2 mt-1 border-t border-rule pt-3">
+              <Link to={item.to} className="group/roll inline-flex items-baseline gap-3 font-sans text-ui text-ink">
+                <RollText>{item.all}</RollText>
+                <span className="text-[0.75rem] text-ink-3">{item.rest}</span>
+              </Link>
+            </li>
+          </motion.ul>
+        ) : null}
+      </AnimatePresence>
+    </div>
   )
 }
 
@@ -200,6 +393,13 @@ export default function Nav() {
 
   return (
     <>
+      <a
+        href="#main"
+        className="fixed left-4 top-4 z-[70] -translate-y-24 rounded-full bg-ink px-4 py-3 font-sans text-ui text-white transition-transform focus:translate-y-0"
+      >
+        Skip to content
+      </a>
+
       {/* The glass's refraction map. Zero-size and out of flow; only the
           filter is used, and only where `bends` is true -- see GLASS above. */}
       {lens ? (
@@ -305,10 +505,10 @@ export default function Nav() {
               transition={{ duration: 0.7, ease: EASE }}
               className={cx(
                 'relative block overflow-hidden transition-opacity duration-500',
-                wide ? 'w-[8.5rem] opacity-100' : 'w-0 opacity-0',
+                wide ? 'w-[7rem] opacity-100 min-[360px]:w-[8.5rem]' : 'w-0 opacity-0',
               )}
             >
-              <Logo word alt="" className={cx('w-[8.5rem] transition-opacity duration-500', markDark && 'opacity-0')} />
+              <Logo word alt="" className={cx('w-[7rem] transition-opacity duration-500 min-[360px]:w-[8.5rem]', markDark && 'opacity-0')} />
               {/* The overlay is positioned by its own wrapper, never by a
                   class on `Logo`: the crop box sets `relative` itself, and
                   `absolute` passed alongside it LOSES -- Step 4.7 did exactly
@@ -320,24 +520,29 @@ export default function Nav() {
                   markDark ? 'opacity-100' : 'opacity-0',
                 )}
               >
-                <Logo word light alt="" className="w-[8.5rem]" />
+                <Logo word light alt="" className="w-[7rem] min-[360px]:w-[8.5rem]" />
               </span>
             </motion.span>
           </Link>
 
           <nav ref={linksRef} aria-label="Main" className="relative ml-auto hidden items-center gap-0.5 lg:flex">
-            {nav.map((item) => (
-              <NavLink
-                key={item.label}
-                to={item.to}
-                className={cx(
-                  'group/roll relative whitespace-nowrap px-3.5 py-2 font-sans text-ui transition-colors duration-500',
-                  linksDark ? 'text-white' : 'text-ink',
-                )}
-              >
-                <RollText>{item.label}</RollText>
-              </NavLink>
-            ))}
+            <HomeLink dark={linksDark} />
+            {nav.map((item) =>
+              item.children ? (
+                <NavMenu key={item.label} item={item} dark={linksDark} reduced={reduced} />
+              ) : (
+                <NavLink
+                  key={item.label}
+                  to={item.to}
+                  className={cx(
+                    'group/roll relative whitespace-nowrap px-3.5 py-2 font-sans text-ui transition-colors duration-500',
+                    linksDark ? 'text-white' : 'text-ink',
+                  )}
+                >
+                  <RollText>{item.label}</RollText>
+                </NavLink>
+              ),
+            )}
           </nav>
 
           <div ref={actionRef} className="relative ml-auto flex shrink-0 lg:ml-0">
@@ -356,7 +561,7 @@ export default function Nav() {
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               className={cx(
-                'group/roll inline-flex items-center gap-2.5 rounded-full px-4 py-2 font-sans text-ui transition-colors duration-300 lg:hidden',
+                'group/roll inline-flex items-center gap-2 rounded-full px-3 py-2 font-sans text-ui transition-colors duration-300 min-[360px]:gap-2.5 min-[360px]:px-4 lg:hidden',
                 actionDark ? 'bg-paper text-ink' : 'bg-ink text-paper',
               )}
             >
@@ -390,14 +595,15 @@ export default function Nav() {
                 phone. Raise the type further and `py` is the second knob -- the
                 sheet scrolls now, so nothing is lost either way. */}
             <nav className="flex flex-col">
+              <NavLink
+                to="/"
+                end
+                className="group/roll border-b border-rule py-4 font-display text-[1.75rem] leading-[1.25] text-ink"
+              >
+                <RollText>Home</RollText>
+              </NavLink>
               {nav.map((item) => (
-                <NavLink
-                  key={item.label}
-                  to={item.to}
-                  className="group/roll border-b border-rule py-4 font-serif text-[1.75rem] leading-tight text-ink"
-                >
-                  <RollText>{item.label}</RollText>
-                </NavLink>
+                <SheetItem key={item.label} item={item} reduced={reduced} />
               ))}
               <Link
                 to="/contact"

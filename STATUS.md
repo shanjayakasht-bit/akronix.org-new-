@@ -8,7 +8,535 @@ content audit, design system and homepage structure.
 
 ## Done
 
-### Step 4.8 — Nav wordmark centred; project docs brought up to date (current)
+### Step 7 — A white first screen, a colour showcase, glossy pricing, sound on About, the policies ported (current)
+
+Client feedback on Step 6.1, 11 Oct 2026, with two screenshots (the glass nav on
+a white strip above the black hero; the Solutions "THE EIGHT" sidebar). Eleven
+requests, in the client's order:
+
+| # | Asked | Done |
+|---|---|---|
+| 1 | The nav "looks more separated -- blend it to the screen or remove the white background" | `lib/navPull.js` (`NAV_PULL`, `NAV_H`): the opening block of every page (`Hero`, `PageIntro`) is pulled up under the floating pill by exactly the pill's height (4.875rem on phones, 5.125rem from `md`) and padded back down, so the page's own ground -- white, the grid hairlines, the figure -- runs behind the glass. There is no strip above the page any more. The pill itself is the Step 4.8 pill, untouched |
+| 2 | "By the starting itself it looks black ... a company profile should not" | The home hero is **white**: ink type, red full stops, `HeroFigure tone="light"` (outline in ink, head in red), the page grid in hairlines, a Chennai foot strip and `ColourBar` (the twelve product colours edge to edge). Home grounds now alternate white / mist; black survives in the QuoteBand, the footer and a few cards. `PageIntro dark` still exists, unused |
+| 3 | The home "premium products" slide, "more interesting" | `sections/Showcase.jsx` replaces `Products.jsx` (deleted). From `xl`: twelve upright slabs in their twelve colours, one open at a time; width is handed over on a spring (`flexGrow`, so nothing below is pushed); the open slab shows the code very large, the name, what it is for and what it is being built to do, and the figure is traced again. Below `xl`: a snap-scrolling row of cards. A counters row above (12 / 6 / 6, counted up) and a legend below. Every slab and card opens `/contact?product=<slug>` -- a request for early access |
+| 4 | The products page "more professional" | `building/Portfolio.jsx` rewritten: the card is a plain white enterprise "app tile" (a tile in the product's colour, the stage written out, the colour as a bar along the top, the figure very faint and moving with the pointer), plus a **Cards / List** switch (the list is a ruled table, for comparing). Filters, live counts, the sliding choice and the flash on arrival are kept. `Spectrum` moved off black to white. Cards now read as products, not portfolio pieces |
+| 5 | The Solutions sidebar, "more interesting" | `solutions/ServiceRail.jsx` (used by `SolutionList`): a vertical track with a square node per line, filled red down to the one being read as you scroll; the active node larger and pulsing once; the active row opens to a one-sentence "what it is for"; passed rows marked; a rolling counter; a foot button that changes with the line ("Discuss AI & Automation") and opens the form with that line chosen |
+| 6 | Pricing: "glossy effect and curve format" | Below, "Pricing is glossy" |
+| 7 | About: "add the sound effect and make the UI more interesting" | Below, "Sound" and "About" |
+| 8 | "Update the phone number to 9715794422, 882543947" | `site.phones` (an array) replaces `site.phone`: **+91 97157 94422** and **+91 88254 3947**, in the footer, the contact details, the policies and `index.html`'s JSON-LD. The old +91 9360745895 is gone from the source. **The second number is nine digits as given** -- an Indian mobile has ten. Published exactly as supplied; the client should confirm it |
+| 9 | "Update the home icon in the nav bar to the word Home" | The nav link and the mobile sheet row say **Home** (rolling text). `brand/Glyphs.jsx` keeps only the chevron |
+| 10 | Terms and privacy: "gather that information and UI animation" | Below, "Policies" |
+| 11 | Products / Solutions hover "shows all the availabilities -- show the core ones and hide the rest" | The two menus list only the core: the **six products in development** and four main lines of work (`core: true` on SaaS, AI, Marketing and Mentorship in `solutions.js`), each with a foot row -- "See all 12 products · 6 more are planned", "See all 8 solutions · 4 more on the page" -- that goes to the full page. The mobile sheet does the same |
+
+**Pricing is glossy -- a deliberate, page-limited exception to "square".**
+`index.css` has two component classes, `.gloss` (a white glazed panel: vertical
+gradient, lit top hairline, a curved dome as `::before`, a band of light that
+crosses it on hover as `::after`) and `.gloss-dark` (frosted dark glass: diagonal
+wash, backdrop blur, bright rim, the same dome and band). Both set
+`overflow: hidden` themselves -- it is what clips the dome and the band to the
+curve -- and are used with large radii (`rounded-[1.75rem]` to `[3.5rem]`).
+`pricing/{GlossButton,Plans,EveryPlan,GlossFaq,GlossCta}.jsx`; `PageIntro glossy`
+sets its facts as `.gloss` tiles. The plans sit as frosted cards on a black
+curved stage with the figure drawn large behind them (so the glass has something
+to blur), and above them a **finder** (`pricing.js` `finder`: Student or founder /
+Growing business / Established company / Large organisation) lights the plan the
+live page already wrote for that person, with one shared ring that slides from plan
+to plan. It is a suggestion, not a "most popular" claim: the page still says
+nothing about anyone having bought a plan. Prices and contents are the live
+page's and unchanged (settled). The rest of the site stays flat and square.
+
+**Sound -- the About page only, off until the visitor turns it on.**
+`lib/sound.js` is a Web Audio engine with no audio files: each sound is a few
+oscillators or a burst of filtered noise through a compressor, played quietly
+(`tick`, `soft`, `pulse`, `click`, `slide`, `ping`, `on`, `off`, `chime`).
+Browsers refuse audio before a click or key press and a site that makes noise
+unasked is rude, so: default **off**, the choice is made with a click (which is
+also what unlocks audio) and is kept in `localStorage` (`akx-sound`, always in a
+try/catch). If "on" was saved, the first click or key press on a later visit wakes
+the context; no `AudioContext` exists until then. `playRaw` only schedules on a
+**running** context (or right after the waking gesture, if the ask is under 250ms
+old) -- a suspended context has a stopped clock and would release every queued
+hover sound at once when it woke. `about/SoundScope.jsx` wraps the page and plays
+by event delegation: hovering any `a`, `button` or `[data-sound]` plays
+`data-sound` (default `tick`) once per element, mouse only; pressing a link or
+button clicks; `data-sound="none"` opts out (the switch has its own on/off
+chords). `about/SoundToggle.jsx` is a switch under the headline (an equaliser
+that moves while on) and a floating one that appears after 640px of scroll
+(bars only on a phone). Hooks used: rows of the state board (`pulse` for work in
+progress, `soft` otherwise), the studio radar (`ping`), the week cells (`tick`),
+and a paper-swish when a new principle sheet takes the top. Nav, footer and every
+other page are silent.
+
+**About, rebuilt around that.** Order: intro (white; the Akronix figure in the
+empty end of the headline, its red head following the cursor on springs --
+`about/PointerFigure.jsx`, hidden below `xl`, still on touch and under reduced
+motion), purpose (black), **where we are** (white), state of the studio (grey),
+principles (white), close. `about/Studio.jsx`: a radar over Chennai (rings, a sweep
+turning every nine seconds, a pin that pings; **no blips -- a blip would be an
+invented client**) beside the studio's clock: Indian Standard Time whatever the
+visitor's zone (`Intl.DateTimeFormat`, `Asia/Kolkata`, `hourCycle: 'h23'`, `en-US`
+weekday), seconds running, "Open now" / "Closed right now" worked out from the
+published Mon-Sat 9-to-7, a midnight-to-midnight bar with the open hours filled
+and a red mark for now (a dashed outline on a Sunday), and the week as seven cells.
+Every figure on it is true and checkable. `StateBoard` rows for the two product
+groups carry the products' own colours (solid for the six being built, pale for the
+six not started) that lift in turn on hover. `Principles`: each sheet's red edge
+fills as its turn comes, and the sheet on top no longer dims or shrinks (it did;
+the last sheet was shaded as if covered). `PageIntro` gained an `aside` slot and
+its header an `isolate`.
+
+**Policies -- the live page, ported and made true.** The live site has **no
+standalone Privacy Policy or Terms & Conditions**: both footer links open its one
+"Our Policies" page, four documents in a sidebar (Overview, Referral Network,
+Akronix Startup Execution, Innovation Events) swapping in an animated panel, with
+"Last updated: March 22, 2026". That is what was ported (`content/policies.js`,
+`components/policies/PolicyDocs.jsx`, `pages/Policies.jsx`): the same four
+documents, clauses, numbers (48 hours, 24 hours, 1-2 week sprints, the lien on code
+until final payment, the ₹2L-₹15L+ referral tiers), date and ids
+(`overview`, `referral`, `execution`, `innovation`). Reworded so nothing claims
+what is not true -- the header of `content/policies.js` lists each change: no
+"premium Digital Nomad Team", "enterprise-grade", "relentless velocity" or "as
+leaders in the tech ecosystem"; no "clients worldwide" or "enterprise clients"; the
+events document says it is the ground rules for any event the studio hosts or joins
+rather than that it "regularly hosts" them; the referral network opens with its
+true status (forming; first meeting not set); "guarantee" dropped from the 24-hour
+response. The site's email and both phone numbers replace the live page's.
+The UI keeps the behaviour and drops the look (dark glass cards, indigo, gradient
+heading): a numbered index with a red bar that slides to the open document (a
+shared `layoutId`), and a grey sheet of clauses where each part rises in turn and
+each clause's rule draws itself across (exit: a short lift and fade). Under it,
+Previous / Next buttons. It is a real tab set (tablist, tabs, tabpanel, arrow keys,
+Home, End), two-by-two on a phone, sticky beside the sheet from `lg`. The open
+document is in the URL: the block holding index and sheet carries the open
+document's id, so `ScrollToTop`'s hash-seek brings it to the top on arrival, and
+choosing a tab writes the hash with `replaceState` (no scroll-to-top, no history
+entry). Footer: **Privacy Policy -> `/policies#overview`** (its Security
+commitment is the nearest thing the live page has), **Terms & Conditions ->
+`/policies#execution`** (the engagement terms); "Privacy & terms" in the bottom
+bar and "Policies" go to `/policies`.
+
+**A bug the overflow probe caught, and the general rule.** The new home swipe row
+made the whole page 3,600px wide on phones and tablets. Every label carries a
+visually-hidden `sr-only` copy of its text, and `sr-only` is `position: absolute`;
+with no positioned ancestor inside the row, those copies took the section as their
+containing block, escaped the row's `overflow-x: auto`, and sat at the far end of
+the scroll. **A horizontally scrolling container must be `relative`** (the pricing
+finder is, through `.gloss-dark`). Re-run `probe2.mjs` after adding any scroll row.
+
+**Rules this leaves**
+- No fabricated proof anywhere in the new work: the radar has no blips, the clock
+  and hours are the published ones, the product chips are the real products in
+  their real stages, the pricing finder lights a suggestion not a bestseller, and
+  the policy text claims no activity.
+- Sound is opt-in and About-only. Do not turn it on by default, and do not play
+  anything without a gesture-unlocked, running context.
+- A control inside a stretched link must not be a second link; the state-board
+  chips are `aria-hidden` spans for that reason.
+- Roll-up text on every clickable (CLAUDE.md) -- the new buttons, tabs, steps and
+  toggles all use `RollText` inside a `group/roll`.
+- Write the stage as a word wherever a product's colour appears.
+
+**Verified.** Chromium, WebKit (Safari's engine) and reduced-motion Chromium: all
+seven routes render with no console or page errors; overflow probe over **all eight
+routes at eleven widths, 0 problems** (after the swipe-row fix); the four link flows
+and four hash links; contact form validation and mail fallback; nav menus (core
+only, with the foot rows); the sound engine by instrumenting `AudioContext` (nothing
+created before opt-in; `on`/`off` chords; `pulse` 2 oscillators, `soft` 1, `ping` 2,
+`tick` 1; a hover twice on one element plays once; slide swishes while scrolling the
+principles; silent when off; a saved "on" creates no context until a gesture); the
+studio clock under a faked clock (Mon 11:00 open, Mon 19:30 closed, Sat 17:59
+open, Sun closed, 00:05 closed); the policy tabs (click, arrow keys, Home / End,
+wrap-around, arriving on each hash and on a bad hash, the footer links from the same
+page and from another, phone layout); About, Policies and Home at 375 and 1512.
+**Not verified:** real Safari by eye; the sound **by ear** -- only that the right
+sounds are scheduled, so their level and taste want a listen.
+
+**Flagged for the client (also under "Waiting on the client").** The second phone
+number has nine digits. The policy wording was reworded to stay true and needs
+their read before anyone treats it as legal text; its "last updated" date is the
+live page's. The site still has no real privacy policy -- what it collects (the
+contact form opens the visitor's own mail app; booking requests go to
+`site.bookingEndpoint` when set; the sound choice sits in the browser) is not
+written anywhere. Sound is off by default.
+
+### Step 6.1 — The glass nav is back; the products page is rebuilt; two home sections removed (superseded in part by Step 7)
+
+*Step 7 changed: the hero is white (not black), the Spectrum is on white, the nav
+shows the word Home (not an icon) and its menus list only the core items, and the
+home "products" section is the Showcase. The rest stands.*
+
+Client feedback on Step 6, 11 Oct 2026, with a screenshot of the homepage:
+"bring back the nav bar like the previous one"; "I don't like the product page
+-- update that and make the UI more professional and more animated"; "remove
+this part in the home page."
+
+**1. The nav is the previous nav again.** `shell/Nav.jsx` is the Step 4.8
+liquid-glass pill, restored from git and with Step 5.2's additions re-applied:
+the Home icon first, Products and Solutions opening a card of their
+subdivisions (each product with its colour dot), the fold-outs in the mobile
+sheet, and the two phone tweaks (Menu button and wordmark give a little below
+360px). `lib/lensMap.js` and `lib/useBackdropTone.js` are restored with it, and
+the skip-to-content link is kept. **Gone with the corporate header:** the black
+announcement strip above it, the full-width mega-menu, and the chevron
+button / pinned-menu interaction model (that was written for the mega-menu).
+Read the comment at the top of `Nav.jsx` before touching it -- Steps 4.4-4.8
+record why each piece is the way it is, and they apply again. The pill sits in
+flow (~5rem) on the white page above the black hero, as it did on cream; the
+hero's height budget was retuned (`100svh - 5rem`, and `(100svh - 28rem) / 3`
+for the headline). The nav links still flip black/white as a group when the
+pill straddles a dark/white edge -- the client's choice, Step 4.7.
+
+**2. Removed from the home page:** the four-discipline bar (`CapabilityBar`)
+and the "Who we are" statement (`Statement`), the two white blocks between the
+hero and the pillars. The screenshot showed both and said "this part", so both
+went; if only one was meant, each was a single self-contained component and
+`hero.capabilityLinks` was four `{ n, label, line, to }` rows (the labels and
+sentences are in Step 6's text above). Section markers renumbered: pillars
+01, products 02, why 03, tools 04, close 05. The files and the data are
+deleted, not parked.
+
+**3. `/building` rebuilt as a product portfolio** (`pages/Building.jsx`,
+`building/{Spectrum,Portfolio}.jsx`, `brand/CoverFigure.jsx`). The old page was
+a black page of twelve identical long panels beside a sticky index, with a fade
+as its only motion. Now:
+
+| Part | What it is |
+|---|---|
+| Hero | `PageIntro` in its new **dark** mode (black, white type, the page grid) with `children` -- the **spectrum**: the twelve products as twelve blocks in their own colours. A product in development is a SOLID block; a planned one is an OUTLINE of its colour with nothing in it. Blocks grow up from the baseline in turn on arrival; hover or focus one and it takes a larger share of the strip on a spring while the rest give way and its name and stage come up; click one and the page scrolls to its card and the card flashes. The strip dims whatever the filters below have hidden. No bar, number or percentage of progress: none is known |
+| Portfolio | Category filter in the live page's own order (All, CRM, HR & Workforce, Operations, Finance, Education, Retail, AI & Automation, with the live counts) plus a stage filter (All, In development, Planned). Counts are live -- what each choice would leave given the other filter -- and a choice that would leave none is disabled, so the grid is never empty. The active choice is a black block that **slides** from chip to chip (shared layout, `layoutId`); "Showing 12 of 12" rolls to the new number; cards that go fade and shrink, the ones that stay glide to their new places, new ones rise in |
+| Card | A cover in the product's colour -- solid for a product being built, pale (its tint, its own hue for the type) for a planned one -- with the code set very large and the Akronix figure in outline behind it; below, category, the stage as a written word with a dot, the name, what it is for, "Being built to do" in two ruled columns, and "Request early access". The whole card is the link (stretched `after`), to `/contact?product=<slug>`. Hover: the border goes to ink, the product's colour draws along the foot, the code rolls, the figure's outline is traced again; the cover answers the pointer -- figure and code drift in opposite directions on springs |
+| Rest | The four "In every product" cells, the studio-model statement, "Have a Unique Requirement?" -- unchanged |
+
+State lives in the page (`cat`, `stage`, `flash`) because the strip and the
+filters are one control. A link to `/building#crm` lands on the card (the scroll
+is `ScrollToTop`'s) and the card flashes (the page's). Removed:
+`building/ProductIndex.jsx` (sticky index and long panels), `building/PageHero.jsx`.
+
+**Rules this leaves**
+- Colour identifies a product; the stage is ALWAYS written as a word as well.
+  A solid cover or block for "being built" and a pale or outlined one for
+  "planned" repeats the stage with intensity -- a second cue, never the only
+  one. (The Step 5.1 rule said colour never marks stage; this refines it, and
+  the note in `products.js` is updated.)
+- `AnimatePresence mode="popLayout"` positions an exiting child absolutely, so
+  the list needs `relative`. Cards use `layout="position"` (not `layout`): with
+  full `layout` the card's text stretches while it moves. Their `transition` has
+  a `layout` key of its own so the entrance `delay` does not also delay the move.
+- Variants propagate through `whileHover="hover"` on a `motion` ancestor to SVG
+  `motion.path` children -- `CoverFigure` relies on it (`initial/animate="rest"`
+  on the card).
+- A control inside a stretched link must not be a second link.
+
+**Verified (Chromium; WebKit and reduced-motion Chromium for errors):** the
+restored nav with its dropdowns (hover) and the pill's tone over black, white
+and grey grounds; home with the two sections gone; the products page at 1512
+and 375 -- hero, spectrum hover, every filter combination (counts, disabled
+chips, 3 / 1 / 6 / 12 results), strip click from a filtered grid (filters
+clear, card lands at 112px, flashes), card hover, card click to
+`/contact?product=hrms` with the select filled; overflow probe over all eight
+routes at eleven widths (0 problems); all seven routes in both engines;
+the four link flows and the four hash links from Step 6. **Not verified:** real
+Safari by eye.
+
+### Step 6 — The corporate redesign
+
+Client request, 10 Oct 2026: "it looks more AI generated -- make it look like a
+high MNC company website, update the UI and animation." This is a rebuild of
+the whole visual layer on top of the existing content, routes and logic. **It
+supersedes** the rounded slabs, pill buttons, liquid-glass pill nav, cream
+palette and the roman/italic accent device (Steps 3c-4.8, 5.1) -- those were
+the client's own earlier calls, and this later one replaces them. All of it is
+recorded here so any of it can be revived deliberately, not by accident.
+
+**What was read as "AI-generated", and what replaced it**
+
+| Tell | Now |
+|---|---|
+| Cream ground, terracotta accent, forest and cocoa slabs | White ground; near-black sections; the **logo's own red** (#DD1916, `--color-brand`) as the only accent, used as a marker, a hover and a full stop. Product colours are the only other chroma |
+| Rounded slabs that grew on scroll, pill buttons, pill nav, glass | Square everything. Sections run edge to edge and are told apart by their ground. Radius survives only on status dots |
+| Centred "eyebrow, heading with one accent word in italic, subtext, grid" in every section | Left-aligned split intros (marker and index left, heading right). One colour; the second half of a title in grey. No italic anywhere. Sections have different shapes |
+| Circle icon chips, glyph sets, tags and pills | Numbers and words. Two glyphs remain (Home, chevron). Orbs, FitText and the old glyph sets are deleted |
+| Playful effects (per-letter hinge, 3D card swing, tilt) | Masked line reveals, hairlines that draw, wipes, springs, scroll-linked pins |
+| Serif / Schibsted Grotesk at 500 | **IBM Plex Sans**, regular and light, tight tracking. No bold, no italic, no mono |
+
+**Tokens** (`src/styles/index.css`): `paper` white, `mist` #F3F4F6, `ink`
+#0B0C0F with `ink-2` / `ink-3`, `rule`, `coal` (black sections), `graphite`,
+`brand` and `brand-soft` (the red lifted for black). The old names (`clay`,
+`forest`, `cocoa`, `sand`, `moss`...) are aliased to the new palette so a stray
+reference cannot show cream or green; **write new code with the new names.**
+
+**Shell**
+- **Header -- REVERSED in Step 6.1, the glass nav is back; this describes the corporate header that was removed:** an announcement strip ("Twelve
+  products, six in development, none shipped yet. Follow the build"), then a
+  sticky white bar that contracts after 40px. Products and Solutions open a
+  full-width **mega-menu**: intro and link left, subdivisions in columns right,
+  the page dims. Home icon first (rolls). No active-link underline (Step 4.4
+  stands). Mobile: a full-screen sheet with fold-outs.
+- **Menu interaction model (went with that header, Step 6.1)** (tested in Chromium): a mouse *hover* opens a
+  panel and leaving closes it; a click or Enter on the chevron *pins* it open;
+  Enter also moves focus into the panel; Escape closes and returns focus to the
+  chevron; touch never hovers (pointer events say which), so a tap is only a
+  click. The parent label is a link, the chevron beside it is the button with
+  `aria-expanded`. The panel sits right after the nav in the DOM.
+- **Footer**: logo, one line, the email set large, four sitemap columns, legal
+  row, back to top. The sign-off is the traced figure in outline bleeding off
+  the corner (the wordmark raster went soft at full width).
+- Skip-to-content link, `Seo` (title + description per route), page JSON-LD
+  `Organization`, Open Graph card (`public/og.png`, rendered from the traced
+  figure), `robots.txt`, `sitemap.xml`, a new `favicon.svg` (white figure, red
+  head, on black -- visible on any tab strip, which the old white-on-clear one
+  was not). **Routes are code-split**; the entry script is 306kB (97kB gzip),
+  down from 540kB, the rest prefetched 3.5s after load.
+
+**The hero** (`sections/Hero.jsx`, `brand/HeroFigure.jsx`): black, white light
+type, the three full stops in red, a plain lede, two buttons, the page's column
+grid drawn as five hairlines, and on the right **the Akronix figure drawing
+itself** -- body, leg, head (filled the brand red) -- inside two construction
+rings, one dotted and turning very slowly, with a band of light crossing the
+silhouette every few seconds. The figure is a **vector traced from the logo
+raster** (`brand/figure.js`, generated by `scripts/figure/`, two files with
+instructions in their headers; re-running them reproduces the module byte for
+byte). Scroll gives the headline and the figure two speeds. The empty "DEMO
+VIDEO" frame is gone; a real film, if supplied (`hero.videoUrl`), becomes its
+own band (`sections/Film.jsx`) and renders nothing until then.
+
+**Home, in order (the capability bar and the statement were removed in Step
+6.1):** hero -> capability bar (four ruled cells, black wipe on
+hover) -> statement lit letter by letter -> the four pillars as **spring-
+animated panels** that hand their width over (hover/focus/click; an accordion
+below `lg`) -> **twelve products as a matrix** (counts 12 and 06 that count up;
+each cell links to `/contact?product=<slug>`; the product's colour is a bar
+along the top and fills the whole cell on hover; the six planned set quieter,
+hollow dot) -> "Why Businesses Choose Akronix" as a reading list -> the tools
+as a **scroll-velocity marquee** -> the scheduler.
+
+**Inner pages** share `PageIntro` (breadcrumb, a large light headline set left,
+a sentence and buttons beside it, and a row of **facts** -- 12 products, 8 lines
+of work, 30 minutes: true numbers and terms, never a result or a count of
+anything that has happened). Body sections: `ProductIndex` (sticky index,
+ruled panels, code set large), `SolutionList` (ledger with a drifting index
+numeral per line), `Process` (pinned horizontal read, black), `Plans` (one
+ruled table, Growth the black cell, ticks that draw), `EveryPlan`, `Faq`
+(open essays), `StateBoard` (the "state of the studio" table), `Principles`
+(stacking sheets), `Advantages` (four ruled cells, hover fill), `CtaBand`.
+Forms use filled square fields with a rule along the foot and a 1px frame on
+focus.
+
+**Rules this leaves (keep them)**
+- Never position one thing by both a default and an override class: `cx` is a
+  plain join. `Arrow` (default `h-4 w-4`) now drops its default if the caller
+  names a size; `Button` sizes carry their own `arrow`. Cost a 2px overflow at
+  320 to find.
+- `useTransform` with a keyframe array whose first input is negative throws in
+  the browser's scroll timeline (Step 5.2): `Process` and its steps use
+  function transforms.
+- Text rolled by `RollText` is clipped by its box; give it a line-height of at
+  least 1.15 or descenders ("g" in "Pricing") are cut off.
+- **Lenis clamps a jump to the page height it last measured.** Route code-
+  splitting puts a one-screen Suspense fallback on screen for a moment, Lenis
+  measures *that*, and a hash link then lands at ~832px instead of the section.
+  `ScrollToTop` calls `lenis.resize()` before it scrolls. Re-test
+  `/building#pos`, `/solutions#ai`, `/about#how`, `/contact#slots` -- both by
+  clicking a link and by loading the URL cold -- after touching routing.
+- Do not use `vector-effect: non-scaling-stroke` on a path whose `pathLength`
+  is animated: dashes then run in screen pixels and the draw-on breaks.
+- The headline sizes are width- and height-limited and were measured. Hero:
+  "Connect." is ~3.9x its font size in Plex Light; the `(100svh - 30rem) / 3`
+  term keeps three lines, the lede and the buttons on a 1512x860 screen.
+  `PageIntro`: lines are held to ~17 characters and set `nowrap` inside a mask,
+  so a longer line would be **clipped, not wrapped**.
+
+**Verified:** Chromium at 1512x860, 1280x720, 1920x1080, 1024x768, 768x1024,
+375 and 320; WebKit (Safari's engine) and Chromium with reduced motion on all
+seven routes (no console or page errors, every scroll-linked effect exercised);
+an overflow probe over all eight routes (incl. the 404) at eleven widths,
+320-2560, now clean; hover states of the mega-menu, the pillars and the
+product matrix; keyboard and pointer behaviour of the menu (above); the mobile
+sheet. **Not verified:** real Safari by eye (WebKit renders it correctly);
+real touch hardware; screen-reader output.
+
+**Copy changed with the design:** the hero gained a lede (`hero.lede`);
+the footer line; the announcement strip; capability-bar sentences; the
+statement lines. All are claims already made elsewhere on the site.
+
+**Deleted:** the glass-nav helpers (`lensMap`, `useBackdropTone`), `Slab` (now
+`ui/Band`; `Slab` is an alias), `Ecosystem`, `ToolStrip`, `Tilt`, the dev-only
+`/specimen` page, the unused `home/*` leftovers, `Orbs`, `FitText`, the old
+`Type/Qualifier/Rule/Section/StageMark` primitives, `Rise`, `RisingLetters`,
+`Reveal`, and the unused packages' imports.
+
+### Step 5.2 — The remaining pages, nav subdivisions, product-to-contact flow
+
+Client request, 10 Oct 2026: build the Solutions, work/pricing, About and
+Contact pages from the live site's content; put a Home icon in the nav and the
+live site's subdivisions under it; clicking a product should land on the
+Book-a-Consultation page with that product selected; rebuild "Why Businesses
+Choose Akronix"; make the UI more professional, attractive and animated.
+
+The client did not answer the three questions at the end of Step 5.1, so the
+defaults below were chosen -- **each is a one-line change and is listed under
+"Waiting on the client".**
+
+**Sitemap now (seven routes + redirects).** `/` Home, `/building` Products,
+`/solutions` Solutions, `/pricing` Pricing, `/about` About Us, `/contact`
+Contact, `/policies`. `/work` -> `/solutions` and `/studio` -> `/about` are
+`<Navigate>` redirects. "Work" in the client's list was read as the old
+`/work` stub, which was to hold services *and* pricing; they are two pages
+because the live nav has Solutions and Pricing as separate items. The old
+`Work.jsx` / `Studio.jsx` stubs are deleted.
+
+| Page | What it holds | Shape |
+|---|---|---|
+| `/solutions` | The live site's eight service pages as one: SaaS, Web & Mobile, AI & Automation, Digital Marketing, Cloud & DevOps, IT Consulting, Mentorship & Training (Academy folded in), Business Networking (stage "Forming") | Shared `PageIntro`; a ledger with a sticky index (`SolutionList`) -- ruled rows, no cards, big faint glyph drifting behind each; the five-step approach as a **pinned horizontal scroll** on forest (`Process`); closing CTA |
+| `/pricing` | The four plans, unchanged and settled; what every plan includes; custom route; six FAQ answers | Plan cards that lean to the pointer (`Tilt`) with self-drawing ticks; a ruled strip + a spring-assembled tag pile on sand; essay-style FAQ |
+| `/about` | Purpose, "the state of the studio" (five rows, each with its true stage), five working principles | Purpose lit letter-by-letter on cocoa (`QuoteBand`); the state board on forest with pulsing dots only on work in progress; principles as a **stack of sheets** that pile as scrolled |
+| `/contact` | Details, the live four-step flow, the enquiry form, the scheduler, four FAQ answers. Every "Book a Consultation" button lands here | Form first on a phone, details + a scroll-filled timeline beside it on desktop |
+| `/policies` | The live overview and three commitments only | Plain |
+
+**Nav.** A Home icon is the first control (rolls like the labels). Products and
+Solutions open a panel of their subdivisions on hover or focus: all twelve
+products, each with its colour dot and stage; the eight solutions. Each
+child links to its own anchor (`/building#crm`, `/solutions#ai`). The panel is
+a solid paper card, so it never needs toning against the ground. Mobile: the
+sheet gains a Home row and a fold-out per parent. Data lives in
+`content/site.js` (`nav[].children`). The wordmark drops to 7rem below 360px
+and the Menu button tightens, or the pill overflows at 320.
+
+**Product click -> contact.** The homepage grid cards and every `/building`
+entry link to `/contact?product=<slug>`. The form opens with that product
+chosen and a card that says plainly the product is in development, has not
+shipped and cannot be bought -- "Request early access", never a purchase, per
+the standing refusal. `?service=<slug>` and `?plan=<key>` work the same way
+(the Solutions and Pricing buttons use them). Slugs are `productSlug()` and
+`solutions[].slug`.
+
+**The contact form has no backend.** `site.contactEndpoint` is null. Until it
+is set the form opens the visitor's mail client with the message written out
+and the closing screen says exactly that -- never that it was received. Same
+rule as the booking panel.
+
+**"Why Businesses Choose Akronix"** is a new component, `WhyAkronix`, on the
+homepage only. A sticky column (heading, the live closing line, two buttons)
+beside six ruled rows; the row crossing the middle of the screen is lit (glyph
+fills, step forward, link slides in), a spring-driven rail fills down the list.
+Every row links to the page that backs it up. The copy under each title was
+rewritten (the live one-liners were generic) and Networking carries "Forming".
+The old `Advantages` component is unchanged and still serves `/building`.
+
+**Animation added** (all Motion; nothing new installed, no GSAP):
+scroll-pinned horizontal track (`useScroll` + `useTransform`), sticky stacking
+sheets, spring-filled rails, `pathLength` tick and check drawing, pointer tilt
+via `useSpring`, staggered dropdown (`staggerChildren`), parallax watermark
+glyphs, spring-assembled tag pile. **A trap hit:** `useTransform` with a
+keyframe array whose first input is negative is handed to the browser's native
+scroll timeline, which throws "Offsets must be in the range [0,1]" and blanks
+the whole page. `Process` uses function transforms for that reason. No glow, no
+sheen on cards (CLAUDE.md lists glowing cards as AI-made): `Tilt` leans and
+draws nothing.
+
+**Content NOT carried from the live site, and why:** the "Business Analytics"
+bars, "Most Popular" badge, "Join thousands" line, Monthly/Annual toggle
+(no annual prices exist) -- pricing; the "Our Journey" 2021-2025 timeline,
+mission/vision, leadership and Meet the Team -- about; Academy's graduates
+counter and university/Google/Microsoft logo row, "placed & thriving",
+"placement support", "fundraising support" and "penetration testing" /
+"compliance" / "24/7 monitoring" -- solutions; the networking membership
+prices (the community does not run); "Proven Results" and "Expert Team".
+
+**Files.** New: `content/{solutions,pricing,about,contact}.js`;
+`sections/{PageIntro,Process,Faq,CtaBand,WhyAkronix}.jsx`;
+`solutions/SolutionList`, `pricing/{Plans,EveryPlan}`, `about/{StateBoard,
+Principles}`, `contact/{ContactForm,Details}`; `motion/Tilt`; the four pages.
+`building/PageHero` is now a three-line wrapper around `PageIntro` -- **widths
+of `PageIntro`'s headline were tuned on "Your Business."; every new headline
+was kept to <=16 characters a line and checked at 375 and 1512.**
+
+**Verified (Chromium, 1512x860, 375, 320):** every route renders with no
+console error (and `/work`, `/studio`, a 404); overflow probe over all seven
+routes at eleven widths -- the only flags left are the pinned track and the
+clipped watermark glyphs, both inside `overflow-hidden` with `scrollWidth`
+equal to the viewport; Products and Solutions menus opened and a child link
+followed (`/solutions#ai` lands at the section); product card ->
+`/contact?product=crm` with the select pre-filled, from `/building` and from
+the homepage grid; mobile sheet with Products unfolded; the pinned track at
+four scroll depths with step N on the left margin at N/(count-1); build clean.
+**Not checked:** real Safari; the form's mail hand-off (needs a mail client);
+keyboard traversal of the dropdowns beyond focus-opens/Escape-closes.
+
+### Step 5.1 — New typeface, product colours, live-site audit
+
+Client request, 10 Oct 2026: collect the live akronix.org content (everything
+except the team page), give each product its colour identity from the live
+site, change the font ("looks AI/Claude generated"), and make the site more
+professional.
+
+**Typeface.** Newsreader (serif, body *and* headlines) + Instrument Sans is
+gone. The whole site is one family now, **Schibsted Grotesk** (variable
+weight, true italic). The serif-on-cream-with-orange-italic combination was
+the "AI-generated" tell; the cream ground and the roman/italic qualifier
+device stay (client-approved, and CLAUDE.md makes white/bone the primary).
+
+| Change | Where |
+|---|---|
+| `@fontsource-variable/schibsted-grotesk` added; Newsreader, Instrument Sans and the unused IBM Plex Mono packages removed | `package.json`, `index.css` |
+| `--font-serif` renamed `--font-display` (and the `font-serif` utility to `font-display` in all 12 files that used it) -- it is a sans now, the old name would lie. `--font-sans` and `--font-display` are the same family | `index.css`, components |
+| Body is sans. `font-optical-sizing` removed (Newsreader's opsz axis; Schibsted has none) | `index.css` |
+| `h1, h2, h3` carry weight 500 in the base layer; everything else 400. Set there so per-letter and per-word reveal spans inherit it. Not bold, so CLAUDE.md's weight rule is not touched | `index.css` |
+
+**This supersedes decisions 3 and 4 below** ("every weight 400", "optical sizing
+auto") -- headings are 500 now and there is no opsz.
+
+**Widths were tuned for the serif and had to be re-derived.** Schibsted is
+wider. "Connect." is **3.84x** its font size (measured at 375, 1280 and 1512;
+it was 3.3567x). Hero headline: phone term `24vw` -> `21vw`, desktop width
+factor `0.1314` -> `0.115` (0.46 / 4.0). Measured after: "Connect." 633px in a
+659px column at 1512, 303 in 335 at 375, 530 in 552 at 1280. The comment above
+the `<h1>` in `Hero.jsx` records both. The Menu button also overflowed the pill
+by 14px at 320; it is `px-3` below 360 now. "Our Premium Products" had its
+`max-w` raised from 16ch to 22ch so it keeps the one-line shape.
+**Any headline fitted by ratio elsewhere (PageHero's `12vw` term, FitText)
+was written for the serif; PageHero fits at 1512 and 375 as shipped, but
+re-measure if its copy changes.**
+
+**Product colour identity.** Read from the live products page's markup (each
+card carries inline hex values). Tokens `--color-p-<slug>` and `-tint` in
+`index.css` ("Product identity"); each product in `products.js` has an
+`accent` with literal class strings (`chip`, `dot`, `edge`). Used small:
+glyph chip (tint ground, colour glyph), a dot in the stage tag, the dot on
+each scope item, the index's active dot, and the card's hover edge -- never as
+a ground, so twelve hues sit on the editorial palette. **Colour marks the
+product, never the stage:** the stage text is unchanged.
+
+| Product | Colour | Product | Colour |
+|---|---|---|---|
+| CRM | #2563EB blue | Attendance | #0284C7 sky |
+| HRMS | #16A34A green | Project Management | #059669 emerald |
+| ERP | #EA580C orange | Books | #D97706 amber |
+| Inventory | #0D9488 teal | E-commerce | #DB2777 pink |
+| POS | #E11D48 rose | LMS | #9333EA purple |
+| AI Assistant | #7C3AED violet | Helpdesk | #65A30D lime |
+
+**Helpdesk is not the live site's colour.** The live page gave CRM and
+Helpdesk the same blue (#2563EB); "unique" colours meant one of them had to
+move. Helpdesk is lime. Change it in the one token if the client prefers.
+Applied on `/building` (`ProductIndex.jsx`) and the homepage grid
+(`Products.jsx`).
+
+**Live-site audit, 10 Oct 2026** (curl of the pages + the CSS bundle). The live
+site is Next.js, fonts Outfit and Inter. Content matches the 19-page scrape in
+`_legacy_content/` -- nothing new was found. New: it shows a header, a
+product-category filter (All 12 / CRM 1 / HR 2 / Operations 3 / Finance 1 /
+Education 1 / Retail 2 / AI 2), and "AI Assistant" tagged "New". The live
+homepage still shows the invented proof (a "$250,000 / 1,420 clients"
+dashboard, the logo wall twice, Testimonials and Case Studies in the footer).
+**None of that is carried over** -- CLAUDE.md "Never include".
+
+**Verified (Chromium, 1512x860 and 375):** build clean; overflow probe clean
+at all eleven widths on `/` and `/building` (the probe flags the nav glass
+span `-right-24`; it is decorative and `scrollWidth` equals the viewport, so it
+is not an overflow). Real Safari not looked at.
+
+### Step 4.8 — Nav wordmark centred; project docs brought up to date
 
 Client report: the AKRONIX wordmark in the nav was not vertically centred.
 
@@ -1475,11 +2003,11 @@ every `rounded-*` is either a control or the stage dot.
    name. Imports are `from 'motion/react'`. Grepping for `framer-motion` will find
    nothing — this is expected, not a missing dependency.
 
-3. **Every type weight sits at 400.** Hierarchy comes from size and space, not weight.
+3. **(Superseded by Step 5.1: headings are 500.) Every type weight sits at 400.** Hierarchy comes from size and space, not weight.
    This is more editorial *and* it means CLAUDE.md's "no bold except main headings"
    exception never has to be invoked. Do not add weight to create emphasis.
 
-4. **`font-optical-sizing: auto` is set on `body`.** The browser picks Newsreader's
+4. **(Superseded by Step 5.1: Newsreader is gone, no opsz.) `font-optical-sizing: auto` was set on `body`.** The browser picks Newsreader's
    `opsz` value from the rendered size, which is what stops an 88px headline reading
    as inflated body text. Don't hard-code `font-variation-settings` over it.
 
@@ -1498,7 +2026,7 @@ every `rounded-*` is either a control or the stage dot.
    `dist/` but never downloaded. If dist size matters later, hand-written `@font-face`
    rules limited to `latin`/`latin-ext` would cut roughly 250KB of unused files.
 
-9. **The nav is one liquid-glass pill** (superseded the hairline bar long ago; this
+9. **(Step 6 replaced the nav; Step 6.1 put it back -- it is the liquid-glass pill again. Step 7: the first link is the word "Home", the Products and Solutions cards list only the core items with a "See all" foot row, and the page's opening block is pulled up under the pill by `NAV_PULL`. Read the comment at the top of `Nav.jsx`.)** The nav is one liquid-glass pill (superseded the hairline bar long ago; this
    entry rewritten in Step 4.8). Sticky, full width across the hero, contracting to
    its contents past 260px on desktop. Glass: 2px frost + rim, with a true SVG
    lens bend at the rim in Chromium only and a harder-frosted rim band standing in
@@ -1516,7 +2044,7 @@ every `rounded-*` is either a control or the stage dot.
     `exit={{ opacity: 0, transition: {...} }}`. `transition={{ exit: {...} }}` is
     silently ignored. Cost a bug during this step.
 
-12. **The specimen lives at `/specimen`, dev-only.** Guarded by `import.meta.env.DEV`,
+12. **(Removed in Step 6: there is no specimen page; the tokens are in `index.css`.)** The specimen lived at `/specimen`, dev-only. Guarded by `import.meta.env.DEV`,
     so it never reaches production. Keep it as the token reference.
 
 13. **The Chrome extension WAS connected on 2 Sep 2026** and the whole of Step 3r
@@ -1543,15 +2071,37 @@ every `rounded-*` is either a control or the stage dot.
     init script -- that serves exactly the markup Safari gets. The overflow probe
     used since Step 4.2 walks eleven widths, 320 to 2560.
 
-15. **Centred `SectionHead` titles stay under ~22 characters.** Its words are flex
+15. **(Obsolete after Step 6: headings are left-aligned and nothing is centred.)** Centred `SectionHead` titles stayed under ~22 characters. Its words are flex
     items, so `text-balance` cannot reach them, and a longer centred title wraps
     inside its accent at desktop. Broke three times (Steps 4.2, 4.5).
 
-16. **Shared sections take props, with the homepage as the default.** `QuoteBand`,
+16. **(Partly superseded by Step 6: `Slab`, `clip` and `anchor` are gone; sections are `ui/Band`, and pages are built from `PageIntro`, `SectionIntro`, `Headline` and `CtaBand`.)** Shared sections take props, with the homepage as the default. `QuoteBand`,
     `FinalCta` and `Advantages` render the homepage exactly when given nothing,
     and another page's words when given props. `Container wide` (1600 measure),
     `Slab clip` (sticky children) and `Slab anchor="top"` (very tall slabs) are
     opt-in. Build new pages from these rather than copying them.
+
+17. **A horizontally scrolling container must be `position: relative`.** Every
+    `RollText` carries an `sr-only` (absolute) copy of its label, and an absolute
+    box whose nearest positioned ancestor is outside a scroll container is not
+    clipped by it: the Step 7 home swipe row made the page 3,600px wide on phones.
+    Re-run `probe2.mjs` (eleven widths, all routes) after adding any scroll row.
+
+18. **Sound lives in `lib/sound.js` and is About-only, opt-in.** Default off,
+    saved in `localStorage` (`akx-sound`, in a try/catch), unlocked by the click
+    that turns it on. It only schedules on a *running* audio context -- a
+    suspended one has a stopped clock and would release every queued sound at
+    once when it woke. `SoundScope` plays by `data-sound` through event
+    delegation; `data-sound="none"` opts a control out. To test it without ears,
+    wrap `window.AudioContext` in an init script and count `createOscillator`
+    and `createBufferSource` calls (see Step 7, "Verified").
+
+19. **`PageIntro` takes `dark`, `glossy`, `aside` and `children`.** `aside` is a
+    decorative node set in the empty end of the headline's eight columns from
+    `xl` up, behind the type (About's figure); `children` sit between the
+    headline and the facts row. The header is `isolate`, so a `-z-10` child
+    stays above the header's own ground. Every opening block that wants to sit
+    under the floating nav takes `NAV_PULL` from `lib/navPull.js`.
 
 ---
 
@@ -1607,7 +2157,7 @@ looking at.
 
 ---
 
-## Homepage hero — signed off
+## Homepage hero — signed off (SUPERSEDED by Step 6: this describes the old video-frame hero, kept as history)
 
 The hero is finished and approved by the client. It took four rounds of
 correction; what follows is the part a future session actually needs.
@@ -1749,30 +2299,30 @@ say otherwise.
 
 ## Next
 
-Step 5 — the remaining pages, in this order. `/building` is done (Steps
-4.1-4.8). Build the rest from the same parts -- see decision 16 -- and verify
-at 1512x860 and 375 before calling anything finished (decision 14).
+Every page is built (Steps 4.1-6). What is left:
 
-1. `/work` — services and pricing on one page. Reads `src/content/services.js`.
-   Pricing is settled: the ₹999 / ₹2,499 / ₹4,999 tiers ship with their current
-   contents. Raised twice and reaffirmed; do not re-litigate.
-2. `/studio` — the thesis and working method, long-form. No people, no timeline,
-   no mission/vision/values.
-3. `/contact` — the four-step flow from contact.md is usable; the form belongs
-   here rather than on the homepage.
-4. `/policies` — legal utility. Note it is dated 22 March 2026, a future date,
-   and uses `admin@akronix.org` while contact.md uses the Gmail address.
-
-Then SEO metadata, OG images, 404 polish. The favicon is done; see Step 3q.
-
-The client has been following the live site's page structure closely (Step
-4.4 rebuilt /building to it). Before proposing a page, read its legacy file in
-`_legacy_content/pages/` and ask whether to follow that structure.
+1. **The client's eye on Steps 6-7, in Safari at 1512x860.** It is a large
+   visual change on top of unchanged content. Anything specific they dislike is a
+   token or one component: the red is `--color-brand`, the hero is `Hero.jsx` and
+   `HeroFigure.jsx` (white since Step 7), the shape of a section is its `Band`
+   tone, the glossy pricing is `.gloss` / `.gloss-dark` in `index.css`, the
+   sound is `lib/sound.js`.
+2. **Real imagery, when it exists.** The corporate look leans hard on
+   photography and the studio has none. Real build screenshots, a real film
+   (`hero.videoUrl`), and real people if the client ever wants them would each
+   slot in without a rebuild. Until then the hero's image is the drawn mark --
+   deliberately, not as a stand-in for a photo.
+3. Per-route Open Graph images need a server-rendered deployment: a single-page
+   app cannot serve them to a crawler that does not run script. One card
+   (`public/og.png`) serves every route for now.
+4. Build any new page from `PageIntro` + the sections in `components/sections/`
+   and verify at 1512x860 and 375 before calling it finished (decision 14; the
+   probe in Step 6's "Verified" is the one to rerun).
 
 ## Waiting on the client
 
 Items 1-3 are built and idle until someone supplies the missing half; 4-6 want
-the client's eye:
+the client's eye; 10-13 are Step 7's open questions:
 
 1. **A booking endpoint.** `site.bookingEndpoint` is null, so submitting the
    booking form falls back to the visitor's own mail client and the closing
@@ -1780,9 +2330,10 @@ the client's eye:
    POSTs instead and switches to the scheduled wording.
 2. **A real Google Meet room.** `site.meetLink` is null. Whatever receives the
    booking is also what has to issue the link.
-3. **The hero demo video.** `hero.videoUrl` and `hero.videoPoster` are null and
-   the frame shows a plainly labelled placeholder. Drop an `.mp4` into
-   `/public` and set the two values; the choreography needs no other change.
+3. **A film.** `hero.videoUrl` and `hero.videoPoster` are null and the homepage
+   renders nothing for them (Step 6 removed the labelled empty frame). Drop an
+   `.mp4` into `/public` and set the two values and a Film band appears under
+   the capability bar.
 
 4. **Stage of the six added products.** Attendance, Project Management, Books,
    E-commerce, LMS and Helpdesk show "Planned" (Step 4.3). If any is being
@@ -1791,10 +2342,39 @@ the client's eye:
    (`products.js`) and the four boxes (`content/building.js`) are written from
    the legacy lists and claim nothing beyond them, but nobody at Akronix has
    signed them off.
-6. **One look at the nav glass in real Safari.** Every Safari-path check so far
-   was the Safari markup rendered in Chromium (decision 14).
+6. **One look at the new site in real Safari.** Step 6 was checked in
+   Chromium and in WebKit (Safari's engine) -- no console errors, layouts
+   match -- but not by eye in Safari itself (decision 14).
 
-The old open question -- the nav tinting pink and pale blue over the forest and
-cocoa slabs -- is **closed**: the client chose black-or-white links in Step 4.7.
+7. **Three defaults chosen in Step 5.2 because the questions went unanswered:**
+   (a) *Networking* is shown as "Forming" and the live membership prices are
+   not shown -- if the community does run, edit the line in
+   `content/solutions.js`; (b) the contact/policies email is `site.email`
+   (akronix.in@gmail.com) everywhere -- the live policies page says
+   admin@akronix.org, change `site.email` if that is preferred; (c) the
+   Pricing plans still list Networking and Academy access, so
+   `pricingNote` says the community is forming. Wording wants a read.
+8. **The new FAQ answers** (`pricing.js` x6, `contact.js` x4) are written
+   fresh -- the live pages list the questions with no answers. They make only
+   claims the flow already makes and say where a policy is not written (refunds,
+   payment methods). Nobody at Akronix has signed them off.
+9. **A contact endpoint.** `site.contactEndpoint` is null; see Step 5.2.
+10. **The second phone number.** The client gave "9715794422, 882543947"; the
+    second is nine digits and is published exactly so (`site.phones`,
+    `tel:+91882543947`). If a digit is missing, the fix is one line in
+    `content/site.js` and one in `index.html`'s JSON-LD.
+11. **A read of the policy wording** (`content/policies.js`). Ported from the live
+    page and reworded so that nothing claims a client, an event or a guarantee
+    that does not exist; the header of that file lists every change. Its "last
+    updated" date is the live page's, 22 March 2026 -- change `updated` there when
+    the wording is signed off.
+12. **A real privacy policy and terms.** The live site has neither: both footer
+    links open its four-document policies page, and so they do here (Privacy
+    Policy to the Overview, Terms & Conditions to Startup Execution). Nothing on
+    the site says what it collects. That text needs the client, and for anything
+    binding a lawyer, to write it; it should not be drafted from the code alone.
+13. **Whether sound should be offered at all, and how loudly.** It is About-only,
+    off by default, and was checked for what it schedules, not by ear.
+
 
 Run with `npm run dev`.
