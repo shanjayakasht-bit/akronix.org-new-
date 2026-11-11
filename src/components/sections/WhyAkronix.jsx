@@ -39,7 +39,7 @@ function Row({ item, index, reduced }) {
       transition={{ duration: 0.8, ease: EASE }}
       className="relative border-t border-rule last:border-b"
     >
-      <Link to={item.to} className="group/roll group relative block py-9 pl-5 pr-2 transition-colors duration-500 hover:bg-white md:py-11 md:pl-8">
+      <Link to={item.to} className="group/roll group relative block py-7 pl-5 pr-2 transition-colors duration-500 hover:bg-white md:py-9 md:pl-8">
         <span
           aria-hidden="true"
           className={cx(
@@ -92,13 +92,13 @@ export default function WhyAkronix() {
   const reduced = usePrefersReducedMotion()
 
   return (
-    <Band tone="mist">
+    <Band tone="mist" pad="md">
       <Container wide>
         <div className="grid gap-14 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-32">
-              <Label index="03">Our advantage</Label>
-              <Headline title="Why Businesses Choose" accent="Akronix" size="text-h2" className="mt-6 max-w-[16ch]" />
+              <Label index="03">Our approach</Label>
+              <Headline title="Built on engineering." accent="Driven by outcomes." size="text-h2" className="mt-6 max-w-[16ch]" />
 
               <motion.div
                 className="mt-10 max-w-[30rem]"

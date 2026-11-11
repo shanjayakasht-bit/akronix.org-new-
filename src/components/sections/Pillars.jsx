@@ -126,18 +126,19 @@ export default function Pillars() {
   const [open, setOpen] = useState(-1)
 
   return (
-    <Band tone="mist">
+    <Band tone="mist" pad="md">
       <Container wide>
         <SectionIntro
           eyebrow="What we do"
           index="01"
-          title="The Akronix"
-          accent="Ecosystem."
-          sub="One platform. Four pillars of growth. Software, marketing, networking and mentorship from one team, so you brief once and get one answer."
+          title="Technology and expertise"
+          accent="for every stage of growth."
+          titleClass="text-h2"
+          sub="Software development, digital marketing, business networking and mentorship, delivered from Chennai."
         />
 
         <motion.div
-          className="mt-16 hidden h-[36rem] border border-rule lg:flex"
+          className="mt-12 hidden h-[36rem] border border-rule lg:flex"
           initial={reduced ? false : { opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-8% 0px' }}

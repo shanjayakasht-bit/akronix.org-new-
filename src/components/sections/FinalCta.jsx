@@ -26,14 +26,14 @@ export default function FinalCta() {
         }
 
   return (
-    <Band tone="mist" id="book">
+    <Band tone="mist" pad="md" id="book">
       <Container wide>
         <div className="grid gap-14 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-6">
             <motion.div {...up(0)}>
               <Label index="05">{finalCta.eyebrow}</Label>
             </motion.div>
-            <Headline title="Ready to Talk About" accent="Your Project?" className="mt-6 max-w-[14ch]" size="text-h1" />
+            <Headline title="Let’s turn your next idea" accent="into a working solution." className="mt-6 max-w-[20ch]" size="text-h2" />
             <motion.p className="mt-8 max-w-[44ch] font-sans text-lede text-ink-2" {...up(0.25)}>
               {finalCta.copy}
             </motion.p>

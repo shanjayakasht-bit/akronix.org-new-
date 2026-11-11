@@ -1,150 +1,196 @@
-import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
+import { useInView } from 'motion/react'
 import { Container } from '../primitives'
-import { Label } from '../ui/Pill'
 import { Button } from '../ui/Button'
-import { HeroFigure } from '../brand/HeroFigure'
-import ColourBar from './ColourBar'
+import { RollText } from '../ui/RollText'
+import { PriceLadder } from '../pricing/PriceLadder'
+import { WorkIndex, StepsRail } from './HeroVisuals'
+import HeroShowcase from './HeroShowcase'
 import { NAV_PULL } from '../../lib/navPull'
 import { cx } from '../../lib/cx'
+import { useReady } from '../../lib/useReady'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
-import { hero } from '../../content/home'
+import { two } from '../../lib/studioTime'
+import { heroSlides } from '../../content/home'
 
-const EASE = [0.16, 1, 0.3, 1]
+/* How long each slide stays, in ms. The tab's fill (`.akx-slide` in index.css) is
+   the same length: keep the two together. */
+const DWELL = 7000
 
-/* The first screen (Step 7: LIGHT).
+const EASE = 'ease-[cubic-bezier(0.16,1,0.3,1)]'
+const STAGGER = ['delay-[0ms]', 'delay-[120ms]', 'delay-[240ms]']
+
+/* The first screen (Step 7.4: slides).
  *
- * Step 6 started the site black. The client's verdict was that a company
- * profile should not open black, so the hero is white now: ink type, the red
- * full stops, the Akronix figure drawn in ink with its head in red, and along
- * the foot of the screen a bar of the twelve product colours.
+ * Step 7.3 gave it the look of a large company's -- a plain statement, a split
+ * layout, a launcher of the twelve products on the right. The client's reply was
+ * that it was still not interesting, and that the products "are displayed again
+ * and again": the hero showed them, then the products section, then the menu.
  *
- * The hero reaches up under the floating nav (`NAV_PULL`), so its grid lines and
- * its figure run behind the glass pill instead of the pill sitting on a
- * separate strip -- the nav is part of the screen, not above it.
+ * So the products are gone from it, and it is four slides, the way the big
+ * companies' first screens are (IBM, Infosys, Cognizant, Zoho all rotate a few
+ * messages). Each is a different true thing about the studio with its own
+ * picture -- who and where it is (an interface preview), what it does (the eight lines of
+ * work), how a job runs (five steps), what it costs (the price columns). See
+ * `heroSlides` in `content/home.js` and `HeroVisuals`.
  *
- * Behind everything, the page's column grid is drawn in hairlines: five lines,
- * each growing down from the top in turn. Corporate layouts are built on a
- * visible grid and this is it showing.
+ * The slides change by themselves every seven seconds while the hero is on
+ * screen, which is the reason for the rest: a pointer or focus on it holds it, a
+ * Pause control stops it, the four tabs under it go to any slide and fill as the
+ * time runs, and with reduced motion it never moves unprompted. Slides are
+ * stacked in one grid cell so the hero never changes height, and a slide that is
+ * not showing is `inert`. Everything is CSS transitions (decision 20), so it
+ * also works on a refresh.
  *
- * Headline size: three lines must fit the screen with the lede, the buttons and
- * the foot strip under them, so it is the smaller of a width term and a height
- * term. "Connect." is the widest line, ~3.9x its font size in IBM Plex Sans
- * Light, so on a phone 19vw leaves it comfortably inside the column. The height
- * term budgets ~30rem for the nav, the foot strip and everything around the
- * lines, over 3.2 (three lines at 0.94 plus the mask padding); 9.5rem caps it. (33rem left a 66px headline on a
- * 1280x720 laptop; trimming the paddings and the strip bought it back.)
- *
- * Scroll: as the hero leaves, the headline lifts away faster than the figure
- * falls behind it, and the figure turns a few degrees -- two speeds, which is
- * what reads as depth. If a real film is supplied (`hero.videoUrl`) it is its
- * own band under this one -- see `Film`. */
+ * Layout and ground are unchanged from 7.3: white left, a grey panel behind the
+ * picture from `lg`, reaching up under the nav pill (`NAV_PULL`). */
 export default function Hero() {
+  const ready = useReady()
   const reduced = usePrefersReducedMotion()
   const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const textY = useTransform(scrollYProgress, [0, 1], [0, -90])
-  const figY = useTransform(scrollYProgress, [0, 1], [0, 140])
-  const figRotate = useTransform(scrollYProgress, [0, 1], [0, 7])
-  const figScale = useTransform(scrollYProgress, [0, 1], [1, 1.08])
-  const fadeOut = useTransform(scrollYProgress, [0, 0.7], [1, 0])
+  const onScreen = useInView(ref)
+  const [at, setAt] = useState(0)
+  /* held: a pointer or focus is on the hero. paused: the visitor pressed Pause. */
+  const [held, setHeld] = useState(false)
+  const [paused, setPaused] = useState(false)
+  const playing = !reduced && onScreen && !held && !paused
+  const n = heroSlides.length
 
-  const fade = (d) =>
-    reduced
-      ? {}
-      : {
-          initial: { opacity: 0, y: 24 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.9, ease: EASE, delay: d },
-        }
+  useEffect(() => {
+    if (!playing) return undefined
+    const t = setTimeout(() => setAt((a) => (a + 1) % n), DWELL)
+    return () => clearTimeout(t)
+  }, [playing, at, n])
+
+  /* A slide's parts arrive one after another when it comes up and leave at once. */
+  const part = (on, k) =>
+    cx(
+      'transition-[opacity,translate,visibility] ease-[cubic-bezier(0.16,1,0.3,1)]',
+      on ? cx('visible translate-y-0 opacity-100 duration-[800ms]', STAGGER[k]) : 'invisible translate-y-4 opacity-0 duration-300 delay-[0ms]',
+    )
+
+  const visuals = [
+    (on) => <HeroShowcase on={on} />,
+    (on) => <WorkIndex on={on} />,
+    (on) => <StepsRail on={on} />,
+    (on) => <PriceLadder play={on} caption={false} className="mx-auto h-full w-full max-w-[24rem] justify-center" />,
+  ]
 
   return (
-    <section ref={ref} className={cx('relative isolate overflow-hidden bg-white text-ink', NAV_PULL)}>
-      {/* the grid, drawn */}
-      <Container wide className="pointer-events-none absolute inset-0 -z-10">
-        <div className="relative h-full">
-          {['left-0', 'left-1/4', 'left-1/2', 'left-3/4', 'right-0'].map((pos, i) => (
-            <motion.span
-              key={pos}
-              aria-hidden="true"
-              className={`absolute inset-y-0 w-px origin-top bg-ink/[0.07] ${pos}`}
-              initial={reduced ? false : { scaleY: 0 }}
-              animate={{ scaleY: 1 }}
-              transition={{ duration: 1.6, ease: EASE, delay: 0.1 + i * 0.12 }}
-            />
-          ))}
-        </div>
-      </Container>
-
-      <Container wide className="relative">
-        <div className="grid items-center gap-10 py-8 lg:min-h-[calc(100svh-5.125rem-3.25rem)] lg:grid-cols-12 lg:py-10">
-          <motion.div style={reduced ? undefined : { y: textY, opacity: fadeOut }} className="relative z-10 lg:col-span-7">
-            <motion.div {...fade(0.1)}>
-              <Label>Akronix &middot; Chennai, India</Label>
-            </motion.div>
-
-            <h1 className="mt-8 font-light text-[clamp(3.25rem,min(19vw,calc((100svh-30rem)/3.2)),9.5rem)] leading-[0.94] tracking-[-0.045em]">
-              <span className="sr-only">{hero.headline.join(' ')}</span>
-              {hero.headline.map((line, i) => {
-                const stop = line.endsWith('.')
+    <section
+      ref={ref}
+      aria-roledescription="carousel"
+      aria-label="Akronix"
+      onPointerEnter={(e) => e.pointerType === 'mouse' && setHeld(true)}
+      onPointerLeave={() => setHeld(false)}
+      onFocusCapture={() => setHeld(true)}
+      onBlurCapture={() => setHeld(false)}
+      className="relative"
+    >
+      <div className={cx('relative isolate bg-white text-ink lg:bg-gradient-to-r lg:from-white lg:from-[58.3%] lg:to-mist lg:to-[58.3%]', NAV_PULL)}>
+        <Container wide>
+          <div className="grid items-center gap-12 py-14 md:py-20 lg:min-h-[calc(100svh-5.125rem-6.5rem)] lg:grid-cols-12 lg:gap-12 lg:py-10">
+            {/* the words */}
+            <div className="grid lg:col-span-7">
+              {heroSlides.map((s, i) => {
+                const on = ready && at === i
+                const Heading = i === 0 ? 'h1' : 'h2'
                 return (
-                  <span key={line} aria-hidden="true" className="block overflow-hidden pb-[0.08em]">
-                    <motion.span
-                      className="block whitespace-nowrap"
-                      initial={reduced ? false : { y: '110%' }}
-                      animate={{ y: '0%' }}
-                      transition={{ duration: 1.2, ease: EASE, delay: 0.25 + i * 0.12 }}
-                    >
-                      {stop ? line.slice(0, -1) : line}
-                      {stop ? <span className="text-brand">.</span> : null}
-                    </motion.span>
-                  </span>
+                  <div
+                    key={s.key}
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-label={`${i + 1} of ${n}`}
+                    aria-hidden={!on}
+                    inert={!on}
+                    className="col-start-1 row-start-1"
+                  >
+                    <Heading className={cx('max-w-[14ch] text-balance font-light text-[clamp(2.75rem,1.3rem+4.4vw,5.25rem)] leading-[1.04] tracking-[-0.035em] sm:max-w-[16ch] lg:max-w-[15ch]', part(on, 0))}>
+                      <span className="sr-only">
+                        {s.headline.lead} {s.headline.rest}.
+                      </span>
+                      <span aria-hidden="true">
+                        {s.headline.lead} <span className="text-ink-3">{s.headline.rest}</span>
+                        <span className="text-brand">.</span>
+                      </span>
+                    </Heading>
+                    <p className={cx('mt-8 max-w-[52ch] font-sans text-lede text-ink-2', part(on, 1))}>{s.lede}</p>
+                    <div className={cx('mt-10 flex flex-wrap items-center gap-x-8 gap-y-5', part(on, 2))}>
+                      <Button to={s.primary.to}>{s.primary.label}</Button>
+                      <Button to={s.secondary.to} variant="quiet">
+                        {s.secondary.label}
+                      </Button>
+                    </div>
+                  </div>
                 )
               })}
-            </h1>
+            </div>
 
-            <motion.p className="mt-8 max-w-[54ch] font-sans text-lede text-ink-2" {...fade(0.75)}>
-              {hero.lede}
-            </motion.p>
+            {/* the picture */}
+            <div className="-mx-5 bg-mist px-5 py-8 md:-mx-8 md:px-8 lg:mx-0 lg:bg-transparent lg:p-0 lg:col-span-5">
+              <div className="grid min-h-[28rem] lg:min-h-[31rem]">
+                {heroSlides.map((s, i) => {
+                  const on = ready && at === i
+                  return (
+                    <div key={s.key} aria-hidden={!on} inert={!on} className={cx('col-start-1 row-start-1 flex flex-col', part(on, 1))}>
+                      <p className="flex items-baseline justify-between gap-4 font-sans text-mark font-medium uppercase text-ink-3">
+                        <span>{s.caption}</span>
+                        <span className="tnum">
+                          {two(i + 1)} / {two(n)}
+                        </span>
+                      </p>
+                      <div className="mt-6 flex-1">{visuals[i](on)}</div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        </Container>
+      </div>
 
-            <motion.div className="mt-10 flex flex-nowrap items-center gap-2 sm:flex-wrap sm:gap-3" {...fade(0.9)}>
-              <Button to="/contact" size="snug" className="flex-auto justify-center whitespace-nowrap sm:flex-none">
-                Get Started
-              </Button>
-              <Button to="/building" variant="outline" size="snug" className="flex-auto justify-center whitespace-nowrap sm:flex-none">
-                Explore Products
-              </Button>
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            style={reduced ? undefined : { y: figY, rotate: figRotate, scale: figScale }}
-            className="relative flex items-center justify-center lg:col-span-5 lg:justify-end"
-          >
-            <HeroFigure tone="light" className="h-[clamp(16rem,52svh,40rem)] w-auto max-w-full lg:h-[clamp(17rem,56svh,40rem)]" />
-          </motion.div>
-        </div>
-
-        {/* the foot of the hero: where, and a cue to scroll */}
-        <motion.div
-          className="flex items-center justify-between border-t border-rule py-3 font-sans text-[0.75rem] uppercase tracking-[0.14em] text-ink-3"
-          {...fade(1.2)}
-        >
-          <span>Chennai &middot; 13.08&deg;N 80.27&deg;E</span>
-          <span className="inline-flex items-center gap-3">
-            Scroll
-            <span aria-hidden="true" className="relative block h-px w-12 overflow-hidden bg-ink/15">
-              <motion.span
-                className="absolute inset-y-0 left-0 w-1/2 bg-ink"
-                animate={reduced ? undefined : { x: ['-100%', '200%'] }}
-                transition={{ duration: 2.2, ease: 'easeInOut', repeat: Infinity, repeatDelay: 0.6 }}
-              />
-            </span>
-          </span>
-        </motion.div>
-      </Container>
-
-      <ColourBar />
+      {/* the tabs: any slide, and the time left on the one showing */}
+      <div className="border-y border-rule bg-white">
+        <Container wide>
+          <div className="grid grid-cols-2 sm:grid-cols-[repeat(4,minmax(0,1fr))_auto]">
+            {heroSlides.map((s, i) => {
+              const on = at === i
+              return (
+                <button
+                  key={s.key}
+                  type="button"
+                  aria-current={on ? 'true' : undefined}
+                  aria-label={`Show slide ${i + 1}: ${s.tab}`}
+                  onClick={() => setAt(i)}
+                  className="group/roll relative border-rule py-5 pr-6 text-left even:border-l even:pl-6 sm:border-l sm:pl-6 sm:first:border-l-0 sm:first:pl-0"
+                >
+                  <span aria-hidden="true" className="absolute inset-x-0 -top-px h-[2px] bg-ink/10" />
+                  {on ? (
+                    playing ? (
+                      <span key={`fill-${at}`} aria-hidden="true" className="akx-slide absolute inset-x-0 -top-px h-[2px] origin-left bg-brand" />
+                    ) : (
+                      <span aria-hidden="true" className="absolute inset-x-0 -top-px h-[2px] bg-ink" />
+                    )
+                  ) : null}
+                  <span className={cx('tnum block font-sans text-mark transition-colors duration-300', on ? 'text-brand' : 'text-ink-3')}>{two(i + 1)}</span>
+                  <span className={cx('mt-1.5 block font-display text-[1.125rem] leading-snug tracking-[-0.015em] transition-colors duration-300', on ? 'text-ink' : 'text-ink-3 group-hover/roll:text-ink')}>
+                    <RollText>{s.tab}</RollText>
+                  </span>
+                </button>
+              )
+            })}
+            {reduced ? null : (
+              <button
+                type="button"
+                onClick={() => setPaused((v) => !v)}
+                className="group/roll hidden items-center gap-3 border-l border-rule pl-6 font-sans text-ui font-medium text-ink sm:inline-flex"
+              >
+                <RollText>{paused ? 'Play' : 'Pause'}</RollText>
+              </button>
+            )}
+          </div>
+        </Container>
+      </div>
     </section>
   )
 }

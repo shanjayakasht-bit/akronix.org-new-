@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { Container } from '../primitives'
 import { Band } from '../ui/Band'
@@ -6,6 +5,7 @@ import { SectionIntro } from '../sections/SectionHead'
 import { site } from '../../content/site'
 import { cx } from '../../lib/cx'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
+import { useIst, two } from '../../lib/studioTime'
 
 const EASE = [0.16, 1, 0.3, 1]
 
@@ -25,34 +25,6 @@ const EASE = [0.16, 1, 0.3, 1]
  * claim. There are no dots on the radar standing for anything: a blip would be a
  * made-up client. The pointer pinging it (with sound on) is the only response. */
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-
-function ist(date = new Date()) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Asia/Kolkata',
-    weekday: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hourCycle: 'h23',
-  }).formatToParts(date)
-  const get = (t) => parts.find((p) => p.type === t)?.value ?? ''
-  const hh = Number(get('hour')) % 24
-  const mm = Number(get('minute'))
-  const ss = Number(get('second'))
-  const wd = get('weekday').slice(0, 3)
-  return { hh, mm, ss, wd, open: wd !== 'Sun' && hh >= 9 && hh < 19 }
-}
-
-function useIst() {
-  const [now, setNow] = useState(() => ist())
-  useEffect(() => {
-    const id = setInterval(() => setNow(ist()), 1000)
-    return () => clearInterval(id)
-  }, [])
-  return now
-}
-
-const two = (n) => String(n).padStart(2, '0')
 
 function Radar({ reduced }) {
   return (

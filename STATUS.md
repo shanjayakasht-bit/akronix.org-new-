@@ -8,7 +8,401 @@ content audit, design system and homepage structure.
 
 ## Done
 
-### Step 7 — A white first screen, a colour showcase, glossy pricing, sound on About, the policies ported (current)
+### Step 7.7 — "Selected Work" taken off the home page (current)
+
+Client: *"remove the preworks details in the home page."* Read as the Selected Work
+(previous projects) section added in Step 7.6; say so if something else was meant.
+
+It is removed from `pages/Home.jsx`, and the section numbers are back in order (01 What we
+do, 02 White-label SaaS, 03 Our approach, 04 Our toolkit, 05 Get started today); the grounds
+alternate grey / white again; the page is about 1,100px shorter (7,364px at 1512). Nothing else
+on the home page, and no other page, changed. Checked in WebKit and Chromium: no project link,
+image or "Selected Work" text left on the page, six sections, no overflow, no console errors,
+the other five pages load cleanly at 390, `vite build` compiles.
+
+**Left in place, unused, in case it is wanted back:** `sections/SelectedWork.jsx`, the
+`selectedWork` data in `content/home.js` (with its notes on attribution), and the three
+screenshots in `public/work/`. To bring it back: add `<SelectedWork />` after `<Pillars />` in
+`Home.jsx` and shift the later `index` labels up by one. To delete it for good: remove those
+three things. Note the screenshots are still **served** at `/work/*.jpg` on a deployed site
+even though nothing uses them, and they show third-party sites; delete them if that matters.
+The open questions recorded under 7.6 (Alagu Crackers' attribution, permission to show the CICT
+projects) only matter again if the section returns.
+
+### Step 7.6 — Seven targeted changes to the home page (change 2, Selected Work, removed in 7.7)
+
+A written brief of seven changes to the home page only. No new library, no change to the
+nav, routes, pricing, the contact/booking code or any other page (the files changed are
+listed at the end; `Plans.jsx` and `Nav.jsx` are untouched).
+
+| # | Change | Where |
+|---|---|---|
+| 1 | **Hero slide 1: the clock is replaced by an interface preview** | New `sections/HeroShowcase.jsx`; `HeroVisuals.jsx` lost `StudioClock`; `Hero.jsx` swaps it in. Slides 2-4, the tabs, Pause and the carousel are unchanged (only slide 1's tab says "What we build" and its caption "Interface preview") |
+| 2 | **"Selected Work"** after the lines of work: three real, live sites, with real screenshots | New `sections/SelectedWork.jsx`, `selectedWork` in `content/home.js`, `public/work/*.jpg` |
+| 3 | **The twelve-product accordion made matte** | `sections/Showcase.jsx`: a local palette; `products.js` untouched |
+| 4 | **Copy refined** | `content/home.js`, headings in `Pillars`, `Showcase`, `WhyAkronix`, `FinalCta` |
+| 5 | **"Technologies & Platforms We Work With" as a controlled grid** | `sections/Tools.jsx` (`Marquee` is now unused, left in place) |
+| 6 | **One section rhythm** | `pad="md"` on every section after the hero; 48px under every heading |
+| 7 | **Footer email** | **Not changed, on purpose: see below** |
+
+**1. The interface preview, and why it is allowed to exist.** CLAUDE.md rules out
+dashboards of made-up data and the 7.1 site policy refused a mocked-up product screen. The
+brief asked for a representative frontend-only interface if no real screenshots exist, and
+none do (no product has shipped), so it is built as a **study of an interface, labelled as
+one**: "Illustrative interface. Not a screenshot of a shipped product." under it, and an
+`aria-label` saying the same. It holds no figures, no axis values, no names or counts and
+nothing that moves as if live: tiles are a label over a grey placeholder bar, rows are
+placeholder bars with the words every record has ("Draft", "In review", "Done"), the chart
+is a drawn shape with no scale. Three views switch from its sidebar (Overview with a chart
+that draws once, Records, Automations with a flow and an Active/Paused switch); a view
+change is a short fade; reduced motion has none. Palette: five new theme tokens
+`--color-ui-cream/charcoal/navy/violet/grey` in `index.css` (`#f2f0ea #101217 #172033
+#7047eb #a7a9ad`), used only here and in the accordion, and the one purple is a flat
+accent: no gradients.
+
+**2. Selected Work -- what is and is not claimed.** Cards for CICT Digital Library
+(library.cict.in), AUREX'26 (aurexcict.in) and Alagu Crackers (alagucrackerstheni.in),
+with the brief's descriptions word for word, a link that opens in a new tab
+(`rel="noopener noreferrer"`), and a browser-frame crop of a real screenshot. The two CICT
+projects carry the tag "Internship and team contribution" and are called neither commercial
+nor client work. **Open question: Alagu Crackers has no attribution** because the brief gave
+none -- whether it is a client project, a personal one or Akronix's own must be confirmed
+before any wording is added; the site elsewhere says "We are taking on our first client
+work" (about.js) and answers "You have no clients yet" (faq.js), so a client label there
+would contradict them. **Technology** is only what the live sites themselves show:
+library.cict.in sends `X-Powered-By: Next.js` and serves `/_next/` assets; the other two
+mount a React root. Nothing else (hosting, database, backend) is listed. **Screenshots**
+were captured at 1280x800 from the live sites: the Library after dismissing its
+announcements pop-up; Alagu Crackers at its category browser, not its splash page, whose
+hero carries the shop's own "10K+ happy customers / 4.8 rating" figures, which are not
+Akronix's to display; floating chat and social widgets that sat over the content were hidden.
+The images are 50-160 KB each. No testimonials, outcomes or partnerships. They will go stale
+as the sites change: re-capture when they do (the capture is a few lines of Playwright).
+
+**3. The accordion.** The twelve saturated colours are gone. The six in development are dark
+panels (muted navy, charcoal and one deep muted purple); the six planned are light (off-white
+and a neutral grey). Each product keeps its identity as one desaturated accent: a 2px rule
+along its top edge, its stage dot and its stage word (a darker shade on light panels so the
+word stays at 4.5:1 or better). Hover on a shut slab lifts the panel a shade; the open one
+gets a hairline inset ring and, while the tour runs, its time-left line in the accent. All
+twelve products, copy, scope lists, stages, early-access links, the tour, hover and focus
+opening, and the mobile cards are as before; the legend now says "a dark panel" / "a light
+panel". The palette is a literal map in `Showcase.jsx` keyed by product slug, with a neutral
+fallback for a product added later; `content/products.js` and every other page's product
+colours are unchanged.
+
+**4. Copy** (old text recorded here, each is a one-line revert):
+
+| Where | Was | Now |
+|---|---|---|
+| Lines-of-work heading and sub | "Four lines of work." / "...from one team. You brief once and get one answer." | "Technology and expertise for every stage of growth." / "Software development, digital marketing, business networking and mentorship, delivered from Chennai." |
+| The four cards' one-liners | "generate leads, build brands and accelerate business growth"; "a networking ecosystem that connects, mentors, collaborates and creates opportunities"; "unlock opportunities" | Each now says what the line is, from `solutions.js` (the lists of work; Networking "forming now, modelled on BNI"), and their small labels became Engineering / Marketing / Community / Learning |
+| Products heading and sub | "Our premium products." / "...None has shipped. Here is where each of the twelve stands..." | "Products designed for real business challenges." / "Twelve white-label products for core business operations. None has shipped: this is where each one stands, and how to ask for early access." |
+| Why-us heading | "Why work with Akronix" | "Built on engineering. Driven by outcomes." (label "Our approach") |
+| Why-us closing line | "One team answers for the whole job: the build, the marketing and the advice." (written in 7.3; the brief lists it as to avoid) | "Scope, milestones and price are written down before work begins, so progress is something you can see." (the About page's second principle) |
+| Why-us row titles | Complete Ecosystem / Expert Mentorship / AI-Powered Growth / Strategic Networking / Scalable Solutions / Long-Term Partnership | Integrated services / Mentorship / AI and automation / Networking / Built to scale / Ongoing support; row 1 no longer says "brief one team instead of four" |
+| Close heading | "Ready to talk about your project?" | "Let's turn your next idea into a working solution." |
+
+Nothing added claims an achievement, statistic, award, client or date. The stage distinctions
+(none shipped; six in development; six planned; Networking forming) are kept. The Booking
+widget, the pricing, legal and every other page's text are untouched.
+
+**5. Technologies.** The nine names in nine equal ruled cells (the list is `tools`, unchanged),
+in the page's own type in grey that darkens on hover; the tenth cell from `lg` holds "Tools
+we use in our work. Named here for that reason only: not a partnership, and not an
+endorsement." Nothing moves, so nothing clips, overflows or needs a pause. **No vendor logos:**
+the project holds no licensed logo assets and drawn look-alikes would be worse than none; if
+properly licensed marks are supplied they belong in these cells.
+
+**6. Rhythm** (measured at 1512 / 390): four sections used 128px / 96px of vertical padding and
+two used 96 / 64; all now use 96 / 64 (`pad="md"`), the heading-to-content gap is 48px
+throughout, and the six "why" rows are 8px tighter. The home page went from 8847 to 8471px
+at 1512 (and 12202 to 11842 at 390) **with the new section added**. `SectionIntro` and `Band`
+are shared, so they were not changed; only the home sections' own props were.
+
+**7. Email -- not changed.** The brief asks for `contact@akronix.in`, or another verified
+company-domain address, and otherwise to keep the working one and report what is needed.
+Read-only DNS lookups: `akronix.in` has **no MX or address records**, so mail to it could not
+be delivered; `akronix.org` has Hostinger MX records and `admin@akronix.org` appears in
+`policies.js`, but nothing confirms that mailbox exists. So `email` stays
+`akronix.in@gmail.com`. The footer's text and its `mailto:` read the same `site.email` (the
+contact page and booking do too), and a note in `site.js` records all this. **To switch:**
+create and test the mailbox, then change `email` in `content/site.js` and the literal in the
+Organization JSON-LD in `index.html`.
+
+**Not verified, needs a person:** Alagu Crackers' attribution; whether the CICT team wants
+its name and screenshots shown; whether the descriptions of Alagu's order management and
+administrative workflows (the brief's wording) can be shown publicly, since only the public
+pages could be seen; the Library's "(An Autonomous Institution Under Ministry of Education,
+Govt. of India)" and emblem appear in its screenshot, so confirm that showing them is fine.
+
+**Files:** created `sections/HeroShowcase.jsx`, `sections/SelectedWork.jsx`,
+`public/work/{cict-digital-library,aurex-26,alagu-crackers}.jpg`. Modified
+`content/home.js`, `content/site.js` (a comment only), `styles/index.css` (five tokens),
+`pages/Home.jsx`, `sections/{Hero,HeroVisuals,Pillars,Showcase,WhyAkronix,Tools,FinalCta}.jsx`.
+About and Building import `content/home.js` for defaults they override with their own props
+(checked on the rendered pages); Contact and Policies import `content/site.js`, whose values
+are unchanged.
+
+### Step 7.5 — The pricing comparison audited and rebuilt as a matte table
+
+A written brief (twelve points) to audit and fix the pricing comparison: the nav
+overlapping it, the red lines between ticks, a clean SaaS comparison table, centred
+indicators, a matte white/light-grey look, Growth highlighted with a "Most Popular"
+label, accurate per-tier entitlements, billing and tax only if confirmed, responsive
+behaviour, plain indicators, and no changes to anything unrelated. Files:
+`pricing/EveryPlan.jsx` (rewritten) and `content/pricing.js` (data only). Nothing else
+on the page was touched; `Plans.jsx` is still byte-identical (md5
+`e5c7cfbee2228a1acf0980248fce27c6`) and so are the nav, the hero, the custom picker,
+the FAQ and the close.
+
+**Root causes (found before changing anything):**
+
+| Symptom | Cause |
+|---|---|
+| The nav "overlaps" the table | `shell/Nav.jsx:422` is a `sticky top-0 z-50` wrapper around a refracting glass pill, so content scrolls under it by design. The table had nothing to rest on: its plan names and prices were in an ordinary header that scrolled up beneath the glass and out of sight, and the section had no `scroll-mt`. A sticky header could not have fixed it anyway: the old wrapper was `.gloss`, which is `overflow: hidden`, and `position: sticky` does not work inside that. Fixed in the table, not the nav (the nav is shared and was the client's design) |
+| The red lines | The `Seg` spans added in Step 7.4 (two per cell, `absolute top-1/2 h-[2px]`), drawn over a grey track. Removed with the rings and every animation |
+| Not matte | `.gloss` is a vertical gradient (white to #e5e9ef) over the whole panel, a dome pseudo-element and a drop shadow, and the rows were transparent over it, so the bottom rows were visibly greyer than the top (measured: transparent row grounds over a gradient). Rows are now flat white on a 1px border, on a `mist` section, no shadow (measured: zero box-shadows in the section) |
+| Different tiers not shown | The table listed only the five "on every plan" lines, all ticked. What each plan adds was only on the cards above |
+| Column alignment | **Not broken.** Measured: each indicator's centre equalled its header's to 0.1px. It is guaranteed now by one fixed-layout column set shared by header and body, every cell centred, and both indicators in one 18px-high box (the dash used to sit a few px below the tick's centre line) |
+
+**What it is now.** A real comparison: "Included in every plan" (the five lines, with
+their descriptions) and then all **23 lines the four plans list**, in seven groups,
+each a tick or a dash per plan. Which plans have a line is **computed from `plans`**
+by the rule the plans state about themselves -- a plan whose `lead` begins
+"Everything in" includes the plan before it -- not typed, so the table cannot
+disagree with the cards above it (`comparison` in `content/pricing.js`). A script
+checked it: every line a plan lists is in the table and ticked for that plan, every
+other tick is justified by that rule, no line is duplicated or invented, and a line
+in `plans` but in no group is appended under "More" rather than dropped.
+The sticky header (from 768px) sits at `top-[5.25rem]`, 2px under the pill's 82px,
+on an opaque ground (measured in both engines). Growth is set apart by treatment
+alone, from its `feature` flag: a faint solid tint down the column and a rule over
+its name. Below 768px the table scrolls sideways in a labelled, keyboard-focusable
+region (`role="region"`, `tabIndex`, arrow keys scroll it in Chromium) and holds its
+first column. **The scroller is `relative`: without it the cells' `sr-only` labels
+widened the page by 200px on a phone (decision 17 again).** Checked 320 to 2560: no
+page overflow.
+
+**Not done, and why.**
+- **No "Most Popular" label.** `content/pricing.js` already records it as not
+  carried from the live page, and CLAUDE.md forbids it: Akronix has no customers, so
+  nothing is popular, and the brief itself says not to invent. Growth is highlighted
+  without it. If a label is still wanted it needs honest wording; it is one line in the
+  Growth header.
+- **No tax or GST line.** Billing is confirmed by the config (the plans say "/ month";
+  the hero says "billed monthly"; the contracts answer says no term) and is stated
+  under the table, for Starter, Growth and Business. Enterprise is "Custom pricing".
+  Nothing in the config mentions tax, so none is shown.
+- The rest of `/pricing` stays glossy and curved (Step 7, the client's earlier
+  request); only this section is matte. Say if the matte treatment should carry across.
+
+A reading note: "Basic digital marketing support" and "Advanced digital marketing" are
+both ticked on the higher plans, because both are listed and "Everything in Starter,
+plus" includes the first. The table does not decide that one replaces the other.
+
+### Step 7.4 — The home first screen as four slides, and a new mark on /pricing (the matrix mark was replaced in 7.5)
+
+Client, with two screenshots (the 7.3 hero; the pricing matrix): *"still not
+satisfied with the 1st landing slide, make it more interesting, because product is
+displayed again and again. In the pricing page update the marking."*
+
+**Home hero -- `sections/Hero.jsx`, new `sections/HeroVisuals.jsx`.** The launcher of
+the twelve products from 7.3 is **gone** (`HeroSuite.jsx` deleted): the hero, the
+products section and the menu all showed the same twelve. The first screen is four
+slides, the way IBM, Infosys, Cognizant and Zoho rotate a few messages. Each is a
+different true thing about the studio with its own picture, and **none shows a
+product**:
+
+| Slide | Words (`heroSlides`, `content/home.js`) | Picture |
+|---|---|---|
+| 01 Who we are | "Business software, and the team to build it with you." | A live analog clock on IST: sixty ticks, hour and minute hands in ink, a red second hand that steps each second, the brand's red dot as the pin; the digital time and "Open now / Closed right now" from the published hours. Shares `lib/studioTime.js` with About |
+| 02 What we do | "One studio, eight ways to help." | The eight lines of work as an index, each row to its line on `/solutions`; Networking says "Forming" |
+| 03 How it goes | "Five steps, from first call to launch." | The five steps (`approach` in `solutions.js`) on one red line that draws down a rail, lighting each |
+| 04 What it costs | "Plans with the price on the page." | The monthly prices as columns drawn to scale (`PriceLadder`, now reusable: `play`, `className`, `caption`) |
+
+Mechanics: slides change every 7s (`DWELL`, and `.akx-slide` in `index.css` is the
+same length -- keep them together) while the hero is on screen; a pointer or focus
+on it holds it; a **Pause / Play** control stops it; four tabs under the hero go to
+any slide and fill red as the time runs; reduced motion never moves unprompted and
+has no Pause. Slides are stacked in one grid cell so the hero never changes height,
+and one that is not showing is `inert`. All CSS transitions (decision 20). Layout and
+ground are as 7.3. At 1512x860 the whole thing, tabs included, ends at 843px.
+The quick-links row of 7.3 (Products / Pricing / Talk to us) is replaced by the tabs.
+
+The slide copy restates what is already on the site: slide 2 the Solutions lede,
+slide 3 its five steps and "free 30-minute discovery call", slide 4 the Pricing
+lede. Slide 1 keeps the Step 6 lede. **The headline of slide 1, and everything in
+slides 2-4, wants the client's read.**
+
+**Pricing marking -- `pricing/EveryPlan.jsx`.** The matrix's twenty identical black
+discs with a white tick read as a wall of dots. Each row is now **one red line that
+runs through all four plans**, with a white ring and a red tick at each plan: an
+inclusion is a line that does not stop at any plan. The line sweeps left to right
+when the table is first seen, lighting each tick, row after row (CSS, a 20-rung
+ladder of 60ms delays: a row starts one rung after the one above it, each plan is
+four rungs after the last). Pointing at a plan fills its rings with ink, tick turned
+white, and lifts the column. Under 768px the tags are outlined with a red tick.
+`Plans.jsx` is still byte-identical (md5 `e5c7cfbee2228a1acf0980248fce27c6`).
+
+Verified in WebKit and Chromium at 1512x860 (and 1280, 1024, 768, 390): all four
+slides by eye; a pointer holds the tour, leaving releases it, the tabs jump, Pause
+and Play work, inactive slides are `inert`, the clock matches Chennai to the minute,
+reduced motion holds still; no horizontal overflow from 2560 to 320 on `/` and
+`/pricing`; no console errors on six routes; `vite build` compiles.
+`ColourBar.jsx` and `brand/HeroFigure.jsx` are still unused (see 7.3).
+
+### Step 7.3 — The home first screen, rebuilt to read as a large company's (hero visual superseded by 7.4)
+
+Client: still not satisfied with the first landing page; it should look and feel
+like Zoho, Google, Apple, Amazon, Alphabet, Cognizant, Infosys, IBM; "it still looks
+AI-generated".
+
+**What read as AI-made, and is gone from the first screen:** the slogan "Build.
+Connect. Scale." with a red full stop on each word (the live site's line, and the
+one CLAUDE.md already called generic); a big outlined figure inside a dotted ring;
+five hairline grid lines drawn down the page; the map-coordinates strip and the
+"Scroll" cue; a rainbow bar of the twelve colours along the foot; scroll parallax
+that rotated the figure. None of it said anything about Akronix.
+
+**What those companies' first screens share, and what this does** (`sections/Hero.jsx`,
+new `sections/HeroSuite.jsx`):
+
+| | |
+|---|---|
+| A plain statement of what the company does | "Business software, and the team to build it with you." -- ink, then grey, one red full stop (the heading device used all over the site). The lede is unchanged |
+| One filled button, one text link | "Talk to us" (solid) and "See what we are building" (the `quiet` link style) |
+| A visual about the actual offer | The product suite as an **app launcher**: twelve square tiles in the product colours, solid for in development and pale for planned, the stage written under it as you point at one. It stands in for the product screenshot such sites show -- Akronix has shipped nothing, so a screenshot would be invented; an index of the real products is not. Default line: "Six in development, six planned. None has shipped." Each tile goes to its entry on `/building` |
+| The split: white left, light grey panel behind the visual | A hard-stop gradient on the section (`lg:from-[58.3%] lg:to-[58.3%]`), reaching up under the nav pill as before |
+| A row of links to where visitors go next | Products / Pricing / Talk to us, ruled, with a red line that draws across the top on hover. The numbers and the price are read from `products.js` and `pricing.js`, not typed |
+
+At 1512x860 the whole screen, quick links included, ends at 857px. Everything
+arrives with a short fade and rise as CSS transitions (`lib/useReady.js`), so it
+also happens on a refresh (decision 20).
+
+**Copy changed on the home page, to be read by the client.** Each is one line to
+revert, and the old text is below. They were chosen because they read as filler or
+claimed more than is true:
+
+| Where | Was | Now |
+|---|---|---|
+| Hero headline (`content/home.js`) | Build. Connect. Scale. | Business software, and the team to build it with you. |
+| Pillars title and sub | "The Akronix Ecosystem." / "One platform. Four pillars of growth. Software, marketing, networking and mentorship from one team, so you brief once and get one answer." (there is no platform) | "Four lines of work." / "Software, marketing, networking and mentorship from one team. You brief once and get one answer." |
+| Why-us title | "Why Businesses Choose Akronix" (implies businesses have) | "Why work with Akronix" |
+| Why-us closing line | "We don't just build software. We build relationships, solutions and futures." | "One team answers for the whole job: the build, the marketing and the advice." (what /about principle 01 says) |
+| Close headline | "Ready to Talk About Your Project?" | "Ready to talk about your project?" (sentence case, like the other headings) |
+
+`sections/ColourBar.jsx` and `brand/HeroFigure.jsx` are now **unused** (only the old
+hero imported them). They are left in place, not deleted, in case either is wanted
+back; delete them if not. Not done: the Title Case button labels and card titles
+elsewhere on the home page ("Get in Touch", "Software Solutions") are still Title
+Case against sentence-case headings, and the six "Why work with Akronix" row titles
+("Complete Ecosystem", "AI-Powered Growth") are the live site's own and untouched.
+
+Verified in WebKit and Chromium: 1512x860 (and 1280x720, 1024, 768, 390, 1920,
+2560) by eye, no horizontal overflow from 2560 down to 320, tile hover and keyboard
+focus update the caption, a tile lands on its `/building` entry, reduced motion
+shows everything, no console errors, `vite build` compiles.
+
+### Step 7.2 — About's principle sheets and the rest of /pricing, "more interesting"
+
+Client, with a screenshot of sheet 05 on `/about#how`: *"I love this card animation
+and card size, don't change the animation effect; make the card appearance more
+interesting and more unique. In pricing, except the Choose a plan slide, update the
+remaining views and make them more interesting and more professional."*
+
+**About -- `about/Principles.jsx`, new `about/PrincipleArt.jsx`.** The pile, the
+scale, the shade, the red bar and the paper sound are untouched, and so is each
+sheet's size: all five are 233px at 1512 and 232px at 1440, as before (checked; 228-261
+at 1280, taller below 1280 where the diagram wraps under the copy). What changed is
+what is on a sheet:
+
+| Sheet | Diagram, drawn as that sheet's turn comes |
+|---|---|
+| 01 One team | A broken line "handed between agencies" above one red line through Brief, Strategy, Build, Marketing, Answer |
+| 02 Clear execution | A sheet of three ruled lines, Scope / Milestones / Price, each written then ticked |
+| 03 In person or remote | **On a black sheet**: two panes of equal weight, a table with two people and a video window with two, "or", then "Neither is second-best" |
+| 04 Your success first | A trunk that forks into "Right fit: we start" / "Smaller piece: we say so" / "Not a fit: we say so", "Before you spend anything" under it |
+| 05 Technology | The same switch set two ways: AI and automation *in* where it removes real work, *left out* where a simple tool is enough |
+
+Every word in a diagram is already in that sheet's copy; none has a number or an
+example. Each is legible at progress 0 (grey structure and labels) and the red is
+what scroll adds, so a sheet that has just arrived is never blank; with reduced
+motion they are held complete. The numeral column went from 3/12 to a fixed
+8rem/11rem to make room and the copy kept its wrap. The third sheet is black so the
+pile has a dark leaf in it.
+
+**Pricing -- everything but `Plans.jsx`, which is byte-identical** (md5
+`e5c7cfbee2228a1acf0980248fce27c6` before and after; the client asked for "Choose a
+plan" to stay exactly as it is -- do not edit it without being asked). The page keeps
+its glossy, curved language (Step 7's page-limited exception).
+
+| Section | Was | Now |
+|---|---|---|
+| Hero (`PriceLadder.jsx`, through `PageIntro`'s `aside`) | Headline, lede, four facts | Plus the four monthly prices as glazed columns **drawn to scale** (Business full height, Growth half, Starter a fifth, Enterprise a dashed open-topped column: no published price, so no height). From 1360px |
+| What every plan includes (`EveryPlan.jsx`) | Five equal glossy tiles | A matrix: five inclusions down, four plans with prices across, a tick in **every** cell (that is the claim). Ticks draw as a diagonal wave; a hovered column lifts. Under 768px: a card per line with the four plans as tags |
+| Need something larger? (`CustomPlan.jsx`, new) | A heading, a button, six decorative pills | A dark glass card where the six items are **picker buttons**, lit the way "Choose a plan" lights its card (white glass, red ring). The button opens `/contact?plan=enterprise&custom=0,4` and `ContactForm` writes the named lines into the message |
+| Questions (`GlossFaq.jsx`) | Six equal cards in two columns | An index down the left held in place while the answers scroll, the one being read marked red (the device from `/about` and `/solutions`); each answer opens with its verdict in a line. Answers stay open, not behind a click. Index rows glide to their answer |
+| Close (`GlossCta.jsx`) | Text and two buttons | Plus three steps on a rail: Tell us which plan / Hear back within a day / Agree it in writing. Each is a promise the page already makes (the 24 h fact, the refunds answer) |
+
+Copy added to `content/pricing.js`: a `tag` and `verdict` on each FAQ item (each
+restates only the first claim of its own answer -- the refunds verdict says "Not
+written yet, so agreed first") and `pricingClose.steps`. **They want the client's
+read** like the rest of the page's copy. `ContactForm` reads `?custom=` as positions
+in `customPlan.items`, so nothing typed into an address reaches the message.
+
+**New shared pieces.** `motion/Reveal.jsx` (rise on first sight, CSS not `motion`
+`initial`, so it works on a hard load: see decision 20; pass `innerRef` not `ref`).
+A named breakpoint `wide` (1360px) in `index.css`.
+
+Verified in WebKit and Chromium at 1512x860 and 1440, widths 1360 to 320 for
+overflow (none), reduced motion (everything shown, About's diagrams complete), the
+picker, the form prefill and a junk `?custom=`, the FAQ index click and scroll-spy,
+the matrix hover, no console errors, `vite build` compiles. Not done: the About
+diagrams' scroll timing was judged by eye at five positions, not measured.
+
+### Step 7.1 — The home product showcase, "more interesting" again
+
+The client asked for the Step 7 showcase (`sections/Showcase.jsx`) to be more
+interesting a second time, with a screenshot of it open on E-commerce. All changes
+are in that one file plus one keyframe in `index.css`.
+
+| Change | How |
+|---|---|
+| **A bug first:** the figure ran under the product name ("Akronix E-commerce", at 1512 wide) | The figure is `h-40` and held above the name. Measured on all twelve slabs at 1512x860: it clears the name on every one, tightest 12px (AI Assistant). A product with more summary lines moves its name up, so re-measure if a summary gets longer |
+| The row arrives as a skyline | Each slab's clip opens from the bottom edge up, left to right, 70ms apart (`RISE_DELAY`, a ladder of literal `delay-[..]` classes, as in `RollText`). Once, when the row is first seen (`useInView once`) |
+| The row tours itself | The open slab changes every 5.5s (`DWELL`) while the row is on screen, with a line along its top edge showing the time left (`.akx-tour` in `index.css`: a solid darker shade on a solid slab, the product's own hue on a pale one). A pointer or focus on the row holds it; a **Pause the tour** control (rolling text) stops it; reduced motion has no tour and no control. Keep `DWELL` and the `5.5s` in `.akx-tour` equal |
+| The open slab is staged | The code's letters rise one by one, then the "being built to do" rows, after the width has moved. Nothing waits when a slab closes |
+| The legend became a rail under the row | `01 - 06 In development` / `07 - 12 Planned`. The two segments are on the same spring and gap as the slabs, so each stays under its own slabs while the width moves (`basis-5` is the five gaps inside a group; the group holding the open slab is 11 shares, the other 6). **It assumes the first six products are the ones in development** (true in `products.js`). Below `xl` the old two-swatch legend stays |
+| In-development dots pulse softly | `motion-safe:animate-pulse` on the dot of a solid slab and card: "the work is active", never "available" |
+
+Verified in WebKit and Chromium at 1512x860 and in WebKit at 375: tour advances and
+holds, pause works, focus holds the tour, reduced motion has no entry, tour or
+control, no horizontal overflow, no console errors, `vite build` compiles. The
+phone swipe row is unchanged apart from the pulsing dot.
+
+**Found, and it affects the whole home page (deferred -- not changed here).**
+`App.jsx` wraps the route in `<AnimatePresence mode="wait" initial={false}>`. That is
+how the page skips its own first fade, but it also tells **every motion element
+under it to skip its `initial` state** for as long as the first route stays mounted
+(until the first client-side navigation). On a hard load or refresh of `/` the new
+slab rise and the progress line did not run; after clicking to another page and
+back they did. Checked for those two only. Other sections use the same pattern
+(`Faq.jsx` and `ColourBar.jsx` start from `initial={{ scaleX: 0 }}`, scroll reveals
+use `initial` + `whileInView`) and are very likely static on a hard load. This is
+probably worth fixing at the root -- drop `initial={false}` from `AnimatePresence`
+and give `motion.main` itself `initial={firstRender ? false : {...}}` -- but it
+changes how every page first appears, so it wants the client's say.
+This section does not depend on it: its entrance and tour line are CSS (a class swap
+on a transition, a keyframe).
+
+**Do not drive the rise with `motion` `initial`/`animate` on `clipPath`.** Tried
+first, with the same result both ways (stable constants, then a single `useInView`):
+every time the open slab changed, the component re-rendered and the whole row's clip
+snapped back to `inset(100%)` and rose again. A CSS class swap on a transition cannot
+replay, which is why it is CSS now. Cause not found.
+
+### Step 7 — A white first screen, a colour showcase, glossy pricing, sound on About, the policies ported
 
 Client feedback on Step 6.1, 11 Oct 2026, with two screenshots (the glass nav on
 a white strip above the black hero; the Solutions "THE EIGHT" sidebar). Eleven
@@ -2102,6 +2496,21 @@ every `rounded-*` is either a control or the stage dot.
     headline and the facts row. The header is `isolate`, so a `-z-10` child
     stays above the header's own ground. Every opening block that wants to sit
     under the floating nav takes `NAV_PULL` from `lib/navPull.js`.
+
+20. **`AnimatePresence initial={false}` in `App.jsx` silences `initial` states on a
+    hard load.** Anything that must show its entrance on a refresh of `/` cannot
+    rely on `motion`'s `initial`; use a CSS transition or keyframe (Showcase does).
+    See Step 7.1. To check a reveal, test it both on a hard load and after a
+    client-side navigation -- they differ.
+
+21. **Two Tailwind v4 traps, both hit in Step 7.2.** (a) An arbitrary
+    `min-[1360px]:` variant is sorted *ahead of* `md:` in the output, so `md:` wins
+    at 1512 and the class silently does nothing; use a named breakpoint
+    (`wide`, 1360px, in the `@theme` block) for anything between `lg` and `2xl`.
+    (b) `translate-y-*` and `scale-*` set the `translate` and `scale` properties,
+    not `transform`: a `transition-[opacity,transform]` does not animate them. Say
+    `transition-[opacity,translate]` (the bare `transition-transform` utility is
+    fine; it lists all four).
 
 ---
 

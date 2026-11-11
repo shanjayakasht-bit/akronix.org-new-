@@ -6,6 +6,20 @@ import { solutions } from './solutions'
  * NOTE: `email` is an open question — the live contact page uses a Gmail address
  * while the policies page uses admin@akronix.org. A custom-domain address reads
  * materially better. Change it here and it changes everywhere.
+ *
+ * Checked in Step 7.6 (read-only DNS lookups, no mail sent), because a company-domain
+ * address was asked for in the footer:
+ *   - contact@akronix.in: NOT usable. akronix.in has no MX and no address records, so
+ *     nothing could be delivered to it. Nothing in the project configures it.
+ *   - admin@akronix.org: akronix.org has Hostinger MX records (mx1/mx2.hostinger.com)
+ *     and this address is in the policies text carried over from the live site, but
+ *     nothing here confirms that the mailbox exists or is read, so it is not verified.
+ * So `email` stays the Gmail address, which is known to work, and every mailto link
+ * still agrees with the text beside it (the footer, the contact page and the JSON-LD
+ * in index.html all read this one value or repeat it).
+ *
+ * To switch: create and test the mailbox, then change `email` below AND the `email`
+ * in the Organization JSON-LD in index.html, which repeats the literal address.
  */
 export const site = {
   name: 'Akronix',

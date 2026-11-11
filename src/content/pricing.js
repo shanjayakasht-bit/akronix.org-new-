@@ -127,9 +127,9 @@ export const pricingNote =
   'Networking and Academy access are included from the day each opens. The networking community is still forming, so until its first meeting is set, that line of a plan means a place waiting for you. Everything else listed is available now.'
 
 export const everyPlan = {
-  eyebrow: 'On every plan',
-  title: 'What every plan',
-  accent: 'includes.',
+  eyebrow: 'Compare plans',
+  title: 'Compare',
+  accent: 'the plans.',
   items: [
     { name: 'Security', copy: 'Your data handled with care, in transit and at rest.' },
     { name: 'Networking access', copy: 'A place in the founders’ and professionals’ community, as it opens.' },
@@ -138,6 +138,62 @@ export const everyPlan = {
     { name: 'Partner perks', copy: 'Discounts and offers from the tools we work with, when they exist.' },
   ],
 }
+
+/* The comparison table's rows (Step 7.5).
+ *
+ * Every row after "Included in every plan" is one line from `plans[].items`,
+ * named here by its exact text and grouped by what it is about. Whether a plan
+ * has a line is NOT typed: it is worked out from `plans` itself, by the one rule
+ * the plans state about themselves -- a plan whose `lead` begins "Everything in"
+ * includes every line of the plan before it. So a line is on the plan that lists
+ * it and on every plan above that, and on none below; change a plan's items and
+ * the table follows, and it cannot disagree with the cards above it.
+ *
+ * Two things this deliberately does not do. It does not decide that "Advanced
+ * digital marketing" replaces "Basic digital marketing support" -- both are
+ * listed, so a higher plan shows both, which is what "everything in Starter,
+ * plus" says. And a line that is in `plans` but in no group here is not dropped:
+ * it is appended under "More", so every line a plan lists is always in the table.
+ *
+ * Billing: the plans say "/ month", the hero says "plans are billed monthly" and
+ * the contracts answer says there is no term. Nothing in this file mentions tax,
+ * so the table does not either. */
+const GROUPS = [
+  { name: 'Mentorship and learning', lines: ['1 on 1 mentorship session / month', 'Resource library access', 'On-site / virtual workshops'] },
+  { name: 'Digital marketing', lines: ['Basic digital marketing support', 'Advanced digital marketing', 'Advanced analytics & reporting'] },
+  { name: 'Networking', lines: ['Access to networking community', 'Priority networking access', 'Monthly networking events', 'More exposure in the network'] },
+  { name: 'Consultation and delivery', lines: ['Business consultation (2 / month)', 'Quarterly business review', 'Dedicated account manager', 'Dedicated team', 'Custom solutions & integrations'] },
+  { name: 'Discounts', lines: ['Project discounts', 'Custom SaaS / software discounts'] },
+  { name: 'Support', lines: ['Email support', 'Priority email & chat support', 'Priority support (24/7)', '24/7 dedicated support'] },
+  { name: 'Platform and security', lines: ['SLA & priority infrastructure', 'Advanced security & compliance'] },
+]
+
+const carriesPrevious = (p, c) => c > 0 && /^Everything in\b/i.test(p.lead)
+
+/* For one line: which of the four plans have it. */
+const planHas = (text) => {
+  const has = []
+  plans.forEach((p, c) => has.push(p.items.includes(text) || (carriesPrevious(p, c) && has[c - 1])))
+  return has
+}
+
+const listed = plans.flatMap((p) => p.items)
+const placed = new Set(GROUPS.flatMap((g) => g.lines))
+const leftovers = [...new Set(listed.filter((t) => !placed.has(t)))]
+
+export const comparison = [
+  {
+    name: 'Included in every plan',
+    rows: everyPlan.items.map((it) => ({ label: it.name, copy: it.copy, has: plans.map(() => true) })),
+  },
+  ...[...GROUPS, ...(leftovers.length ? [{ name: 'More', lines: leftovers }] : [])].map((g) => ({
+    name: g.name,
+    rows: g.lines.filter((t) => listed.includes(t)).map((t) => ({ label: t, has: planHas(t) })),
+  })),
+]
+
+export const comparisonNote =
+  'Starter, Growth and Business are billed monthly, with no long-term contract. Enterprise is priced to the organisation. Each plan includes everything in the plan before it, plus the lines shown for it.'
 
 export const customPlan = {
   eyebrow: 'Custom solutions',
@@ -155,39 +211,55 @@ export const customPlan = {
   primary: { label: 'Book a Free Consultation', to: '/contact' },
 }
 
+/* Each question carries a `tag` (the short name in the index beside the answers)
+ * and a `verdict` (the answer in a line). A verdict restates the first thing its
+ * answer already says and adds nothing: where the answer says there is no refund
+ * policy yet, the verdict says so too. */
 export const pricingFaq = [
   {
     q: 'Can I upgrade or downgrade my plan?',
+    tag: 'Changing plans',
+    verdict: 'Yes, month to month',
     a: [
       'Yes. The plans are monthly with no long-term commitment, so you can move up as the business grows, or step down, from one month to the next. Tell us which plan you want and from when.',
     ],
   },
   {
     q: 'What payment methods do you accept?',
+    tag: 'Payment',
+    verdict: 'Confirmed when you start',
     a: [
       'We confirm the payment options when you get started, because we would rather set them up around what is easy for you than publish a list we have not tested. Tell us what you would prefer on the enquiry form.',
     ],
   },
   {
     q: 'Do you offer refunds?',
+    tag: 'Refunds',
+    verdict: 'Not written yet, so agreed first',
     a: [
       'We have not written a refund policy yet, and we would rather say so than invent one here. What we will do is agree it in writing with you before you pay anything, so there is nothing to find out afterwards.',
     ],
   },
   {
     q: 'Are there long-term contracts?',
+    tag: 'Contracts',
+    verdict: 'No',
     a: [
       'No. A plan is billed monthly and you are not tied to a term. Custom software is a different arrangement: it has a written scope, milestones and a price agreed before work starts.',
     ],
   },
   {
     q: 'Is there a setup fee?',
+    tag: 'Fees',
+    verdict: 'The price shown is the whole price',
     a: [
       'The prices on this page are the whole price of a plan. Custom software and larger engagements are quoted separately and in writing before they begin, so a cost never arrives that you were not shown first.',
     ],
   },
   {
     q: 'Can I get a custom plan for my organisation?',
+    tag: 'Custom plans',
+    verdict: 'Yes',
     a: [
       'Yes, and for most organisations beyond a certain size it is the right answer. Tell us about the team, what you want to build or learn, and we will propose something specific rather than pointing you at the nearest tier.',
     ],
@@ -201,4 +273,12 @@ export const pricingClose = {
   copy: 'Pick the plan that looks closest and say so on the form, or book a call first. Either way you will hear back within a day.',
   primary: { label: 'Get Started Today', to: '/contact?plan=growth' },
   secondary: { label: 'Book a Consultation', to: '/contact' },
+  /* What happens after the button. Each step is something this page already
+     promises: the form names a plan, a first reply within a day (the "24 h" on the
+     hero), and terms in writing before any payment (the refunds answer). */
+  steps: [
+    { title: 'Tell us which plan', copy: 'Name the closest one on the form, or leave it blank and say what you need.' },
+    { title: 'Hear back within a day', copy: 'Every enquiry gets a first reply within 24 hours.' },
+    { title: 'Agree it in writing', copy: 'Terms are set down and agreed before you pay anything.' },
+  ],
 }

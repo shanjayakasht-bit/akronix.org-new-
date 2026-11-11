@@ -93,6 +93,17 @@
   --color-p-helpdesk: #65A30D;
   --color-p-helpdesk-tint: #ECFCCB;
 
+  /* ---- Interface palette (Step 7.6) ---------------------------------------
+     The five colours of the hero's interface preview and of the product
+     accordion's matte panels. They are used in those two places only; the site's
+     own ground, ink and red are unchanged. `ui-violet` is the one purple, a flat
+     accent -- there is no gradient anywhere. */
+  --color-ui-cream: #f2f0ea;
+  --color-ui-charcoal: #101217;
+  --color-ui-navy: #172033;
+  --color-ui-violet: #7047eb;
+  --color-ui-grey: #a7a9ad;
+
   /* ---- Families ---------------------------------------------------------- */
   /* One family. No monospace anywhere (client's call, Step 3o): do not use
      `font-mono`, it falls through to the browser default. `font-display` and
@@ -133,6 +144,13 @@
   --text-mark: 0.75rem;
   --text-mark--line-height: 1.2;
   --text-mark--letter-spacing: 0.14em;
+
+  /* ---- Breakpoints --------------------------------------------------------
+     The defaults, plus one: `wide` (1360px) is where a MacBook-width screen starts
+     and a sheet or a hero has room for a third column. A named breakpoint rather
+     than an arbitrary `min-[1360px]:` because Tailwind sorts an arbitrary
+     min-width variant ahead of `md:` in the output, so `md:` would win at 1512. */
+  --breakpoint-wide: 85rem;
 
   /* ---- Radius ------------------------------------------------------------
      Square. The rounded slabs, pill buttons and pill nav of Steps 3c-4.8 are
@@ -293,6 +311,20 @@
   100% { transform: translateX(260%) skewX(-18deg); }
 }
 .akx-sweep { animation: akx-sweep 7s ease-in-out 3.4s infinite; }
+
+/* The time left on the open slab of the home page's product showcase: a line
+   that fills its own width once, at the pace of the tour (5.5s, DWELL in
+   Showcase.jsx -- keep the two together). */
+@keyframes akx-tour {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.akx-tour { animation: akx-tour 5.5s linear forwards; }
+
+/* The time left on the showing slide of the home hero: the same fill as
+   `akx-tour`, over the hero's own dwell (7s, DWELL in Hero.jsx -- keep the two
+   together). */
+.akx-slide { animation: akx-tour 7s linear forwards; }
 
 /* Reduced motion is a hard stop, not a softening. Lenis is bypassed in JS. */
 @media (prefers-reduced-motion: reduce) {

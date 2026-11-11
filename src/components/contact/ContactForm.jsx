@@ -7,6 +7,7 @@ import { Chevron } from '../brand/Glyphs'
 import { site } from '../../content/site'
 import { products, productShort, productSlug } from '../../content/products'
 import { serviceGroups, planOptions } from '../../content/contact'
+import { customPlan } from '../../content/pricing'
 import { cx } from '../../lib/cx'
 import { usePrefersReducedMotion } from '../../lib/usePrefersReducedMotion'
 
@@ -69,8 +70,18 @@ export default function ContactForm() {
     return ''
   }, [params])
   const initialPlan = planOptions.some((p) => p.value === params.get('plan')) ? params.get('plan') : ''
+  /* `?custom=0,3` is what the pricing page's "Need something larger?" picker
+     sends: positions in `customPlan.items`. Only those known lines are used, so
+     nothing typed into an address ever lands in the message. */
+  const initialMessage = useMemo(() => {
+    const named = (params.get('custom') ?? '')
+      .split(',')
+      .map((n) => customPlan.items[Number(n)])
+      .filter(Boolean)
+    return named.length ? `I would like to talk about: ${named.join('; ')}.\n\n` : ''
+  }, [params])
 
-  const [v, setV] = useState({ first: '', last: '', email: '', company: '', topic: initialTopic, plan: initialPlan, message: '' })
+  const [v, setV] = useState({ first: '', last: '', email: '', company: '', topic: initialTopic, plan: initialPlan, message: initialMessage })
   const [touched, setTouched] = useState({})
   const [status, setStatus] = useState('idle')
   const [route, setRoute] = useState('mail')
